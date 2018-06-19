@@ -1,4 +1,4 @@
-#include "third-party/catch.hpp"
+#include "catch.hpp"
 
 #include "pattern-aggregator.hpp"
 

@@ -8,3 +8,4 @@ add_executable(dfc-test
   src/test-main.cpp
   src/test-pattern-aggregator.cpp
 )
+target_include_directories(dfc-test PRIVATE third-party)

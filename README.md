@@ -23,5 +23,11 @@ cmake ..
 make
 ```
 
+## License
+**Current version is MIT**.
+Code in the directory `third-party` has a different license.
+
+Prior versions of this repository may have a different license.
+
 ## Reference
 Byungkwon Choi, JongWook Chae, Muhammad Jamshed, KyoungSoo Park, and Dongsu Han, _DFC: Accelerating String Pattern Matching for Network Applications_, NSDI 2016 [PDF](http://ina.kaist.ac.kr/~dongsuh/paper/nsdi16-paper-choi.pdf)
