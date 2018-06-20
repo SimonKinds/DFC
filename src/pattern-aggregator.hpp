@@ -2,24 +2,25 @@
 #define PATTERN_AGGREGATOR_H
 
 #include <algorithm>
-#include <cstddef>
 #include <cstring>
 #include <functional>
 #include <memory>
 #include <vector>
 
+#include "byte.hpp"
+
 namespace dfc {
 class RawPattern {
  private:
-  static void deleter(std::byte* ptr) { free(ptr); }
+  static void deleter(byte* ptr) { free(ptr); }
 
-  using DataPtr = std::unique_ptr<std::byte, std::function<void(std::byte*)>>;
+  using DataPtr = std::unique_ptr<byte, std::function<void(byte*)>>;
   DataPtr data_;
   int size_;
 
  public:
-  RawPattern(const std::byte* const data, int size)
-      : data_(static_cast<std::byte*>(malloc(size)), deleter), size_(size) {
+  RawPattern(const byte* const data, int size)
+      : data_(static_cast<byte*>(malloc(size)), deleter), size_(size) {
     std::memcpy(data_.get(), data, size);
   }
 
@@ -54,7 +55,7 @@ class RawPattern {
     return memcmp(data_.get(), other.data(), size_) == 1;
   }
 
-  const std::byte* data() const { return data_.get(); }
+  const byte* data() const { return data_.get(); }
 
   int size() const { return size_; }
 

@@ -7,7 +7,7 @@ using dfc::RawPattern;
 
 RawPattern testPattern() {
   std::string string_pat("test");
-  RawPattern pat(reinterpret_cast<std::byte*>(string_pat.data()),
+  RawPattern pat(reinterpret_cast<const byte*>(string_pat.data()),
                  string_pat.size());
 
   return pat;
@@ -15,7 +15,7 @@ RawPattern testPattern() {
 
 RawPattern testPattern2() {
   std::string string_pat("another one");
-  RawPattern pat(reinterpret_cast<std::byte*>(string_pat.data()),
+  RawPattern pat(reinterpret_cast<const byte*>(string_pat.data()),
                  string_pat.size());
 
   return pat;
