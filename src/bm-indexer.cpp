@@ -4,6 +4,7 @@
 
 #include "indexer.hpp"
 
+namespace {
 static void BM_DF_TwoByte(benchmark::State& state) {
   uint16_t segment = std::numeric_limits<uint16_t>::max();
   benchmark::DoNotOptimize(&segment);
@@ -43,3 +44,4 @@ static void BM_CT_IndexerLarge(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_CT_IndexerLarge);
+}  // namespace

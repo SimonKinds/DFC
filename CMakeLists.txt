@@ -16,5 +16,6 @@ target_include_directories(test-dfc PRIVATE third-party)
 add_executable(bm-dfc
   src/bm-indexer.cpp
   src/bm-df-initializer.cpp
+  src/bm-df.cpp
 )
 target_link_libraries(bm-dfc benchmark_main)

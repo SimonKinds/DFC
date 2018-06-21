@@ -1,5 +1,5 @@
-#ifndef PATTERN_AGGREGATOR_H
-#define PATTERN_AGGREGATOR_H
+#ifndef DFC_PATTERN_AGGREGATOR_HPP
+#define DFC_PATTERN_AGGREGATOR_HPP
 
 #include <algorithm>
 #include <vector>

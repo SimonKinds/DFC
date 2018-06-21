@@ -1,28 +1,15 @@
+#ifndef DFC_SEGMENTER_HPP
+#define DFC_SEGMENTER_HPP
+
 #include "byte.hpp"
 
 namespace dfc {
-template <int ByteCount>
-struct Segmenter {};
-
-template <>
-struct Segmenter<1> {
-  using Type = uint8_t;
-  inline Type segment(const byte* in) const noexcept { return *in; }
-};
-
-template <>
-struct Segmenter<2> {
-  using Type = uint16_t;
+template <typename Type>
+struct Segmenter {
   inline Type segment(const byte* in) const noexcept {
-    return *reinterpret_cast<const uint16_t*>(in);
-  }
-};
-
-template <>
-struct Segmenter<4> {
-  using Type = uint32_t;
-  inline Type segment(const byte* in) const noexcept {
-    return *reinterpret_cast<const uint32_t*>(in);
+    return *reinterpret_cast<const Type*>(in);
   }
 };
 }  // namespace dfc
+
+#endif

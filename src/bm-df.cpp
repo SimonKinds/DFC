@@ -1,8 +1,6 @@
 #include "benchmark/benchmark.h"
 
 #include "df-initializer.hpp"
-#include "indexer.hpp"
-#include "segmenter.hpp"
 
 namespace {
 dfc::RawPattern twoBytePattern() {
@@ -21,27 +19,38 @@ dfc::RawPattern fiveBytePattern() {
   return pat;
 }
 
-static void DF_Initializer_TwoByte_AddPattern(benchmark::State& state) {
+static void DF_TwoByte_Index(benchmark::State& state) {
   const auto pattern = twoBytePattern();
-
   dfc::DfInitializer<dfc::TwoByteDfIndexer> init(1, 3);
+  init.addPattern(pattern);
+  const auto df = init.df();
+
+  const auto data = pattern.data();
+
+  benchmark::DoNotOptimize(&df);
+  benchmark::DoNotOptimize(&data);
+
   for (auto _ : state) {
-    init.addPattern(pattern);
-    const auto& filter = init.filter();
-    benchmark::DoNotOptimize(&filter);
+    benchmark::DoNotOptimize(df.isSet(data));
   }
 }
-BENCHMARK(DF_Initializer_TwoByte_AddPattern);
+BENCHMARK(DF_TwoByte_Index);
 
-static void DF_Initializer_FourByteHash_AddPattern(benchmark::State& state) {
+static void DF_FourByteHash_Index(benchmark::State& state) {
   const auto pattern = fiveBytePattern();
 
   dfc::DfInitializer<dfc::FourByteHashDfIndexer> init(4, 10);
+  init.addPattern(pattern);
+  const auto df = init.df();
+
+  const auto data = pattern.data();
+
+  benchmark::DoNotOptimize(&df);
+  benchmark::DoNotOptimize(&data);
+
   for (auto _ : state) {
-    init.addPattern(pattern);
-    const auto& filter = init.filter();
-    benchmark::DoNotOptimize(&filter);
+    benchmark::DoNotOptimize(df.isSet(data));
   }
 }
-BENCHMARK(DF_Initializer_FourByteHash_AddPattern);
+BENCHMARK(DF_FourByteHash_Index);
 }  // namespace

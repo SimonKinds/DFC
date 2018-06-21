@@ -1,3 +1,6 @@
+#ifndef DFC_PATTERN_HPP
+#define DFC_PATTERN_HPP
+
 #include <cstring>
 #include <memory>
 
@@ -55,3 +58,5 @@ class RawPattern {
 };
 
 }  // namespace dfc
+
+#endif

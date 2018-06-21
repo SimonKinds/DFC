@@ -1,3 +1,6 @@
+#ifndef DFC_INDEXER_HPP
+#define DFC_INDEXER_HPP
+
 #include <type_traits>
 #include "byte.hpp"
 
@@ -24,3 +27,5 @@ class CtIndexer {
   }
 };
 }  // namespace dfc
+
+#endif
