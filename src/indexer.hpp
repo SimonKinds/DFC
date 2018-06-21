@@ -2,29 +2,25 @@
 #include "byte.hpp"
 
 namespace dfc {
-template <typename RetType, RetType Hash>
+template <typename Segment_, Segment_ Hash, typename RetType_ = Segment_>
 class DfIndexer {
  public:
-  constexpr inline RetType index(const char* val) const noexcept {
-    return index(reinterpret_cast<const byte*>(val));
-  }
-  constexpr inline RetType index(const byte* val) const noexcept {
-    return (*reinterpret_cast<const RetType*>(val) * Hash) >> 3;
+  using Segment = Segment_;
+  using RetType = RetType_;
+  constexpr inline RetType index(const Segment segment) const noexcept {
+    return (segment * Hash) >> 3;
   }
 };
 
 using TwoByteDfIndexer = DfIndexer<uint16_t, 1>;
-using FourByteHashDfIndexer = DfIndexer<uint16_t, 26693>;
+using FourByteHashDfIndexer = DfIndexer<uint32_t, 26693, uint16_t>;
 
-template <typename RetType, RetType Hash, RetType Mask>
+template <typename Segment, Segment Hash, Segment Mask,
+          typename RetType = Segment>
 class CtIndexer {
  public:
-  constexpr inline RetType index(const char* val) const noexcept {
-    return index(reinterpret_cast<const byte*>(val));
-  }
-
-  constexpr inline RetType index(const byte* val) const noexcept {
-    return (*reinterpret_cast<const RetType*>(val) * Hash) & Mask;
+  constexpr inline RetType index(const Segment segment) const noexcept {
+    return (segment * Hash) & Mask;
   }
 };
 }  // namespace dfc

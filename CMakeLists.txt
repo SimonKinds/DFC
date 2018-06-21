@@ -9,12 +9,12 @@ add_subdirectory(third-party/benchmark)
 add_executable(test-dfc
   src/test-main.cpp
   src/test-pattern-aggregator.cpp
-  src/test-indexer.cpp
+  src/test-df-initializer.cpp
 )
 target_include_directories(test-dfc PRIVATE third-party)
 
 add_executable(bm-dfc
   src/bm-indexer.cpp
+  src/bm-df-initializer.cpp
 )
 target_link_libraries(bm-dfc benchmark_main)
-target_include_directories(bm-dfc PRIVATE third-party)
