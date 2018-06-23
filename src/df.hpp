@@ -10,28 +10,29 @@
 #include "segmenter.hpp"
 
 namespace dfc {
-template <typename Indexer>
+template <typename SegmentType, SegmentType Hash, typename IndexType>
 class DirectFilter {
-  using Filter = typename std::array<
-      byte, ((std::numeric_limits<typename Indexer::RetType>::max() + 1) >> 3)>;
+  using Filter =
+      typename std::array<byte,
+                          ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
 
-  const Filter filter_;
-  Indexer indexer_;
-  Segmenter<typename Indexer::Segment> segmenter_;
-  DfMasker<typename Indexer::Segment> masker_;
+  Filter const filter_;
+  DfIndexer<SegmentType, Hash, IndexType> const indexer_{};
+  Segmenter<SegmentType> const segmenter_{};
+  DfMasker<SegmentType> const masker_{};
 
  public:
   explicit DirectFilter(Filter filter) : filter_(std::move(filter)) {}
 
   inline bool isSet(const byte* in) const noexcept {
-    const auto segment = segmenter_.segment(in);
-    const auto index = indexer_.index(segment);
-    const auto mask = masker_.mask(segment);
+    auto const segment = segmenter_.segment(in);
+    auto const index = indexer_.index(segment);
+    auto const mask = masker_.mask(segment);
 
     return filter_[index] & mask;
   }
 
-  const Filter& filter() const noexcept { return filter_; }
+  Filter const& filter() const noexcept { return filter_; }
 };
 }  // namespace dfc
 

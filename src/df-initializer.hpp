@@ -5,20 +5,24 @@
 #include <limits>
 
 #include "df.hpp"
+#include "indexer.hpp"
 #include "pattern.hpp"
 
 namespace dfc {
 
-template <typename Indexer>
+template <typename SegmentType, SegmentType Hash = 1,
+          typename IndexType = SegmentType>
 class DfInitializer {
-  using Filter = typename std::array<
-      byte, ((std::numeric_limits<typename Indexer::RetType>::max() + 1) >> 3)>;
+  using Filter =
+      typename std::array<byte,
+                          ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
+  using Indexer = DfIndexer<SegmentType, Hash, IndexType>;
 
   Filter filter_;
   int const minLengthPattern_, maxLengthPattern_;
-  Indexer indexer_;
-  Segmenter<typename Indexer::Segment> segmenter_;
-  DfMasker<typename Indexer::Segment> masker_;
+  Indexer const indexer_{};
+  Segmenter<SegmentType> const segmenter_{};
+  DfMasker<SegmentType> const masker_{};
 
  public:
   explicit DfInitializer(int minLengthPattern, int maxLengthPattern) noexcept
@@ -30,18 +34,18 @@ class DfInitializer {
   // TODO: If shorter than segment, extend with all permutation
   void addPattern(const RawPattern& pat) noexcept {
     if (pat.size() >= minLengthPattern_ && pat.size() <= maxLengthPattern_) {
-      const auto segment = segmenter_.segment(pat.data());
-      const auto index = indexer_.index(segment);
-      const auto mask = masker_.mask(segment);
+      auto const segment = segmenter_.segment(pat.data());
+      auto const index = indexer_.index(segment);
+      auto const mask = masker_.mask(segment);
 
       filter_[index] |= mask;
     }
   }
 
-  const Filter& filter() const noexcept { return filter_; }
+  Filter const& filter() const noexcept { return filter_; }
 
-  DirectFilter<Indexer> df() const noexcept {
-    return DirectFilter<Indexer>(filter_);
+  auto df() const noexcept {
+    return DirectFilter<SegmentType, Hash, IndexType>(filter_);
   }
 };
 }  // namespace dfc

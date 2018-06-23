@@ -14,7 +14,7 @@ class RawPattern {
   int size_;
 
  public:
-  RawPattern(const byte* const data, int size)
+  RawPattern(byte const* const data, int size)
       : data_(std::make_unique<byte[]>(size)), size_(size) {
     std::memcpy(data_.get(), data, size);
   }
@@ -26,15 +26,15 @@ class RawPattern {
     return *this;
   }
 
-  RawPattern(const RawPattern&) = delete;
+  RawPattern(RawPattern const&) = delete;
   RawPattern(RawPattern&&) = default;
 
-  bool operator==(const RawPattern& other) const {
+  bool operator==(RawPattern const& other) const {
     return size_ == other.size() &&
            memcmp(data_.get(), other.data(), size_) == 0;
   }
 
-  bool operator<(const RawPattern& other) const {
+  bool operator<(RawPattern const& other) const {
     if (size_ != other.size()) {
       return size_ < other.size();
     }
@@ -42,7 +42,7 @@ class RawPattern {
     return memcmp(data_.get(), other.data(), size_) == -1;
   }
 
-  bool operator>(const RawPattern& other) const {
+  bool operator>(RawPattern const& other) const {
     if (size_ != other.size()) {
       return size_ > other.size();
     }
@@ -50,7 +50,7 @@ class RawPattern {
     return memcmp(data_.get(), other.data(), size_) == 1;
   }
 
-  const byte* data() const { return data_.get(); }
+  byte const* data() const { return data_.get(); }
 
   int size() const { return size_; }
 

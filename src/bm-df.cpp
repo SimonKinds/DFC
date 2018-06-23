@@ -21,7 +21,7 @@ dfc::RawPattern fiveBytePattern() {
 
 static void DF_TwoByte_Index(benchmark::State& state) {
   const auto pattern = twoBytePattern();
-  dfc::DfInitializer<dfc::TwoByteDfIndexer> init(1, 3);
+  dfc::DfInitializer<uint16_t> init(1, 3);
   init.addPattern(pattern);
   const auto df = init.df();
 
@@ -39,7 +39,7 @@ BENCHMARK(DF_TwoByte_Index);
 static void DF_FourByteHash_Index(benchmark::State& state) {
   const auto pattern = fiveBytePattern();
 
-  dfc::DfInitializer<dfc::FourByteHashDfIndexer> init(4, 10);
+  dfc::DfInitializer<uint32_t, 4909, uint16_t> init(4, 10);
   init.addPattern(pattern);
   const auto df = init.df();
 

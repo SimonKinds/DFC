@@ -6,19 +6,19 @@
 
 dfc::RawPattern twoBytePattern() {
   std::string string_pat("te");
-  dfc::RawPattern pat(reinterpret_cast<const byte*>(string_pat.data()),
+  dfc::RawPattern pat(reinterpret_cast<byte const*>(string_pat.data()),
                       string_pat.size());
 
   return pat;
 }
 
 TEST_CASE("Empty without patterns") {
-  dfc::DfInitializer<dfc::TwoByteDfIndexer> init(1, 3);
+  dfc::DfInitializer<uint16_t> init(1, 3);
 
   auto df = init.df();
 
   int ors = 0;
-  for (const auto byte : df.filter()) {
+  for (auto const byte : df.filter()) {
     ors |= byte;
   }
 
@@ -26,14 +26,14 @@ TEST_CASE("Empty without patterns") {
 }
 
 TEST_CASE("Sets bit if pattern is within the size constraint") {
-  dfc::DfInitializer<dfc::TwoByteDfIndexer> init(1, 3);
+  dfc::DfInitializer<uint16_t> init(1, 3);
 
   init.addPattern(twoBytePattern());
 
-  const auto df = init.df();
+  auto const df = init.df();
 
   int ors = 0;
-  for (const auto byte : df.filter()) {
+  for (auto const byte : df.filter()) {
     ors |= byte;
   }
 
@@ -41,14 +41,14 @@ TEST_CASE("Sets bit if pattern is within the size constraint") {
 }
 
 TEST_CASE("Does not set bit if pattern is outside the size constraint") {
-  dfc::DfInitializer<dfc::TwoByteDfIndexer> init(3, 5);
+  dfc::DfInitializer<uint16_t> init(3, 5);
 
   init.addPattern(twoBytePattern());
 
-  const auto df = init.df();
+  auto const df = init.df();
 
   int ors = 0;
-  for (const auto byte : df.filter()) {
+  for (auto const byte : df.filter()) {
     ors |= byte;
   }
 

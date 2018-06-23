@@ -5,10 +5,13 @@
 #include "indexer.hpp"
 
 namespace {
+using TwoByteDfIndexer = dfc::DfIndexer<uint16_t, 1, uint16_t>;
+using FourByteHashDfIndexer = dfc::DfIndexer<uint32_t, 4909, uint16_t>;
+
 static void BM_DF_TwoByte(benchmark::State& state) {
   uint16_t segment = std::numeric_limits<uint16_t>::max();
   benchmark::DoNotOptimize(&segment);
-  dfc::TwoByteDfIndexer indexer;
+  TwoByteDfIndexer indexer;
   for (auto _ : state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
@@ -18,7 +21,7 @@ BENCHMARK(BM_DF_TwoByte);
 static void BM_DF_FourByteHash(benchmark::State& state) {
   uint32_t segment = std::numeric_limits<uint32_t>::max();
   benchmark::DoNotOptimize(&segment);
-  dfc::FourByteHashDfIndexer indexer;
+  FourByteHashDfIndexer indexer;
   for (auto _ : state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
