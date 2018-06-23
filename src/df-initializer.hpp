@@ -12,20 +12,20 @@ namespace dfc {
 
 template <typename SegmentType, SegmentType Hash = 1,
           typename IndexType = SegmentType>
-class DfInitializer {
+class DirectFilterInitializer {
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
-  using Indexer = DfIndexer<SegmentType, Hash, IndexType>;
+  using Indexer = DirectFilterIndexer<SegmentType, Hash, IndexType>;
 
   Filter filter_;
   int const minLengthPattern_, maxLengthPattern_;
   Indexer const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
-  DfMasker<SegmentType> const masker_{};
+  DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  explicit DfInitializer(int minLengthPattern, int maxLengthPattern) noexcept
+  explicit DirectFilterInitializer(int minLengthPattern, int maxLengthPattern) noexcept
       : filter_({}),
         minLengthPattern_(minLengthPattern),
         maxLengthPattern_(maxLengthPattern) {}

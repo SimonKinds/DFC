@@ -14,10 +14,14 @@ class PatternAggregator {
  public:
   void add(RawPattern pat) { patterns_.emplace_back(std::move(pat)); }
 
-  const std::vector<RawPattern>& aggregate() {
+  std::vector<Pattern> aggregate() {
     removeDuplicates();
 
-    return patterns_;
+    std::vector<Pattern> patterns = createPatterns();
+
+    resetPatterns();
+
+    return patterns;
   }
 
  private:
@@ -26,6 +30,21 @@ class PatternAggregator {
     patterns_.erase(std::unique(std::begin(patterns_), std::end(patterns_)),
                     std::end(patterns_));
   }
+
+  std::vector<Pattern> createPatterns() {
+    std::vector<Pattern> newPatterns;
+    newPatterns.reserve(patterns_.size());
+
+    Pid pid = 0;
+    for (auto&& pattern : patterns_) {
+      newPatterns.emplace_back(pid, std::move(pattern));
+      ++pid;
+    }
+
+    return newPatterns;
+  }
+
+  void resetPatterns() { patterns_.clear(); }
 };
 }  // namespace dfc
 

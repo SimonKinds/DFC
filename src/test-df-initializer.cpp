@@ -13,7 +13,7 @@ dfc::RawPattern twoBytePattern() {
 }
 
 TEST_CASE("Empty without patterns") {
-  dfc::DfInitializer<uint16_t> init(1, 3);
+  dfc::DirectFilterInitializer<uint16_t> init(1, 3);
 
   auto df = init.df();
 
@@ -26,7 +26,7 @@ TEST_CASE("Empty without patterns") {
 }
 
 TEST_CASE("Sets bit if pattern is within the size constraint") {
-  dfc::DfInitializer<uint16_t> init(1, 3);
+  dfc::DirectFilterInitializer<uint16_t> init(1, 3);
 
   init.addPattern(twoBytePattern());
 
@@ -41,7 +41,7 @@ TEST_CASE("Sets bit if pattern is within the size constraint") {
 }
 
 TEST_CASE("Does not set bit if pattern is outside the size constraint") {
-  dfc::DfInitializer<uint16_t> init(3, 5);
+  dfc::DirectFilterInitializer<uint16_t> init(3, 5);
 
   init.addPattern(twoBytePattern());
 

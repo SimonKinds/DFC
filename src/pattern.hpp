@@ -5,56 +5,34 @@
 #include <memory>
 
 #include "byte.hpp"
+#include "pid.hpp"
+#include "raw-pattern.hpp"
 
 namespace dfc {
-class RawPattern {
+class Pattern {
  private:
-  using DataPtr = std::unique_ptr<byte[]>;
-  DataPtr data_;
-  int size_;
+  Pid const pid_;
+  int const size_;
+  std::unique_ptr<byte const[]> data_;
 
  public:
-  RawPattern(byte const* const data, int size)
-      : data_(std::make_unique<byte[]>(size)), size_(size) {
-    std::memcpy(data_.get(), data, size);
-  }
+  Pattern(Pid pid, RawPattern&& pattern)
+      : pid_(pid), size_(pattern.size()), data_(pattern.giveOwnership()) {}
 
-  RawPattern& operator=(RawPattern&& other) {
-    size_ = other.size();
-    data_ = other.takeOwnership();
+  Pattern(Pattern&&) = default;
+  Pattern& operator=(Pattern&&) = default;
 
-    return *this;
-  }
+  Pattern(const Pattern&) = delete;
+  Pattern& operator=(const Pattern&) = delete;
 
-  RawPattern(RawPattern const&) = delete;
-  RawPattern(RawPattern&&) = default;
+  inline Pid pid() const noexcept { return pid_; }
+  inline byte const* data() const noexcept { return data_.get(); }
+  inline int size() const noexcept { return size_; }
 
   bool operator==(RawPattern const& other) const {
     return size_ == other.size() &&
            memcmp(data_.get(), other.data(), size_) == 0;
   }
-
-  bool operator<(RawPattern const& other) const {
-    if (size_ != other.size()) {
-      return size_ < other.size();
-    }
-
-    return memcmp(data_.get(), other.data(), size_) == -1;
-  }
-
-  bool operator>(RawPattern const& other) const {
-    if (size_ != other.size()) {
-      return size_ > other.size();
-    }
-
-    return memcmp(data_.get(), other.data(), size_) == 1;
-  }
-
-  byte const* data() const { return data_.get(); }
-
-  int size() const { return size_; }
-
-  DataPtr takeOwnership() { return std::move(data_); }
 };
 
 }  // namespace dfc

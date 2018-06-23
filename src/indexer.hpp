@@ -6,7 +6,7 @@
 
 namespace dfc {
 template <typename Segment, Segment Hash, typename RetType>
-class DfIndexer {
+class DirectFilterIndexer {
  public:
   constexpr inline RetType index(const Segment segment) const noexcept {
     return (segment * Hash) >> 3;
@@ -14,7 +14,7 @@ class DfIndexer {
 };
 
 template <typename Segment, Segment Hash, Segment Mask>
-class CtIndexer {
+class CompactTableIndexer {
  public:
   constexpr inline Segment index(const Segment segment) const noexcept {
     return (segment * Hash) & Mask;

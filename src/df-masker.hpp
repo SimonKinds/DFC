@@ -5,7 +5,7 @@
 
 namespace dfc {
 template <typename Segment>
-class DfMasker {
+class DirectFilterMasker {
  public:
   inline byte mask(const Segment segment) const noexcept {
     return (segment & 0x7) << 1;
