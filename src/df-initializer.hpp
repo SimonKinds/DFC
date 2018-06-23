@@ -13,21 +13,26 @@ namespace dfc {
 template <typename SegmentType, SegmentType Hash = 1,
           typename IndexType = SegmentType>
 class DirectFilterInitializer {
+  static_assert(std::is_integral<SegmentType>::value,
+                "SegmentType must be integral");
+  static_assert(std::is_integral<IndexType>::value,
+                "IndexType must be integral");
+
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
   using Indexer = DirectFilterIndexer<SegmentType, Hash, IndexType>;
 
-  Filter filter_;
+  Filter filter_{};
   int const minLengthPattern_, maxLengthPattern_;
   Indexer const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  explicit DirectFilterInitializer(int minLengthPattern, int maxLengthPattern) noexcept
-      : filter_({}),
-        minLengthPattern_(minLengthPattern),
+  explicit DirectFilterInitializer(int minLengthPattern,
+                                   int maxLengthPattern) noexcept
+      : minLengthPattern_(minLengthPattern),
         maxLengthPattern_(maxLengthPattern) {}
 
   // TODO: If case insensitive, create all permutations of segment

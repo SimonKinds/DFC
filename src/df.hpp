@@ -12,6 +12,11 @@
 namespace dfc {
 template <typename SegmentType, SegmentType Hash, typename IndexType>
 class DirectFilter {
+  static_assert(std::is_integral<SegmentType>::value,
+                "SegmentType must be integral");
+  static_assert(std::is_integral<IndexType>::value,
+                "IndexType must be integral");
+
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
