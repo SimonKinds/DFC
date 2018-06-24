@@ -46,6 +46,10 @@ class CompactTable {
                std::shared_ptr<std::vector<Pattern> const> patterns)
       : table_(table), patterns_(std::move(patterns)) {}
 
+  void exactMatching(char const* const in, int const remaining) const noexcept {
+    exactMatching(reinterpret_cast<byte const*>(in), remaining);
+  }
+
   void exactMatching(byte const* const in, int const remaining) const noexcept {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
