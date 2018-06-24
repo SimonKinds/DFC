@@ -27,7 +27,7 @@ class DirectFilter {
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  explicit DirectFilter(Filter filter) : filter_(std::move(filter)) {}
+  explicit DirectFilter(Filter const& filter) : filter_(filter) {}
 
   inline bool isSet(const byte* in) const noexcept {
     auto const segment = segmenter_.segment(in);

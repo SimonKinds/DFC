@@ -16,7 +16,7 @@ class Pattern {
   std::unique_ptr<byte const[]> data_;
 
  public:
-  Pattern(Pid pid, RawPattern&& pattern)
+  Pattern(Pid const pid, RawPattern&& pattern)
       : pid_(pid), size_(pattern.size()), data_(pattern.giveOwnership()) {}
 
   Pattern(Pattern&&) = default;

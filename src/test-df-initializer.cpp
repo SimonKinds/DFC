@@ -4,6 +4,8 @@
 #include "indexer.hpp"
 #include "segmenter.hpp"
 
+namespace {
+
 dfc::RawPattern twoBytePattern() {
   std::string string_pat("te");
   dfc::RawPattern pat(reinterpret_cast<byte const*>(string_pat.data()),
@@ -54,3 +56,4 @@ TEST_CASE("Does not set bit if pattern is outside the size constraint") {
 
   REQUIRE(ors == 0);
 }
+}  // namespace

@@ -10,6 +10,7 @@ add_executable(test-dfc
   src/test-main.cpp
   src/test-pattern-aggregator.cpp
   src/test-df-initializer.cpp
+  src/test-ct-initializer.cpp
 )
 target_include_directories(test-dfc PRIVATE third-party)
 
