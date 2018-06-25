@@ -47,7 +47,7 @@ TEST_CASE("CT") {
     REQUIRE(matchedPids[0] == pid);
   }
 
-  SECTION("Does not match if remaining characters are fewer than segment") {
+  SECTION("Does not match if incorrect segment") {
     auto patternValue = "x";
 
     dfc::Pid const pid = 1;
@@ -56,7 +56,7 @@ TEST_CASE("CT") {
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
     auto const ct = initializer.ct<TestOnMatcher>(patterns);
-    ct.exactMatching(patternValue, 0);
+    ct.exactMatching("y", 1);
 
     REQUIRE(matchedPids.size() == 0);
   }

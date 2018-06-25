@@ -5,10 +5,12 @@
 #include "indexer.hpp"
 
 namespace {
-using TwoByteDirectFilterIndexer = dfc::DirectFilterIndexer<uint16_t, 1, uint16_t>;
-using FourByteHashDirectFilterIndexer = dfc::DirectFilterIndexer<uint32_t, 4909, uint16_t>;
+using TwoByteDirectFilterIndexer =
+    dfc::DirectFilterIndexer<uint16_t, 1, uint16_t>;
+using FourByteHashDirectFilterIndexer =
+    dfc::DirectFilterIndexer<uint32_t, 4909, uint16_t>;
 
-static void BM_DF_TwoByte(benchmark::State& state) {
+static void DF_TwoByte(benchmark::State& state) {
   uint16_t segment = std::numeric_limits<uint16_t>::max();
   benchmark::DoNotOptimize(&segment);
   TwoByteDirectFilterIndexer indexer;
@@ -16,9 +18,9 @@ static void BM_DF_TwoByte(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(BM_DF_TwoByte);
+BENCHMARK(DF_TwoByte);
 
-static void BM_DF_FourByteHash(benchmark::State& state) {
+static void DF_FourByteHash(benchmark::State& state) {
   uint32_t segment = std::numeric_limits<uint32_t>::max();
   benchmark::DoNotOptimize(&segment);
   FourByteHashDirectFilterIndexer indexer;
@@ -26,9 +28,9 @@ static void BM_DF_FourByteHash(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(BM_DF_FourByteHash);
+BENCHMARK(DF_FourByteHash);
 
-static void BM_CT_IndexerSmall(benchmark::State& state) {
+static void CT_IndexerSmall(benchmark::State& state) {
   auto segment = std::numeric_limits<uint8_t>::max();
   benchmark::DoNotOptimize(&segment);
   dfc::CompactTableIndexer<uint8_t, 1, 0xff> indexer;
@@ -36,9 +38,9 @@ static void BM_CT_IndexerSmall(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(BM_CT_IndexerSmall);
+BENCHMARK(CT_IndexerSmall);
 
-static void BM_CT_IndexerLarge(benchmark::State& state) {
+static void CT_IndexerLarge(benchmark::State& state) {
   auto segment = std::numeric_limits<uint32_t>::max();
   benchmark::DoNotOptimize(&segment);
   dfc::CompactTableIndexer<uint16_t, 44257, 0x1fff> indexer;
@@ -46,5 +48,5 @@ static void BM_CT_IndexerLarge(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(BM_CT_IndexerLarge);
+BENCHMARK(CT_IndexerLarge);
 }  // namespace
