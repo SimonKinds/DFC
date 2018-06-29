@@ -7,10 +7,6 @@
 
 #include "byte.hpp"
 #include "ct.hpp"
-#include "indexer.hpp"
-#include "on-matcher.hpp"
-#include "pattern.hpp"
-#include "segmenter.hpp"
 
 namespace dfc {
 template <typename SegmentType, SegmentType Hash, int Size>
@@ -45,10 +41,10 @@ class CompactTableInitializer {
     }
   }
 
-  template <typename SubOnMatcher>
+  template <typename SubOnMatcher, typename SubMatcher = MemcmpMatcher>
   auto ct(std::shared_ptr<std::vector<Pattern> const> patterns) const {
-    return CompactTable<SegmentType, Hash, Size, OnMatcher<SubOnMatcher>>(
-        table_, std::move(patterns));
+    return CompactTable<SegmentType, Hash, Size, OnMatcher<SubOnMatcher>,
+                        Matcher<SubMatcher>>(table_, std::move(patterns));
   }
 };
 }  // namespace dfc

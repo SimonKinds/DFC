@@ -8,6 +8,7 @@
 #include "byte.hpp"
 #include "df-masker.hpp"
 #include "indexer.hpp"
+#include "matcher.hpp"
 #include "on-matcher.hpp"
 #include "pattern.hpp"
 #include "segmenter.hpp"
@@ -26,7 +27,8 @@ struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename SegmentType, SegmentType Hash, int Size, typename OnMatcher>
+template <typename SegmentType, SegmentType Hash, int Size, typename OnMatcher,
+          typename Matcher = MemcmpMatcher>
 class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
@@ -38,6 +40,7 @@ class CompactTable {
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterMasker<SegmentType> const masker_{};
   OnMatcher const onMatcher_{};
+  Matcher const matcher_{};
 
   std::shared_ptr<std::vector<Pattern> const> patterns_;
 
@@ -61,7 +64,7 @@ class CompactTable {
         for (auto const pidIndex : entry.pids) {
           auto const& pattern = (*patterns_)[pidIndex];
 
-          if (matches(in, remaining, pattern)) {
+          if (matcher_.matches(in, remaining, pattern)) {
             onMatcher_.onMatch(pattern);
           }
         }
@@ -69,17 +72,6 @@ class CompactTable {
         return;
       }
     }
-  }
-
- private:
-  bool matches(byte const* const in, int const remaining,
-               Pattern const& pattern) const noexcept {
-    // TODO: add case sensitivity
-    if (remaining >= pattern.size()) {
-      return std::memcmp(in, pattern.data(), pattern.size()) == 0;
-    }
-
-    return false;
   }
 };
 }  // namespace dfc

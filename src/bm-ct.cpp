@@ -87,4 +87,73 @@ void CT_FourByte_ExactMatching_LongPattern(benchmark::State& state) {
 }
 
 BENCHMARK(CT_FourByte_ExactMatching_LongPattern);
+
+void CT_OneByte_ExactMatching_Loop(benchmark::State& state) {
+  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+
+  dfc::CompactTableInitializer<uint8_t, 1, 0x100> initializer;
+  std::string patternValue("x");
+  benchmark::DoNotOptimize(&patternValue);
+
+  patterns->emplace_back(0, pattern(patternValue.data()));
+  int const patternIndex = 0;
+  initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+
+  for (auto _ : state) {
+    ct.exactMatching(patternValue.data(), 1);
+  }
+}
+BENCHMARK(CT_OneByte_ExactMatching_Loop);
+
+void CT_FourByte_ExactMatching_Loop(benchmark::State& state) {
+  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+
+  CTInitializerFourByteIndexer initializer;
+  std::string patternValue("abcd");
+  benchmark::DoNotOptimize(&patternValue);
+
+  patterns->emplace_back(0, pattern(patternValue.data()));
+  int const patternIndex = 0;
+  initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+
+  byte const* data = reinterpret_cast<byte const*>(patternValue.data());
+  int size = patternValue.size();
+
+  benchmark::DoNotOptimize(&data);
+  benchmark::DoNotOptimize(&size);
+  for (auto _ : state) {
+    ct.exactMatching(data, size);
+  }
+}
+
+BENCHMARK(CT_FourByte_ExactMatching_Loop);
+
+void CT_FourByte_ExactMatching_LongPattern_Loop(benchmark::State& state) {
+  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+
+  CTInitializerFourByteIndexer initializer;
+  std::string patternValue(64, 'a');
+
+  patterns->emplace_back(0, pattern(patternValue.data()));
+  int const patternIndex = 0;
+  initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+
+  byte const* data = reinterpret_cast<byte const*>(patternValue.data());
+  int size = patternValue.size();
+
+  benchmark::DoNotOptimize(&data);
+  benchmark::DoNotOptimize(&size);
+
+  for (auto _ : state) {
+    ct.exactMatching(data, size);
+  }
+}
+
+BENCHMARK(CT_FourByte_ExactMatching_LongPattern_Loop);
 }  // namespace
