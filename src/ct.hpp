@@ -64,7 +64,7 @@ class CompactTable {
     while (entry != std::cend(bucket) && !found) {
       if (entry->segment == segment) {
         for (auto const pidIndex : entry->pids) {
-          auto const& pattern = (*patterns_)[pidIndex];
+          auto const& pattern = patterns_->at(pidIndex);
 
           if (matcher_.matches(in, remaining, pattern)) {
             onMatcher_.onMatch(pattern);
