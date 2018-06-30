@@ -63,6 +63,8 @@ class CompactTable {
     bool found = false;
     while (entry != std::cend(bucket) && !found) {
       if (entry->segment == segment) {
+        found = true;
+
         for (auto const pidIndex : entry->pids) {
           auto const& pattern = patterns_->at(pidIndex);
 
@@ -70,8 +72,6 @@ class CompactTable {
             onMatcher_.onMatch(pattern);
           }
         }
-
-        found = true;
       }
 
       ++entry;
