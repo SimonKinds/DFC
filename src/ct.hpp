@@ -59,9 +59,11 @@ class CompactTable {
 
     auto const& bucket = table_[index];
 
-    for (auto const& entry : bucket) {
-      if (entry.segment == segment) {
-        for (auto const pidIndex : entry.pids) {
+    auto entry = std::cbegin(bucket);
+    bool found = false;
+    while (entry != std::cend(bucket) && !found) {
+      if (entry->segment == segment) {
+        for (auto const pidIndex : entry->pids) {
           auto const& pattern = (*patterns_)[pidIndex];
 
           if (matcher_.matches(in, remaining, pattern)) {
@@ -69,8 +71,10 @@ class CompactTable {
           }
         }
 
-        return;
+        found = true;
       }
+
+      ++entry;
     }
   }
 };
