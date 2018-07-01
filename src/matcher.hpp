@@ -27,12 +27,14 @@ struct LoopMatcher : public Matcher<LoopMatcher> {
   inline bool matches(byte const* const in, Pattern const& pattern) const
       noexcept {
     auto const data = pattern.data();
-    for (int i = 0; i < pattern.size(); ++i) {
-      if (data[i] != in[i]) {
-        return false;
-      }
+    bool matches = true;
+    int i = 0;
+    while (i < pattern.size() && matches) {
+      matches = data[i] == in[i];
+      ++i;
     }
-    return true;
+
+    return matches;
   }
 };
 
