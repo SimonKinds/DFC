@@ -19,7 +19,7 @@ dfc::RawPattern pattern(char const* val) {
   return dfc::RawPattern(reinterpret_cast<byte const*>(val), std::strlen(val));
 }
 
-void CT_OneByte_ExactMatching(benchmark::State& state) {
+void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
   dfc::CompactTableInitializer<uint8_t, 1, 0x100> initializer;
@@ -36,9 +36,28 @@ void CT_OneByte_ExactMatching(benchmark::State& state) {
     ct.exactMatching(patternValue.data(), 1);
   }
 }
-BENCHMARK(CT_OneByte_ExactMatching);
+BENCHMARK(CT_OneByte_ExactMatching_Match_Memcmp);
 
-void CT_FourByte_ExactMatching_Memcmp(benchmark::State& state) {
+void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
+  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+
+  dfc::CompactTableInitializer<uint8_t, 1, 0x100> initializer;
+  std::string patternValue("x");
+  benchmark::DoNotOptimize(&patternValue);
+
+  patterns->emplace_back(0, pattern(patternValue.data()));
+  int const patternIndex = 0;
+  initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+
+  for (auto _ : state) {
+    ct.exactMatching(patternValue.data(), 1);
+  }
+}
+BENCHMARK(CT_OneByte_ExactMatching_Match_Loop);
+
+void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
   CTInitializerFourByteIndexer initializer;
@@ -60,27 +79,22 @@ void CT_FourByte_ExactMatching_Memcmp(benchmark::State& state) {
     ct.exactMatching(data, size);
   }
 }
-BENCHMARK(CT_FourByte_ExactMatching_Memcmp)->Range(4, 1024);
+BENCHMARK(CT_FourByte_ExactMatching_Match_Memcmp)->Range(4, 1024);
 
-void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
+void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
   CTInitializerFourByteIndexer initializer;
-  int range = state.range(0);
-  std::string patternValue(range / 2, 'a');
-  patternValue += 'b';
-  patternValue += std::string(range / 2 - 1, 'a');
-  std::string input(range, 'a');
-
+  std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
   patterns->emplace_back(0, pattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::MemcmpMatcher>(patterns);
+  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
 
-  byte const* data = reinterpret_cast<byte const*>(input.data());
+  byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
 
   benchmark::DoNotOptimize(&data);
@@ -89,7 +103,8 @@ void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
     ct.exactMatching(data, size);
   }
 }
-BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Memcmp)->Range(4, 1024);
+
+BENCHMARK(CT_FourByte_ExactMatching_Match_Loop)->Range(4, 1024);
 
 void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
@@ -122,79 +137,6 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
 }
 BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Start_Memcmp)->Range(4, 1024);
 
-void CT_OneByte_ExactMatching_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
-
-  dfc::CompactTableInitializer<uint8_t, 1, 0x100> initializer;
-  std::string patternValue("x");
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, pattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
-
-  for (auto _ : state) {
-    ct.exactMatching(patternValue.data(), 1);
-  }
-}
-BENCHMARK(CT_OneByte_ExactMatching_Loop);
-
-void CT_FourByte_ExactMatching_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
-
-  CTInitializerFourByteIndexer initializer;
-  std::string patternValue(state.range(0), 'a');
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, pattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
-
-  byte const* data = reinterpret_cast<byte const*>(patternValue.data());
-  int size = patternValue.size();
-
-  benchmark::DoNotOptimize(&data);
-  benchmark::DoNotOptimize(&size);
-  for (auto _ : state) {
-    ct.exactMatching(data, size);
-  }
-}
-
-BENCHMARK(CT_FourByte_ExactMatching_Loop)->Range(4, 1024);
-
-void CT_FourByte_ExactMatching_NoMatch_Half_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
-
-  CTInitializerFourByteIndexer initializer;
-  int range = state.range(0);
-  std::string patternValue(range / 2, 'a');
-  patternValue += 'b';
-  patternValue += std::string(range / 2 - 1, 'a');
-  std::string input(range, 'a');
-
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, pattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
-
-  byte const* data = reinterpret_cast<byte const*>(input.data());
-  int size = patternValue.size();
-
-  benchmark::DoNotOptimize(&data);
-  benchmark::DoNotOptimize(&size);
-  for (auto _ : state) {
-    ct.exactMatching(data, size);
-  }
-}
-BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Loop)->Range(4, 1024);
-
 void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
@@ -225,4 +167,63 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
   }
 }
 BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Start_Loop)->Range(4, 1024);
+
+void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
+  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+
+  CTInitializerFourByteIndexer initializer;
+  int range = state.range(0);
+  std::string patternValue(range / 2, 'a');
+  patternValue += 'b';
+  patternValue += std::string(range / 2 - 1, 'a');
+  std::string input(range, 'a');
+
+  benchmark::DoNotOptimize(&patternValue);
+
+  patterns->emplace_back(0, pattern(patternValue.data()));
+  int const patternIndex = 0;
+  initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+  auto const ct = initializer.ct<TestOnMatcher, dfc::MemcmpMatcher>(patterns);
+
+  byte const* data = reinterpret_cast<byte const*>(input.data());
+  int size = patternValue.size();
+
+  benchmark::DoNotOptimize(&data);
+  benchmark::DoNotOptimize(&size);
+  for (auto _ : state) {
+    ct.exactMatching(data, size);
+  }
+}
+BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Memcmp)->Range(4, 1024);
+
+void CT_FourByte_ExactMatching_NoMatch_Half_Loop(benchmark::State& state) {
+  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+
+  CTInitializerFourByteIndexer initializer;
+  int range = state.range(0);
+  std::string patternValue(range / 2, 'a');
+  patternValue += 'b';
+  patternValue += std::string(range / 2 - 1, 'a');
+  std::string input(range, 'a');
+
+  benchmark::DoNotOptimize(&patternValue);
+
+  patterns->emplace_back(0, pattern(patternValue.data()));
+  int const patternIndex = 0;
+  initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+
+  byte const* data = reinterpret_cast<byte const*>(input.data());
+  int size = patternValue.size();
+
+  benchmark::DoNotOptimize(&data);
+  benchmark::DoNotOptimize(&size);
+  for (auto _ : state) {
+    ct.exactMatching(data, size);
+  }
+}
+BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Loop)->Range(4, 1024);
+
 }  // namespace
