@@ -1,6 +1,9 @@
 #include "catch.hpp"
 
 #include "ct-initializer.hpp"
+#include "util-test.hpp"
+
+using dfc::test::createPattern;
 
 namespace {
 std::vector<dfc::Pid> matchedPids;
@@ -9,10 +12,6 @@ struct TestOnMatcher : public dfc::OnMatcher<TestOnMatcher> {
     matchedPids.emplace_back(pattern.pid());
   }
 };
-
-dfc::RawPattern pattern(char const* val) {
-  return dfc::RawPattern(reinterpret_cast<byte const*>(val), std::strlen(val));
-}
 
 TEST_CASE("CT") {
   matchedPids.clear();
@@ -36,7 +35,7 @@ TEST_CASE("CT") {
     auto patternValue = "x";
 
     dfc::Pid const pid = 1;
-    patterns->emplace_back(pid, pattern(patternValue));
+    patterns->emplace_back(pid, createPattern(patternValue));
     int const patternIndex = 0;
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -51,7 +50,7 @@ TEST_CASE("CT") {
     auto patternValue = "x";
 
     dfc::Pid const pid = 1;
-    patterns->emplace_back(pid, pattern(patternValue));
+    patterns->emplace_back(pid, createPattern(patternValue));
     int const patternIndex = 0;
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -64,8 +63,8 @@ TEST_CASE("CT") {
   SECTION("Multiple patterns") {
     dfc::Pid const firstPatternPid = 1, secondPatternPid = 2;
     SECTION("Can match multiple equal segments") {
-      patterns->emplace_back(firstPatternPid, pattern("x"));
-      patterns->emplace_back(secondPatternPid, pattern("x"));
+      patterns->emplace_back(firstPatternPid, createPattern("x"));
+      patterns->emplace_back(secondPatternPid, createPattern("x"));
       initializer.addPattern(0, patterns->at(0));
       initializer.addPattern(1, patterns->at(1));
 
@@ -78,8 +77,8 @@ TEST_CASE("CT") {
     }
 
     SECTION("Can match multiple different segments") {
-      patterns->emplace_back(firstPatternPid, pattern("x"));
-      patterns->emplace_back(secondPatternPid, pattern("y"));
+      patterns->emplace_back(firstPatternPid, createPattern("x"));
+      patterns->emplace_back(secondPatternPid, createPattern("y"));
       initializer.addPattern(0, patterns->at(0));
       initializer.addPattern(1, patterns->at(1));
 

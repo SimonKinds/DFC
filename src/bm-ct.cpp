@@ -1,7 +1,9 @@
-#include <cstdint>
-
 #include "benchmark/benchmark.h"
 #include "ct-initializer.hpp"
+
+#include "util-test.hpp"
+
+using dfc::test::createPattern;
 
 namespace {
 using CTInitializerFourByteIndexer =
@@ -15,10 +17,6 @@ struct TestOnMatcher : public dfc::OnMatcher<TestOnMatcher> {
   }
 };
 
-dfc::RawPattern pattern(char const* val) {
-  return dfc::RawPattern(reinterpret_cast<byte const*>(val), std::strlen(val));
-}
-
 void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
@@ -26,7 +24,7 @@ void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -45,7 +43,7 @@ void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -64,7 +62,7 @@ void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -88,7 +86,7 @@ void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -120,7 +118,7 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
 
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -151,7 +149,7 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
 
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -180,7 +178,7 @@ void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
 
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
@@ -209,7 +207,7 @@ void CT_FourByte_ExactMatching_NoMatch_Half_Loop(benchmark::State& state) {
 
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, pattern(patternValue.data()));
+  patterns->emplace_back(0, createPattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 

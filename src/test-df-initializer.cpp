@@ -3,17 +3,11 @@
 #include "df-initializer.hpp"
 #include "indexer.hpp"
 #include "segmenter.hpp"
+#include "util-test.hpp"
+
+using dfc::test::twoBytePattern;
 
 namespace {
-
-dfc::RawPattern twoBytePattern() {
-  std::string string_pat("te");
-  dfc::RawPattern pat(reinterpret_cast<byte const*>(string_pat.data()),
-                      string_pat.size());
-
-  return pat;
-}
-
 TEST_CASE("Empty without patterns") {
   dfc::DirectFilterInitializer<uint16_t> init(1, 3);
 

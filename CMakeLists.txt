@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory(third-party/benchmark)
 
 add_executable(test-dfc
+  src/util-test.cpp
+
   src/test-main.cpp
   src/test-pattern-aggregator.cpp
   src/test-df-initializer.cpp
@@ -15,6 +17,8 @@ add_executable(test-dfc
 target_include_directories(test-dfc PRIVATE third-party)
 
 add_executable(bm-dfc
+  src/util-test.cpp
+
   src/bm-indexer.cpp
   src/bm-df-initializer.cpp
   src/bm-df.cpp

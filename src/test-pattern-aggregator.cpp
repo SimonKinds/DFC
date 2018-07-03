@@ -1,25 +1,12 @@
 #include "catch.hpp"
 
 #include "pattern-aggregator.hpp"
+#include "util-test.hpp"
 
 using dfc::PatternAggregator;
 using dfc::RawPattern;
-
-RawPattern testPattern() {
-  std::string string_pat("test");
-  RawPattern pat(reinterpret_cast<const byte*>(string_pat.data()),
-                 string_pat.size());
-
-  return pat;
-}
-
-RawPattern testPattern2() {
-  std::string string_pat("another one");
-  RawPattern pat(reinterpret_cast<const byte*>(string_pat.data()),
-                 string_pat.size());
-
-  return pat;
-}
+using dfc::test::fiveBytePattern;
+using dfc::test::twoBytePattern;
 
 TEST_CASE("emptyByDefault") {
   PatternAggregator agg;
@@ -29,29 +16,29 @@ TEST_CASE("emptyByDefault") {
 
 TEST_CASE("patternIsAdded") {
   PatternAggregator agg;
-  agg.add(testPattern());
+  agg.add(twoBytePattern());
 
   const auto& vec = agg.aggregate();
 
   REQUIRE(vec.size() == 1);
-  REQUIRE(vec[0] == testPattern());
+  REQUIRE(vec[0] == twoBytePattern());
 }
 
 TEST_CASE("duplicatesAreRemoved") {
   PatternAggregator agg;
-  agg.add(testPattern());
-  agg.add(testPattern());
+  agg.add(twoBytePattern());
+  agg.add(twoBytePattern());
 
   const auto& vec = agg.aggregate();
 
   REQUIRE(vec.size() == 1);
-  REQUIRE(vec[0] == testPattern());
+  REQUIRE(vec[0] == twoBytePattern());
 }
 
 TEST_CASE("canAddMultiple") {
   PatternAggregator agg;
-  agg.add(testPattern());
-  agg.add(testPattern2());
+  agg.add(twoBytePattern());
+  agg.add(fiveBytePattern());
 
   const auto& vec = agg.aggregate();
 

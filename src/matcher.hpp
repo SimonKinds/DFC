@@ -1,3 +1,6 @@
+#ifndef DFC_MATCHER_HPP
+#define DFC_MATCHER_HPP
+
 #include "byte.hpp"
 #include "pattern.hpp"
 
@@ -39,3 +42,5 @@ struct LoopMatcher : public Matcher<LoopMatcher> {
 };
 
 }  // namespace dfc
+
+#endif
