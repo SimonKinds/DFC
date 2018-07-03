@@ -7,6 +7,11 @@
 namespace dfc {
 template <typename T>
 struct Matcher {
+  inline bool matches(char const* const in, int const remaining,
+                      Pattern const& pattern) const noexcept {
+    return matches(reinterpret_cast<byte const*>(in), remaining, pattern);
+  }
+
   inline bool matches(byte const* const in, int const remaining,
                       Pattern const& pattern) const noexcept {
     // TODO: add case sensitivity
