@@ -43,7 +43,7 @@ class CompactTableInitializer {
 
   template <typename SubOnMatcher, typename SubMatcher = MemcmpMatcher>
   auto ct(std::shared_ptr<std::vector<Pattern> const> patterns) const {
-    return CompactTable<SegmentType, Hash, Size, OnMatcher<SubOnMatcher>,
+    return CompactTable<SegmentType, Hash, Size, SubOnMatcher,
                         Matcher<SubMatcher>>(table_, std::move(patterns));
   }
 };

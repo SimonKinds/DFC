@@ -77,6 +77,8 @@ class CompactTable {
       ++entry;
     }
   }
+
+  const OnMatcher& onMatcher() const { return onMatcher_; }
 };
 }  // namespace dfc
 

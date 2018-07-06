@@ -6,15 +6,15 @@
 using dfc::test::createPattern;
 
 namespace {
-std::vector<dfc::Pid> matchedPids;
 struct TestOnMatcher : public dfc::OnMatcher<TestOnMatcher> {
+  std::vector<dfc::Pid> mutable matchedPids;
+
   void onMatch(dfc::Pattern const& pattern) const {
     matchedPids.emplace_back(pattern.pid());
   }
 };
 
 TEST_CASE("CT") {
-  matchedPids.clear();
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
   int const ctSize = 0x100;
@@ -28,7 +28,7 @@ TEST_CASE("CT") {
       ct.exactMatching(&in, 1);
     }
 
-    REQUIRE(matchedPids.size() == 0);
+    REQUIRE(ct.onMatcher().matchedPids.size() == 0);
   }
 
   SECTION("Matches if added and equal") {
@@ -42,8 +42,8 @@ TEST_CASE("CT") {
     auto const ct = initializer.ct<TestOnMatcher>(patterns);
     ct.exactMatching(patternValue, 1);
 
-    REQUIRE(matchedPids.size() == 1);
-    REQUIRE(matchedPids[0] == pid);
+    REQUIRE(ct.onMatcher().matchedPids.size() == 1);
+    REQUIRE(ct.onMatcher().matchedPids[0] == pid);
   }
 
   SECTION("Does not match if incorrect segment") {
@@ -57,7 +57,7 @@ TEST_CASE("CT") {
     auto const ct = initializer.ct<TestOnMatcher>(patterns);
     ct.exactMatching("y", 1);
 
-    REQUIRE(matchedPids.size() == 0);
+    REQUIRE(ct.onMatcher().matchedPids.size() == 0);
   }
 
   SECTION("Multiple patterns") {
@@ -71,9 +71,9 @@ TEST_CASE("CT") {
       auto const ct = initializer.ct<TestOnMatcher>(patterns);
       ct.exactMatching("x", 1);
 
-      REQUIRE(matchedPids.size() == 2);
-      REQUIRE(matchedPids[0] == firstPatternPid);
-      REQUIRE(matchedPids[1] == secondPatternPid);
+      REQUIRE(ct.onMatcher().matchedPids.size() == 2);
+      REQUIRE(ct.onMatcher().matchedPids[0] == firstPatternPid);
+      REQUIRE(ct.onMatcher().matchedPids[1] == secondPatternPid);
     }
 
     SECTION("Can match multiple different segments") {
@@ -86,9 +86,9 @@ TEST_CASE("CT") {
       ct.exactMatching("x", 1);
       ct.exactMatching("y", 1);
 
-      REQUIRE(matchedPids.size() == 2);
-      REQUIRE(matchedPids[0] == firstPatternPid);
-      REQUIRE(matchedPids[1] == secondPatternPid);
+      REQUIRE(ct.onMatcher().matchedPids.size() == 2);
+      REQUIRE(ct.onMatcher().matchedPids[0] == firstPatternPid);
+      REQUIRE(ct.onMatcher().matchedPids[1] == secondPatternPid);
     }
   }
 }
