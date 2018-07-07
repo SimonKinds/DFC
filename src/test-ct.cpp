@@ -6,10 +6,10 @@
 using dfc::test::createPattern;
 
 namespace {
-struct TestOnMatcher : public dfc::OnMatcher<TestOnMatcher> {
+struct TestOnMatcher : public dfc::OnMatcher {
   std::vector<dfc::Pid> mutable matchedPids;
 
-  void onMatch(dfc::Pattern const& pattern) const {
+  void onMatch(dfc::Pattern const& pattern) const final {
     matchedPids.emplace_back(pattern.pid());
   }
 };

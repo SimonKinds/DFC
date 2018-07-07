@@ -9,11 +9,11 @@ namespace {
 using CTInitializerFourByteIndexer =
     dfc::CompactTableInitializer<uint32_t, 49157, 0x20000>;
 
-int i;
-struct TestOnMatcher : public dfc::OnMatcher<TestOnMatcher> {
-  void onMatch(dfc::Pattern const& pattern) const {
+int matchCount;
+struct TestOnMatcher : public dfc::OnMatcher {
+  void onMatch(dfc::Pattern const& pattern) const noexcept final {
     (void)(pattern);
-    ++i;
+    ++matchCount;
   }
 };
 

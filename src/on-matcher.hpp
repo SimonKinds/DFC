@@ -4,16 +4,14 @@
 #include "pattern.hpp"
 
 namespace dfc {
-template <typename T>
 struct OnMatcher {
-  inline void onMatch(Pattern const& pattern) const {
-    auto const& derived = static_cast<T const&>(*this);
-    derived.onMatch(pattern);
-  }
+  virtual ~OnMatcher() noexcept = default;
+
+  virtual void onMatch(Pattern const& pattern) const = 0;
 };
 
-struct PrintOnMatcher : public OnMatcher<PrintOnMatcher> {
-  inline void onMatch(Pattern const& pattern) const {
+struct PrintOnMatcher : public OnMatcher {
+  void onMatch(Pattern const& pattern) const noexcept final override {
     printf("(%d)\t\t%*.s\n", pattern.pid(), pattern.size(), pattern.data());
   }
 };

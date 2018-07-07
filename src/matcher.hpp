@@ -7,7 +7,7 @@
 namespace dfc {
 class Matcher {
  public:
-  virtual ~Matcher() = default;
+  virtual ~Matcher() noexcept = default;
 
   inline bool matches(char const* const in, int const remaining,
                       Pattern const& pattern) const noexcept {
@@ -32,7 +32,7 @@ class Matcher {
 class MemcmpMatcher : public Matcher {
  protected:
   bool matchesWithoutBounds(byte const* const in, Pattern const& pattern) const
-      noexcept final override {
+      noexcept final {
     return std::memcmp(in, pattern.data(), pattern.size()) == 0;
   }
 };
@@ -40,7 +40,7 @@ class MemcmpMatcher : public Matcher {
 class LoopMatcher : public Matcher {
  protected:
   bool matchesWithoutBounds(byte const* const in, Pattern const& pattern) const
-      noexcept final override {
+      noexcept final {
     auto const data = pattern.data();
     bool matches = true;
     int i = 0;
