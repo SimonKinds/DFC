@@ -8,28 +8,28 @@ using dfc::test::fiveBytePattern;
 
 namespace {
 TEST_CASE("Loop matcher matches if equal") {
-  dfc::Matcher<dfc::LoopMatcher> matcher;
+  dfc::LoopMatcher matcher;
 
   Pattern pattern(0, fiveBytePattern());
   REQUIRE(matcher.matches(pattern.data(), pattern.size(), pattern) == true);
 }
 
 TEST_CASE("Loop matcher does not match if not equal") {
-  dfc::Matcher<dfc::LoopMatcher> matcher;
+  dfc::LoopMatcher matcher;
 
   Pattern pattern(0, fiveBytePattern());
   REQUIRE(matcher.matches("12345", pattern.size(), pattern) == false);
 }
 
 TEST_CASE("Memcmp matcher matches if equal") {
-  dfc::Matcher<dfc::MemcmpMatcher> matcher;
+  dfc::MemcmpMatcher matcher;
 
   Pattern pattern(0, fiveBytePattern());
   REQUIRE(matcher.matches(pattern.data(), pattern.size(), pattern) == true);
 }
 
 TEST_CASE("Memcmp matcher does not match if not equal") {
-  dfc::Matcher<dfc::MemcmpMatcher> matcher;
+  dfc::MemcmpMatcher matcher;
 
   Pattern pattern(0, fiveBytePattern());
   REQUIRE(matcher.matches("12345", pattern.size(), pattern) == false);

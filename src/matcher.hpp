@@ -5,35 +5,42 @@
 #include "pattern.hpp"
 
 namespace dfc {
-template <typename T>
-struct Matcher {
+class Matcher {
+ public:
+  virtual ~Matcher() = default;
+
   inline bool matches(char const* const in, int const remaining,
                       Pattern const& pattern) const noexcept {
     return matches(reinterpret_cast<byte const*>(in), remaining, pattern);
   }
 
+  // TODO: add case sensitivity
   inline bool matches(byte const* const in, int const remaining,
                       Pattern const& pattern) const noexcept {
-    // TODO: add case sensitivity
-    auto const& derived = static_cast<T const&>(*this);
-    if (remaining >= pattern.size()) {
-      return derived.matches(in, pattern);
+    if (pattern.size() <= remaining) {
+      return matchesWithoutBounds(in, pattern);
     }
 
     return false;
   }
+
+ protected:
+  virtual bool matchesWithoutBounds(byte const* const in,
+                                    Pattern const& pattern) const noexcept = 0;
 };
 
-struct MemcmpMatcher : public Matcher<MemcmpMatcher> {
-  inline bool matches(byte const* const in, Pattern const& pattern) const
-      noexcept {
+class MemcmpMatcher : public Matcher {
+ protected:
+  bool matchesWithoutBounds(byte const* const in, Pattern const& pattern) const
+      noexcept final override {
     return std::memcmp(in, pattern.data(), pattern.size()) == 0;
   }
 };
 
-struct LoopMatcher : public Matcher<LoopMatcher> {
-  inline bool matches(byte const* const in, Pattern const& pattern) const
-      noexcept {
+class LoopMatcher : public Matcher {
+ protected:
+  bool matchesWithoutBounds(byte const* const in, Pattern const& pattern) const
+      noexcept final override {
     auto const data = pattern.data();
     bool matches = true;
     int i = 0;
