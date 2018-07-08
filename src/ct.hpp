@@ -53,7 +53,7 @@ class CompactTable {
     exactMatching(reinterpret_cast<byte const*>(in), remaining);
   }
 
-  void exactMatching(byte const* const in, int const remaining) const noexcept {
+  void exactMatching(byte const* const in, int const remaining) const {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
 

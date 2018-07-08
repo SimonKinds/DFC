@@ -30,14 +30,14 @@ class DirectFilterInitializer {
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  explicit DirectFilterInitializer(int minLengthPattern,
-                                   int maxLengthPattern) noexcept
+  explicit DirectFilterInitializer(int const minLengthPattern,
+                                   int const maxLengthPattern) noexcept
       : minLengthPattern_(minLengthPattern),
         maxLengthPattern_(maxLengthPattern) {}
 
   // TODO: If case insensitive, create all permutations of segment
   // TODO: If shorter than segment, extend with all permutation
-  void addPattern(const RawPattern& pat) noexcept {
+  void addPattern(RawPattern const& pat) noexcept {
     if (pat.size() >= minLengthPattern_ && pat.size() <= maxLengthPattern_) {
       auto const segment = segmenter_.segment(pat.data());
       auto const index = indexer_.index(segment);

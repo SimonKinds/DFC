@@ -14,6 +14,7 @@ add_executable(test-dfc
   src/test-df.cpp
   src/test-ct.cpp
   src/test-matcher.cpp
+  src/test-match-path.cpp
 )
 target_include_directories(test-dfc PRIVATE third-party)
 

@@ -15,7 +15,7 @@ class RawPattern {
   int size_;
 
  public:
-  RawPattern(byte const* const data, int size)
+  explicit RawPattern(byte const* const data, int size)
       : data_(std::make_unique<byte[]>(size)), size_(size) {
     std::memcpy(data_.get(), data, size);
   }
