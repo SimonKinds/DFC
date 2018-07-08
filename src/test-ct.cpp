@@ -3,16 +3,10 @@
 #include "ct-initializer.hpp"
 #include "util-test.hpp"
 
+using dfc::SaveOnMatcher;
 using dfc::test::createPattern;
 
 namespace {
-struct TestOnMatcher : public dfc::OnMatcher {
-  std::vector<dfc::Pid> mutable matchedPids;
-
-  void onMatch(dfc::Pattern const& pattern) const final {
-    matchedPids.emplace_back(pattern.pid());
-  }
-};
 
 TEST_CASE("CT") {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
@@ -21,7 +15,7 @@ TEST_CASE("CT") {
   dfc::CompactTableInitializer<uint8_t, 1, ctSize> initializer;
 
   SECTION("Is empty by default") {
-    auto const ct = initializer.ct<TestOnMatcher>(patterns);
+    auto const ct = initializer.ct<SaveOnMatcher>(patterns);
 
     for (int i = 0; i < ctSize; ++i) {
       byte in = i;
@@ -39,7 +33,7 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct<TestOnMatcher>(patterns);
+    auto const ct = initializer.ct<SaveOnMatcher>(patterns);
     ct.exactMatching(patternValue, 1);
 
     REQUIRE(ct.onMatcher().matchedPids.size() == 1);
@@ -54,7 +48,7 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct<TestOnMatcher>(patterns);
+    auto const ct = initializer.ct<SaveOnMatcher>(patterns);
     ct.exactMatching("y", 1);
 
     REQUIRE(ct.onMatcher().matchedPids.size() == 0);
@@ -68,7 +62,7 @@ TEST_CASE("CT") {
       initializer.addPattern(0, patterns->at(0));
       initializer.addPattern(1, patterns->at(1));
 
-      auto const ct = initializer.ct<TestOnMatcher>(patterns);
+      auto const ct = initializer.ct<SaveOnMatcher>(patterns);
       ct.exactMatching("x", 1);
 
       REQUIRE(ct.onMatcher().matchedPids.size() == 2);
@@ -82,7 +76,7 @@ TEST_CASE("CT") {
       initializer.addPattern(0, patterns->at(0));
       initializer.addPattern(1, patterns->at(1));
 
-      auto const ct = initializer.ct<TestOnMatcher>(patterns);
+      auto const ct = initializer.ct<SaveOnMatcher>(patterns);
       ct.exactMatching("x", 1);
       ct.exactMatching("y", 1);
 
