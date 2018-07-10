@@ -32,6 +32,10 @@ template <typename SegmentType, SegmentType Hash, int Size, typename OnMatcher,
 class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
+  static_assert(std::is_base_of<dfc::OnMatcher, OnMatcher>::value,
+                "OnMatcher template parameter is not an OnMatcher");
+  static_assert(std::is_base_of<dfc::Matcher, Matcher>::value,
+                "Matcher template parameter is not an Matcher");
 
   using Table = std::array<std::vector<CompactTableEntry<SegmentType>>, Size>;
   Table const table_;
@@ -39,15 +43,18 @@ class CompactTable {
   CompactTableIndexer<SegmentType, Hash, Size - 1> const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterMasker<SegmentType> const masker_{};
-  OnMatcher const onMatcher_{};
+
+  std::shared_ptr<OnMatcher const> const onMatcher_{};
   Matcher const matcher_{};
 
   std::shared_ptr<std::vector<Pattern> const> patterns_;
 
  public:
-  CompactTable(Table const& table,
+  CompactTable(Table const& table, std::shared_ptr<OnMatcher const> onMatcher,
                std::shared_ptr<std::vector<Pattern> const> patterns)
-      : table_(table), patterns_(std::move(patterns)) {}
+      : table_(table),
+        onMatcher_(std::move(onMatcher)),
+        patterns_(std::move(patterns)) {}
 
   void exactMatching(char const* const in, int const remaining) const noexcept {
     exactMatching(reinterpret_cast<byte const*>(in), remaining);
@@ -69,7 +76,7 @@ class CompactTable {
           auto const& pattern = patterns_->at(pidIndex);
 
           if (matcher_.matches(in, remaining, pattern)) {
-            onMatcher_.onMatch(pattern);
+            onMatcher_->onMatch(pattern);
           }
         }
       }
@@ -77,8 +84,6 @@ class CompactTable {
       ++entry;
     }
   }
-
-  const OnMatcher& onMatcher() const { return onMatcher_; }
 };
 }  // namespace dfc
 

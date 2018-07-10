@@ -41,10 +41,16 @@ class CompactTableInitializer {
     }
   }
 
-  template <typename SubOnMatcher, typename Matcher = MemcmpMatcher>
-  auto ct(std::shared_ptr<std::vector<Pattern> const> patterns) const {
-    return CompactTable<SegmentType, Hash, Size, SubOnMatcher, Matcher>(
-        table_, std::move(patterns));
+  template <typename OnMatcher, typename Matcher = MemcmpMatcher>
+  auto ct(std::shared_ptr<OnMatcher> onMatcher,
+          std::shared_ptr<std::vector<Pattern> const> patterns) const {
+    static_assert(std::is_base_of<dfc::OnMatcher, OnMatcher>::value,
+                  "OnMatcher template parameter is not an OnMatcher");
+    static_assert(std::is_base_of<dfc::Matcher, Matcher>::value,
+                  "Matcher template parameter is not an Matcher");
+
+    return CompactTable<SegmentType, Hash, Size, OnMatcher, Matcher>(
+        table_, std::move(onMatcher), std::move(patterns));
   }
 };
 }  // namespace dfc

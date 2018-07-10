@@ -9,20 +9,21 @@ using dfc::test::createPattern;
 namespace {
 
 TEST_CASE("CT") {
+  auto onMatcher = std::make_shared<SaveOnMatcher>();
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
   int const ctSize = 0x100;
   dfc::CompactTableInitializer<uint8_t, 1, ctSize> initializer;
 
   SECTION("Is empty by default") {
-    auto const ct = initializer.ct<SaveOnMatcher>(patterns);
+    auto const ct = initializer.ct(onMatcher, patterns);
 
     for (int i = 0; i < ctSize; ++i) {
       byte in = i;
       ct.exactMatching(&in, 1);
     }
 
-    REQUIRE(ct.onMatcher().matchedPids.size() == 0);
+    REQUIRE(onMatcher->matchedPids.size() == 0);
   }
 
   SECTION("Matches if added and equal") {
@@ -33,11 +34,11 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct<SaveOnMatcher>(patterns);
+    auto const ct = initializer.ct(onMatcher, patterns);
     ct.exactMatching(patternValue, 1);
 
-    REQUIRE(ct.onMatcher().matchedPids.size() == 1);
-    REQUIRE(ct.onMatcher().matchedPids[0] == pid);
+    REQUIRE(onMatcher->matchedPids.size() == 1);
+    REQUIRE(onMatcher->matchedPids[0] == pid);
   }
 
   SECTION("Does not match if incorrect segment") {
@@ -48,10 +49,10 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct<SaveOnMatcher>(patterns);
+    auto const ct = initializer.ct(onMatcher, patterns);
     ct.exactMatching("y", 1);
 
-    REQUIRE(ct.onMatcher().matchedPids.size() == 0);
+    REQUIRE(onMatcher->matchedPids.size() == 0);
   }
 
   SECTION("Multiple patterns") {
@@ -62,12 +63,12 @@ TEST_CASE("CT") {
       initializer.addPattern(0, patterns->at(0));
       initializer.addPattern(1, patterns->at(1));
 
-      auto const ct = initializer.ct<SaveOnMatcher>(patterns);
+      auto const ct = initializer.ct(onMatcher, patterns);
       ct.exactMatching("x", 1);
 
-      REQUIRE(ct.onMatcher().matchedPids.size() == 2);
-      REQUIRE(ct.onMatcher().matchedPids[0] == firstPatternPid);
-      REQUIRE(ct.onMatcher().matchedPids[1] == secondPatternPid);
+      REQUIRE(onMatcher->matchedPids.size() == 2);
+      REQUIRE(onMatcher->matchedPids[0] == firstPatternPid);
+      REQUIRE(onMatcher->matchedPids[1] == secondPatternPid);
     }
 
     SECTION("Can match multiple different segments") {
@@ -76,13 +77,13 @@ TEST_CASE("CT") {
       initializer.addPattern(0, patterns->at(0));
       initializer.addPattern(1, patterns->at(1));
 
-      auto const ct = initializer.ct<SaveOnMatcher>(patterns);
+      auto const ct = initializer.ct(onMatcher, patterns);
       ct.exactMatching("x", 1);
       ct.exactMatching("y", 1);
 
-      REQUIRE(ct.onMatcher().matchedPids.size() == 2);
-      REQUIRE(ct.onMatcher().matchedPids[0] == firstPatternPid);
-      REQUIRE(ct.onMatcher().matchedPids[1] == secondPatternPid);
+      REQUIRE(onMatcher->matchedPids.size() == 2);
+      REQUIRE(onMatcher->matchedPids[0] == firstPatternPid);
+      REQUIRE(onMatcher->matchedPids[1] == secondPatternPid);
     }
   }
 }

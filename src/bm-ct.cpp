@@ -9,13 +9,14 @@ namespace {
 using CTInitializerFourByteIndexer =
     dfc::CompactTableInitializer<uint32_t, 49157, 0x20000>;
 
-int matchCount;
-struct TestOnMatcher : public dfc::OnMatcher {
+struct CountOnMatcher : public dfc::OnMatcher {
+  int mutable matchCount;
   void onMatch(dfc::Pattern const& pattern) const noexcept final {
     (void)(pattern);
     ++matchCount;
   }
 };
+auto onMatcher = std::make_shared<CountOnMatcher>();
 
 void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
@@ -28,7 +29,8 @@ void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::MemcmpMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
 
   for (auto _ : state) {
     ct.exactMatching(patternValue.data(), 1);
@@ -47,7 +49,8 @@ void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
 
   for (auto _ : state) {
     ct.exactMatching(patternValue.data(), 1);
@@ -66,7 +69,8 @@ void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::MemcmpMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
@@ -90,7 +94,8 @@ void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
@@ -122,7 +127,8 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::MemcmpMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(input.data());
   int size = patternValue.size();
@@ -153,7 +159,8 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(input.data());
   int size = patternValue.size();
@@ -182,7 +189,8 @@ void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::MemcmpMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(input.data());
   int size = patternValue.size();
@@ -211,7 +219,8 @@ void CT_FourByte_ExactMatching_NoMatch_Half_Loop(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct = initializer.ct<TestOnMatcher, dfc::LoopMatcher>(patterns);
+  auto const ct =
+      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(input.data());
   int size = patternValue.size();
