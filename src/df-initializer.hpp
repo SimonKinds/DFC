@@ -6,6 +6,7 @@
 
 #include "df.hpp"
 #include "indexer.hpp"
+#include "pattern-range.hpp"
 #include "pattern.hpp"
 
 namespace dfc {
@@ -24,22 +25,20 @@ class DirectFilterInitializer {
   using Indexer = DirectFilterIndexer<SegmentType, Hash, IndexType>;
 
   Filter filter_{};
-  int const minLengthPattern_, maxLengthPattern_;
+  PatternRange const patternRange_;
   Indexer const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  explicit DirectFilterInitializer(int const minLengthPattern,
-                                   int const maxLengthPattern) noexcept
-      : minLengthPattern_(minLengthPattern),
-        maxLengthPattern_(maxLengthPattern) {}
+  explicit DirectFilterInitializer(PatternRange patternRange) noexcept
+      : patternRange_(std::move(patternRange)) {}
 
   // TODO: If case insensitive, create all permutations of segment
   // TODO: If shorter than segment, extend with all permutation
-  void addPattern(RawPattern const& pat) noexcept {
-    if (pat.size() >= minLengthPattern_ && pat.size() <= maxLengthPattern_) {
-      auto const segment = segmenter_.segment(pat.data());
+  void addPattern(RawPattern const& pattern) noexcept {
+    if (patternRange_.includes(pattern)) {
+      auto const segment = segmenter_.segment(pattern.data());
       auto const index = indexer_.index(segment);
       auto const mask = masker_.mask(segment);
 

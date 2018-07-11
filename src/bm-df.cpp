@@ -9,7 +9,7 @@ using dfc::test::twoBytePattern;
 namespace {
 void DF_TwoByte_Index(benchmark::State& state) {
   const auto pattern = twoBytePattern();
-  dfc::DirectFilterInitializer<uint16_t> init(1, 3);
+  dfc::DirectFilterInitializer<uint16_t> init(dfc::PatternRange(1, 3));
   init.addPattern(pattern);
   const auto df = init.df();
 
@@ -27,7 +27,8 @@ BENCHMARK(DF_TwoByte_Index);
 void DF_FourByteHash_Index(benchmark::State& state) {
   const auto pattern = fiveBytePattern();
 
-  dfc::DirectFilterInitializer<uint32_t, 4909, uint16_t> init(4, 10);
+  dfc::DirectFilterInitializer<uint32_t, 4909, uint16_t> init(
+      dfc::PatternRange(4, 10));
   init.addPattern(pattern);
   const auto df = init.df();
 

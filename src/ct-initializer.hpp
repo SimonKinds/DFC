@@ -47,7 +47,7 @@ class CompactTableInitializer {
     static_assert(std::is_base_of<dfc::OnMatcher, OnMatcher>::value,
                   "OnMatcher template parameter is not an OnMatcher");
     static_assert(std::is_base_of<dfc::Matcher, Matcher>::value,
-                  "Matcher template parameter is not an Matcher");
+                  "Matcher template parameter is not a Matcher");
 
     return CompactTable<SegmentType, Hash, Size, OnMatcher, Matcher>(
         table_, std::move(onMatcher), std::move(patterns));

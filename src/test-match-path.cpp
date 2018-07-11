@@ -7,7 +7,8 @@
 
 namespace {
 auto createEmptyDf() {
-  dfc::DirectFilterInitializer<uint16_t, 1, uint16_t> init(2, 2);
+  dfc::DirectFilterInitializer<uint16_t, 1, uint16_t> init(
+      dfc::PatternRange(2, 2));
   return init.df();
 }
 auto createEmptyCt(std::shared_ptr<dfc::SaveOnMatcher> onMatcher) {
@@ -16,7 +17,8 @@ auto createEmptyCt(std::shared_ptr<dfc::SaveOnMatcher> onMatcher) {
 }
 
 auto createDfWithPattern(dfc::RawPattern pattern) {
-  dfc::DirectFilterInitializer<uint16_t, 1, uint16_t> init(2, 2);
+  dfc::DirectFilterInitializer<uint16_t, 1, uint16_t> init(
+      dfc::PatternRange(2, 2));
   init.addPattern(pattern);
 
   return init.df();
