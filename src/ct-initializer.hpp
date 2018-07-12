@@ -7,9 +7,11 @@
 
 #include "byte.hpp"
 #include "ct.hpp"
+#include "pattern-range.hpp"
 
 namespace dfc {
-template <typename SegmentType, SegmentType Hash, int Size>
+template <typename PatternRange, typename SegmentType, SegmentType Hash,
+          int Size>
 class CompactTableInitializer {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
@@ -20,24 +22,28 @@ class CompactTableInitializer {
   CompactTableIndexer<SegmentType, Hash, Size - 1> const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
 
+  PatternRange const patternRange_{};
+
  public:
   void addPattern(PidIndex const pidIndex, Pattern const& pattern) noexcept {
-    auto const segment = segmenter_.segment(pattern);
-    auto const bucketIndex = indexer_.index(segment);
+    if (patternRange_.includes(pattern)) {
+      auto const segment = segmenter_.segment(pattern);
+      auto const bucketIndex = indexer_.index(segment);
 
-    auto& bucket = table_[bucketIndex];
+      auto& bucket = table_[bucketIndex];
 
-    bool found = false;
-    for (auto& entry : bucket) {
-      if (entry.segment == segment) {
-        entry.pids.emplace_back(pidIndex);
-        found = true;
-        break;
+      bool found = false;
+      for (auto& entry : bucket) {
+        if (entry.segment == segment) {
+          entry.pids.emplace_back(pidIndex);
+          found = true;
+          break;
+        }
       }
-    }
 
-    if (!found) {
-      bucket.emplace_back(segment, pidIndex);
+      if (!found) {
+        bucket.emplace_back(segment, pidIndex);
+      }
     }
   }
 

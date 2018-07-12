@@ -13,7 +13,8 @@ TEST_CASE("CT") {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
   int const ctSize = 0x100;
-  dfc::CompactTableInitializer<uint8_t, 1, ctSize> initializer;
+  dfc::CompactTableInitializer<dfc::PatternRange<1, 10>, uint8_t, 1, ctSize>
+      initializer;
 
   SECTION("Is empty by default") {
     auto const ct = initializer.ct(onMatcher, patterns);
@@ -51,6 +52,19 @@ TEST_CASE("CT") {
 
     auto const ct = initializer.ct(onMatcher, patterns);
     ct.exactMatching("y", 1);
+
+    REQUIRE(onMatcher->matchedPids.size() == 0);
+  }
+  SECTION("Does not set add pattern if it is outside the range constraint") {
+    auto patternValue = "this is a very long pattern";
+
+    dfc::Pid const pid = 1;
+    patterns->emplace_back(pid, createPattern(patternValue));
+    int const patternIndex = 0;
+    initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+    auto const ct = initializer.ct(onMatcher, patterns);
+    ct.exactMatching(patternValue, std::strlen(patternValue));
 
     REQUIRE(onMatcher->matchedPids.size() == 0);
   }

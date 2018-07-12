@@ -7,7 +7,8 @@ using dfc::test::createPattern;
 
 namespace {
 using CTInitializerFourByteIndexer =
-    dfc::CompactTableInitializer<uint32_t, 49157, 0x20000>;
+    dfc::CompactTableInitializer<dfc::PatternRange<1, 1000000>, uint32_t, 49157,
+                                 0x20000>;
 
 struct CountOnMatcher : public dfc::OnMatcher {
   int mutable matchCount;
@@ -21,7 +22,8 @@ auto onMatcher = std::make_shared<CountOnMatcher>();
 void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
-  dfc::CompactTableInitializer<uint8_t, 1, 0x100> initializer;
+  dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100>
+      initializer;
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 
@@ -41,7 +43,8 @@ BENCHMARK(CT_OneByte_ExactMatching_Match_Memcmp);
 void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
 
-  dfc::CompactTableInitializer<uint8_t, 1, 0x100> initializer;
+  dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100>
+      initializer;
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 
