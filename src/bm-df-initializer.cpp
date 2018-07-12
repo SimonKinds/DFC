@@ -12,7 +12,7 @@ namespace {
 void DF_Initializer_TwoByte_AddPattern(benchmark::State& state) {
   auto const pattern = twoBytePattern();
 
-  dfc::DirectFilterInitializer<uint16_t> init(dfc::PatternRange(1, 3));
+  dfc::DirectFilterInitializer<dfc::PatternRange<1, 3>, uint16_t> init;
   for (auto _ : state) {
     init.addPattern(pattern);
     auto const& filter = init.filter();
@@ -24,8 +24,9 @@ BENCHMARK(DF_Initializer_TwoByte_AddPattern);
 void DF_Initializer_FourByteHash_AddPattern(benchmark::State& state) {
   auto const pattern = fiveBytePattern();
 
-  dfc::DirectFilterInitializer<uint32_t, 4909, uint16_t> init(
-      dfc::PatternRange(4, 10));
+  dfc::DirectFilterInitializer<dfc::PatternRange<4, 10>, uint32_t, 4909,
+                               uint16_t>
+      init;
   for (auto _ : state) {
     init.addPattern(pattern);
     auto const& filter = init.filter();

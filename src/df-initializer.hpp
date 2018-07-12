@@ -11,7 +11,7 @@
 
 namespace dfc {
 
-template <typename SegmentType, SegmentType Hash = 1,
+template <typename PatternRange, typename SegmentType, SegmentType Hash = 1,
           typename IndexType = SegmentType>
 class DirectFilterInitializer {
   static_assert(std::is_integral<SegmentType>::value,
@@ -25,15 +25,14 @@ class DirectFilterInitializer {
   using Indexer = DirectFilterIndexer<SegmentType, Hash, IndexType>;
 
   Filter filter_{};
-  PatternRange const patternRange_;
+
+  PatternRange const patternRange_{};
+
   Indexer const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  explicit DirectFilterInitializer(PatternRange patternRange) noexcept
-      : patternRange_(std::move(patternRange)) {}
-
   // TODO: If case insensitive, create all permutations of segment
   // TODO: If shorter than segment, extend with all permutation
   void addPattern(RawPattern const& pattern) noexcept {

@@ -9,7 +9,7 @@ using dfc::test::twoBytePattern;
 
 namespace {
 TEST_CASE("Empty without patterns") {
-  dfc::DirectFilterInitializer<uint16_t> init(dfc::PatternRange(1, 3));
+  dfc::DirectFilterInitializer<dfc::PatternRange<1, 3>, uint16_t> init;
 
   auto df = init.df();
 
@@ -22,7 +22,7 @@ TEST_CASE("Empty without patterns") {
 }
 
 TEST_CASE("Sets bit if pattern is within the size constraint") {
-  dfc::DirectFilterInitializer<uint16_t> init(dfc::PatternRange(1, 3));
+  dfc::DirectFilterInitializer<dfc::PatternRange<1, 3>, uint16_t> init;
 
   init.addPattern(twoBytePattern());
 
@@ -37,7 +37,7 @@ TEST_CASE("Sets bit if pattern is within the size constraint") {
 }
 
 TEST_CASE("Does not set bit if pattern is outside the size constraint") {
-  dfc::DirectFilterInitializer<uint16_t> init(dfc::PatternRange(3, 5));
+  dfc::DirectFilterInitializer<dfc::PatternRange<3, 5>, uint16_t> init;
 
   init.addPattern(twoBytePattern());
 
