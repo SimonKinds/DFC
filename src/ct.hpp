@@ -37,7 +37,9 @@ class CompactTable {
   static_assert(std::is_base_of<dfc::Matcher, Matcher>::value,
                 "Matcher template parameter is not an Matcher");
 
-  using Table = std::array<std::vector<CompactTableEntry<SegmentType>>, Size>;
+  using Entry = CompactTableEntry<SegmentType>;
+  using Bucket = std::vector<Entry>;
+  using Table = std::array<Bucket, Size>;
   Table const table_;
 
   CompactTableIndexer<SegmentType, Hash, Size - 1> const indexer_{};
@@ -61,27 +63,45 @@ class CompactTable {
   }
 
   void exactMatching(byte const* const in, int const remaining) const {
+    auto const& bucket = getBucket(in);
+
+    findMatchesInBucket(bucket, in, remaining);
+  }
+
+ private:
+  Bucket const& getBucket(byte const* const in) const {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
 
-    auto const& bucket = table_[index];
+    return table_[index];
+  }
+
+  void findMatchesInBucket(Bucket const& bucket, byte const* const in,
+                           int const remaining) const {
+    auto const segment = segmenter_.segment(in);
 
     auto entry = std::cbegin(bucket);
+    auto const end = std::cend(bucket);
     bool found = false;
-    while (entry != std::cend(bucket) && !found) {
+    while (entry != end && !found) {
       if (entry->segment == segment) {
         found = true;
 
-        for (auto const pidIndex : entry->pids) {
-          auto const& pattern = patterns_->at(pidIndex);
-
-          if (matcher_.matches(in, remaining, pattern)) {
-            onMatcher_->onMatch(pattern);
-          }
-        }
+        findMatchesInEntry(*entry, in, remaining);
       }
 
       ++entry;
+    }
+  }
+
+  void findMatchesInEntry(Entry const& entry, byte const* const in,
+                          int const remaining) const {
+    for (auto const pidIndex : entry.pids) {
+      auto const& pattern = patterns_->at(pidIndex);
+
+      if (matcher_.matches(in, remaining, pattern)) {
+        onMatcher_->onMatch(pattern);
+      }
     }
   }
 };
