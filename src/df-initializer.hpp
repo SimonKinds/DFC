@@ -37,7 +37,7 @@ class DirectFilterInitializer {
   // TODO: If shorter than segment, extend with all permutation
   void addPattern(RawPattern const& pattern) noexcept {
     if (patternRange_.includes(pattern)) {
-      auto const segment = segmenter_.segment(pattern.data());
+      auto const segment = segmenter_.segment(pattern);
       auto const index = indexer_.index(segment);
       auto const mask = masker_.mask(segment);
 

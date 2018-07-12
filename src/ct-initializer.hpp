@@ -22,7 +22,7 @@ class CompactTableInitializer {
 
  public:
   void addPattern(PidIndex const pidIndex, Pattern const& pattern) noexcept {
-    auto const segment = segmenter_.segment(pattern.data());
+    auto const segment = segmenter_.segment(pattern);
     auto const bucketIndex = indexer_.index(segment);
 
     auto& bucket = table_[bucketIndex];
