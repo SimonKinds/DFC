@@ -32,13 +32,15 @@ class CompactTableInitializer {
 
       auto& bucket = table_[bucketIndex];
 
+      auto entry = std::begin(bucket);
+      auto const end = std::cend(bucket);
       bool found = false;
-      for (auto& entry : bucket) {
-        if (entry.segment == segment) {
-          entry.pids.emplace_back(pidIndex);
+      while (entry != end && !found) {
+        if (entry->segment == segment) {
+          entry->pids.emplace_back(pidIndex);
           found = true;
-          break;
         }
+        ++entry;
       }
 
       if (!found) {
