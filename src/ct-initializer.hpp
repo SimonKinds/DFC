@@ -25,6 +25,7 @@ class CompactTableInitializer {
   PatternRange const patternRange_{};
 
  public:
+  // TODO: If case insensitive, create all permutations of segment
   void addPattern(PidIndex const pidIndex, Pattern const& pattern) noexcept {
     if (patternRange_.includes(pattern)) {
       auto const segment = segmenter_.segment(pattern);
