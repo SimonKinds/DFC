@@ -49,11 +49,11 @@ class CompactTable {
   std::shared_ptr<OnMatcher const> const onMatcher_{};
   Matcher const matcher_{};
 
-  std::shared_ptr<std::vector<Pattern> const> patterns_;
+  std::shared_ptr<std::vector<ImmutablePattern> const> patterns_;
 
  public:
   CompactTable(Table const& table, std::shared_ptr<OnMatcher const> onMatcher,
-               std::shared_ptr<std::vector<Pattern> const> patterns)
+               std::shared_ptr<std::vector<ImmutablePattern> const> patterns)
       : table_(table),
         onMatcher_(std::move(onMatcher)),
         patterns_(std::move(patterns)) {}

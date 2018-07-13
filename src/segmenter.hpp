@@ -15,10 +15,6 @@ struct Segmenter {
     return segment(pattern.data());
   }
 
-  inline SegmentType segment(RawPattern const& pattern) const noexcept {
-    return segment(pattern.data());
-  }
-
   inline SegmentType segment(byte const* const in) const noexcept {
     return *reinterpret_cast<const SegmentType*>(in);
   }

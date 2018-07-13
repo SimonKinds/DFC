@@ -14,10 +14,10 @@ class PatternAggregator {
  public:
   void add(RawPattern pat) { patterns_.emplace_back(std::move(pat)); }
 
-  std::vector<Pattern> aggregate() {
+  std::vector<ImmutablePattern> aggregate() {
     removeDuplicates();
 
-    std::vector<Pattern> patterns = createPatterns();
+    auto patterns = createPatterns();
 
     resetPatterns();
 
@@ -31,8 +31,8 @@ class PatternAggregator {
                     std::end(patterns_));
   }
 
-  std::vector<Pattern> createPatterns() {
-    std::vector<Pattern> newPatterns;
+  std::vector<ImmutablePattern> createPatterns() {
+    std::vector<ImmutablePattern> newPatterns;
     newPatterns.reserve(patterns_.size());
 
     Pid pid = 0;

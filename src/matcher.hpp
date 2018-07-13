@@ -10,13 +10,13 @@ class Matcher {
   virtual ~Matcher() noexcept = default;
 
   inline bool matches(char const* const in, int const remaining,
-                      Pattern const& pattern) const noexcept {
+                      ImmutablePattern const& pattern) const noexcept {
     return matches(reinterpret_cast<byte const*>(in), remaining, pattern);
   }
 
   // TODO: add case sensitivity
   inline bool matches(byte const* const in, int const remaining,
-                      Pattern const& pattern) const noexcept {
+                      ImmutablePattern const& pattern) const noexcept {
     if (pattern.size() <= remaining) {
       return matchesWithoutBounds(in, pattern);
     }
@@ -26,12 +26,14 @@ class Matcher {
 
  protected:
   virtual bool matchesWithoutBounds(byte const* const in,
-                                    Pattern const& pattern) const noexcept = 0;
+                                    ImmutablePattern const& pattern) const
+      noexcept = 0;
 };
 
 class MemcmpMatcher : public Matcher {
  protected:
-  bool matchesWithoutBounds(byte const* const in, Pattern const& pattern) const
+  bool matchesWithoutBounds(byte const* const in,
+                            ImmutablePattern const& pattern) const
       noexcept final {
     return std::memcmp(in, pattern.data(), pattern.size()) == 0;
   }
@@ -39,7 +41,8 @@ class MemcmpMatcher : public Matcher {
 
 class LoopMatcher : public Matcher {
  protected:
-  bool matchesWithoutBounds(byte const* const in, Pattern const& pattern) const
+  bool matchesWithoutBounds(byte const* const in,
+                            ImmutablePattern const& pattern) const
       noexcept final {
     auto const data = pattern.data();
     bool matches = true;

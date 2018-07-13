@@ -29,7 +29,7 @@ auto createCtWithPattern(std::shared_ptr<dfc::SaveOnMatcher> onMatcher,
                          dfc::RawPattern pattern) {
   dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint16_t, 1, 100>
       init;
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
   patterns->emplace_back(0, std::move(pattern));
   init.addPattern(0, patterns->at(0));
 

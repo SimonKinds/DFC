@@ -10,9 +10,9 @@ using CTInitializerFourByteIndexer =
     dfc::CompactTableInitializer<dfc::PatternRange<1, 1000000>, uint32_t, 49157,
                                  0x20000>;
 
-struct CountOnMatcher : public dfc::OnMatcher {
+struct CountOnMatcher final : public dfc::OnMatcher {
   int mutable matchCount;
-  void onMatch(dfc::Pattern const& pattern) const noexcept final {
+  void onMatch(dfc::ImmutablePattern const& pattern) const noexcept final {
     (void)(pattern);
     ++matchCount;
   }
@@ -20,7 +20,7 @@ struct CountOnMatcher : public dfc::OnMatcher {
 auto onMatcher = std::make_shared<CountOnMatcher>();
 
 void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100>
       initializer;
@@ -41,7 +41,7 @@ void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
 BENCHMARK(CT_OneByte_ExactMatching_Match_Memcmp);
 
 void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100>
       initializer;
@@ -62,7 +62,7 @@ void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
 BENCHMARK(CT_OneByte_ExactMatching_Match_Loop);
 
 void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   std::string patternValue(state.range(0), 'a');
@@ -87,7 +87,7 @@ void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
 BENCHMARK(CT_FourByte_ExactMatching_Match_Memcmp)->Range(4, 1024);
 
 void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   std::string patternValue(state.range(0), 'a');
@@ -113,7 +113,7 @@ void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
 BENCHMARK(CT_FourByte_ExactMatching_Match_Loop)->Range(4, 1024);
 
 void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   int range = state.range(0);
@@ -145,7 +145,7 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
 BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Start_Memcmp)->Range(4, 1024);
 
 void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   int range = state.range(0);
@@ -177,7 +177,7 @@ void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
 BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Start_Loop)->Range(4, 1024);
 
 void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   int range = state.range(0);
@@ -207,7 +207,7 @@ void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
 BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Memcmp)->Range(4, 1024);
 
 void CT_FourByte_ExactMatching_NoMatch_Half_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   int range = state.range(0);

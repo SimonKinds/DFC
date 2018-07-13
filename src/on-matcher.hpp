@@ -9,11 +9,11 @@ namespace dfc {
 struct OnMatcher {
   virtual ~OnMatcher() noexcept = default;
 
-  virtual void onMatch(Pattern const& pattern) const = 0;
+  virtual void onMatch(ImmutablePattern const& pattern) const = 0;
 };
 
 struct PrintOnMatcher : public OnMatcher {
-  void onMatch(Pattern const& pattern) const noexcept final override {
+  void onMatch(ImmutablePattern const& pattern) const noexcept final override {
     printf("(%d)\t\t%*.s\n", pattern.pid(), pattern.size(), pattern.data());
   }
 };
@@ -21,7 +21,7 @@ struct PrintOnMatcher : public OnMatcher {
 struct SaveOnMatcher : public OnMatcher {
   std::vector<dfc::Pid> mutable matchedPids;
 
-  void onMatch(dfc::Pattern const& pattern) const final {
+  void onMatch(dfc::ImmutablePattern const& pattern) const final {
     matchedPids.emplace_back(pattern.pid());
   }
 };

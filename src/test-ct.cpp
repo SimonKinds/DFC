@@ -10,7 +10,7 @@ namespace {
 
 TEST_CASE("CT") {
   auto onMatcher = std::make_shared<SaveOnMatcher>();
-  auto patterns = std::make_shared<std::vector<dfc::Pattern>>();
+  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   int const ctSize = 0x100;
   dfc::CompactTableInitializer<dfc::PatternRange<1, 10>, uint8_t, 1, ctSize>

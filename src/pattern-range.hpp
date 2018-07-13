@@ -8,15 +8,7 @@ template <int startInclusive, int endInclusive>
 class PatternRange {
  public:
   constexpr inline bool includes(Pattern const& pattern) const noexcept {
-    return includes(pattern.size());
-  }
-
-  constexpr inline bool includes(RawPattern const& pattern) const noexcept {
-    return includes(pattern.size());
-  }
-
- private:
-  constexpr inline bool includes(int const size) const noexcept {
+    int const size = pattern.size();
     return startInclusive <= size && size <= endInclusive;
   }
 };
