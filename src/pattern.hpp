@@ -50,7 +50,7 @@ class RawPattern final : public Pattern {
   byte const* data() const noexcept override { return data_.get(); }
   int size() const noexcept override { return size_; }
 
-  std::shared_ptr<byte[]> const& ptr() const { return data_; }
+  std::shared_ptr<byte[]> ptr() const { return data_; }
 };
 
 class ImmutablePattern final : public Pattern {
