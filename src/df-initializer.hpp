@@ -33,14 +33,13 @@ class DirectFilterInitializer {
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  // TODO: If case insensitive, create all permutations of segment
   // TODO: If shorter than segment, extend with all permutation
   void addPattern(Pattern const& pattern) noexcept {
     if (patternRange_.includes(pattern)) {
       if (pattern.caseSensitive()) {
-        addSegment(pattern);
+        addPatternWithoutPermutations(pattern);
       } else {
-        addPermutations(pattern);
+        addPatternWithPermutations(pattern);
       }
     }
   }
@@ -52,17 +51,17 @@ class DirectFilterInitializer {
   }
 
  private:
-  void addSegment(Pattern const& pattern) {
+  void addPatternWithoutPermutations(Pattern const& pattern) noexcept {
     addSegment(segmenter_.segment(pattern));
   }
 
-  void addPermutations(Pattern const& pattern) {
+  void addPatternWithPermutations(Pattern const& pattern) noexcept {
     for (auto const segment : segmenter_.permutations(pattern)) {
       addSegment(segment);
     }
   }
 
-  void addSegment(SegmentType const segment) {
+  void addSegment(SegmentType const segment) noexcept {
     auto const index = indexer_.index(segment);
     auto const mask = masker_.mask(segment);
 

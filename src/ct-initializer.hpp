@@ -25,27 +25,12 @@ class CompactTableInitializer {
   PatternRange const patternRange_{};
 
  public:
-  // TODO: If case insensitive, create all permutations of segment
   void addPattern(PidIndex const pidIndex, Pattern const& pattern) noexcept {
     if (patternRange_.includes(pattern)) {
-      auto const segment = segmenter_.segment(pattern);
-      auto const bucketIndex = indexer_.index(segment);
-
-      auto& bucket = table_[bucketIndex];
-
-      auto entry = std::begin(bucket);
-      auto const end = std::cend(bucket);
-      bool found = false;
-      while (entry != end && !found) {
-        if (entry->segment == segment) {
-          entry->pids.emplace_back(pidIndex);
-          found = true;
-        }
-        ++entry;
-      }
-
-      if (!found) {
-        bucket.emplace_back(segment, pidIndex);
+      if (pattern.caseSensitive()) {
+        addPatternWithoutPermutations(pidIndex, pattern);
+      } else {
+        addPatternWithPermutations(pidIndex, pattern);
       }
     }
   }
@@ -60,6 +45,40 @@ class CompactTableInitializer {
 
     return CompactTable<SegmentType, Hash, Size, OnMatcher, Matcher>(
         table_, std::move(onMatcher), std::move(patterns));
+  }
+
+ private:
+  void addPatternWithoutPermutations(PidIndex pidIndex,
+                                     Pattern const& pattern) {
+    addPatternForSegment(pidIndex, segmenter_.segment(pattern));
+  }
+
+  void addPatternWithPermutations(PidIndex pidIndex,
+                                  Pattern const& pattern) noexcept {
+    for (auto const segment : segmenter_.permutations(pattern)) {
+      addPatternForSegment(pidIndex, segment);
+    }
+  }
+
+  void addPatternForSegment(PidIndex pidIndex, SegmentType segment) noexcept {
+    auto const bucketIndex = indexer_.index(segment);
+
+    auto& bucket = table_[bucketIndex];
+
+    auto entry = std::begin(bucket);
+    auto const end = std::cend(bucket);
+    bool found = false;
+    while (entry != end && !found) {
+      if (entry->segment == segment) {
+        entry->pids.emplace_back(pidIndex);
+        found = true;
+      }
+      ++entry;
+    }
+
+    if (!found) {
+      bucket.emplace_back(segment, pidIndex);
+    }
   }
 };
 }  // namespace dfc
