@@ -35,13 +35,13 @@ class DirectFilterInitializer {
  public:
   // TODO: If case insensitive, create all permutations of segment
   // TODO: If shorter than segment, extend with all permutation
-  void addPattern(RawPattern const& pattern) noexcept {
+  void addPattern(Pattern const& pattern) noexcept {
     if (patternRange_.includes(pattern)) {
-      auto const segment = segmenter_.segment(pattern);
-      auto const index = indexer_.index(segment);
-      auto const mask = masker_.mask(segment);
-
-      filter_[index] |= mask;
+      if (pattern.caseSensitive()) {
+        addSegment(pattern);
+      } else {
+        addPermutations(pattern);
+      }
     }
   }
 
@@ -49,6 +49,24 @@ class DirectFilterInitializer {
 
   auto df() const noexcept {
     return DirectFilter<SegmentType, Hash, IndexType>(filter_);
+  }
+
+ private:
+  void addSegment(Pattern const& pattern) {
+    addSegment(segmenter_.segment(pattern));
+  }
+
+  void addPermutations(Pattern const& pattern) {
+    for (auto const segment : segmenter_.permutations(pattern)) {
+      addSegment(segment);
+    }
+  }
+
+  void addSegment(SegmentType const segment) {
+    auto const index = indexer_.index(segment);
+    auto const mask = masker_.mask(segment);
+
+    filter_[index] |= mask;
   }
 };
 }  // namespace dfc
