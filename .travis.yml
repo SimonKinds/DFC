@@ -1,9 +1,5 @@
 language: cpp
 
-script:
-  - ./scripts/test.sh Debug
-  - ./scripts/test.sh Release
-
 matrix:
     - os: linux
       addons:
@@ -26,4 +22,8 @@ matrix:
 
 before_install:
     - eval "${MATRIX_EVAL}"
+
+script:
+  - ./scripts/test.sh Debug
+  - ./scripts/test.sh Release
 
