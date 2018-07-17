@@ -54,7 +54,9 @@ class RawPattern final : public Pattern {
     std::memcpy(data_.get(), data, size);
   }
 
-  byte const* data() const noexcept override { return &*data_.get(); }
+  byte const* data() const noexcept override {
+    return static_cast<byte const*>(data_.get());
+  }
   int size() const noexcept override { return size_; }
   bool caseSensitive() const noexcept override { return caseSensitive_; };
 
@@ -76,7 +78,9 @@ class ImmutablePattern final : public Pattern {
         data_(pattern.ptr()) {}
 
   inline Pid pid() const noexcept { return pid_; }
-  inline byte const* data() const noexcept override { return &*data_.get(); }
+  inline byte const* data() const noexcept override {
+    return static_cast<byte const*>(data_.get());
+  }
   inline int size() const noexcept override { return size_; }
   bool caseSensitive() const noexcept override { return caseSensitive_; };
 };

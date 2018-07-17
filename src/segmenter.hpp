@@ -22,7 +22,7 @@ struct Segmenter {
 
     for (int permutationIndex = 0; permutationIndex < permutationCount;
          ++permutationIndex) {
-      auto& permutation = permutations[permutationIndex];
+      uint64_t permutation = 0;
 
       for (int characterIndex = 0; characterIndex < segmentSize;
            ++characterIndex) {
@@ -31,6 +31,8 @@ struct Segmenter {
                            ? std::toupper(in[characterIndex])
                            : in[characterIndex];
       }
+
+      permutations[permutationIndex] = static_cast<SegmentType>(permutation);
     }
 
     return permutations;
