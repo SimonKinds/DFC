@@ -7,7 +7,7 @@ using dfc::test::createPattern;
 
 namespace {
 using CTInitializerFourByteIndexer =
-    dfc::CompactTableInitializer<dfc::PatternRange<1, 1000000>, uint32_t, 49157,
+    dfc::CompactTableInitializer<dfc::PatternRange<4, 1000000>, uint32_t, 49157,
                                  0x20000>;
 
 struct CountOnMatcher final : public dfc::OnMatcher {

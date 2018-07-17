@@ -12,7 +12,7 @@ auto createEmptyDf() {
   return init.df();
 }
 auto createEmptyCt(std::shared_ptr<dfc::SaveOnMatcher> onMatcher) {
-  dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint16_t, 1, 100>
+  dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
       init;
   return init.ct<dfc::SaveOnMatcher>(std::move(onMatcher), nullptr);
 }
@@ -27,7 +27,7 @@ auto createDfWithPattern(dfc::RawPattern pattern) {
 
 auto createCtWithPattern(std::shared_ptr<dfc::SaveOnMatcher> onMatcher,
                          dfc::RawPattern pattern) {
-  dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint16_t, 1, 100>
+  dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
       init;
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
   patterns->emplace_back(0, std::move(pattern));

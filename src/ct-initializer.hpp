@@ -15,6 +15,9 @@ template <typename PatternRange, typename SegmentType, SegmentType Hash,
 class CompactTableInitializer {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
+  static_assert(
+      PatternRange::startInclusive == sizeof(SegmentType),
+      "SegmentType must be equal in size to the smallest pattern length");
 
   using Table = std::array<std::vector<CompactTableEntry<SegmentType>>, Size>;
   Table table_;
