@@ -38,15 +38,13 @@ class CompactTableInitializer {
     }
   }
 
-  template <typename OnMatcher, typename Matcher = MemcmpMatcher>
+  template <typename OnMatcher>
   auto ct(std::shared_ptr<OnMatcher> onMatcher,
           std::shared_ptr<std::vector<ImmutablePattern> const> patterns) const {
     static_assert(std::is_base_of<dfc::OnMatcher, OnMatcher>::value,
                   "OnMatcher template parameter is not an OnMatcher");
-    static_assert(std::is_base_of<dfc::Matcher, Matcher>::value,
-                  "Matcher template parameter is not a Matcher");
 
-    return CompactTable<SegmentType, Hash, Size, OnMatcher, Matcher>(
+    return CompactTable<SegmentType, Hash, Size, OnMatcher>(
         table_, std::move(onMatcher), std::move(patterns));
   }
 

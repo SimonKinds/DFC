@@ -10,6 +10,7 @@ RawPattern twoBytePattern();
 RawPattern fiveBytePattern();
 
 RawPattern createPattern(char const* const str);
+RawPattern createCaseInsensitivePattern(char const* const str);
 }  // namespace test
 }  // namespace dfc
 

@@ -4,34 +4,32 @@
 #include "util-test.hpp"
 
 using dfc::ImmutablePattern;
+using dfc::test::createCaseInsensitivePattern;
 using dfc::test::fiveBytePattern;
 
 namespace {
-TEST_CASE("Loop matcher matches if equal") {
-  dfc::LoopMatcher matcher;
+TEST_CASE("Matcher matches if equal") {
+  dfc::Matcher matcher;
 
   ImmutablePattern pattern(0, fiveBytePattern());
   REQUIRE(matcher.matches(pattern.data(), pattern.size(), pattern) == true);
 }
 
-TEST_CASE("Loop matcher does not match if not equal") {
-  dfc::LoopMatcher matcher;
+TEST_CASE("Matcher does not match if not equal") {
+  dfc::Matcher matcher;
 
   ImmutablePattern pattern(0, fiveBytePattern());
   REQUIRE(matcher.matches("12345", pattern.size(), pattern) == false);
 }
 
-TEST_CASE("Memcmp matcher matches if equal") {
-  dfc::MemcmpMatcher matcher;
+TEST_CASE("Matcher matches all variants of case insensitive patterns") {
+  ImmutablePattern pattern(0, createCaseInsensitivePattern("ab"));
 
-  ImmutablePattern pattern(0, fiveBytePattern());
-  REQUIRE(matcher.matches(pattern.data(), pattern.size(), pattern) == true);
+  dfc::Matcher matcher;
+  REQUIRE(matcher.matches("ab", 2, pattern));
+  REQUIRE(matcher.matches("Ab", 2, pattern));
+  REQUIRE(matcher.matches("aB", 2, pattern));
+  REQUIRE(matcher.matches("AB", 2, pattern));
 }
 
-TEST_CASE("Memcmp matcher does not match if not equal") {
-  dfc::MemcmpMatcher matcher;
-
-  ImmutablePattern pattern(0, fiveBytePattern());
-  REQUIRE(matcher.matches("12345", pattern.size(), pattern) == false);
-}
 }  // namespace

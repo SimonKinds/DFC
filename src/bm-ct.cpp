@@ -3,6 +3,7 @@
 
 #include "util-test.hpp"
 
+using dfc::test::createCaseInsensitivePattern;
 using dfc::test::createPattern;
 
 namespace {
@@ -19,7 +20,7 @@ struct CountOnMatcher final : public dfc::OnMatcher {
 };
 auto onMatcher = std::make_shared<CountOnMatcher>();
 
-void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
+void CT_OneByte_ExactMatching(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100>
@@ -31,37 +32,15 @@ void CT_OneByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
+  auto const ct = initializer.ct<CountOnMatcher>(onMatcher, patterns);
 
   for (auto _ : state) {
     ct.exactMatching(patternValue.data(), 1);
   }
 }
-BENCHMARK(CT_OneByte_ExactMatching_Match_Memcmp);
+BENCHMARK(CT_OneByte_ExactMatching);
 
-void CT_OneByte_ExactMatching_Match_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-
-  dfc::CompactTableInitializer<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100>
-      initializer;
-  std::string patternValue("x");
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, createPattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
-
-  for (auto _ : state) {
-    ct.exactMatching(patternValue.data(), 1);
-  }
-}
-BENCHMARK(CT_OneByte_ExactMatching_Match_Loop);
-
-void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
+void CT_FourByte_ExactMatching_CaseSensitive(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
@@ -72,8 +51,7 @@ void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
+  auto const ct = initializer.ct<CountOnMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
@@ -84,21 +62,20 @@ void CT_FourByte_ExactMatching_Match_Memcmp(benchmark::State& state) {
     ct.exactMatching(data, size);
   }
 }
-BENCHMARK(CT_FourByte_ExactMatching_Match_Memcmp)->Range(4, 1024);
+BENCHMARK(CT_FourByte_ExactMatching_CaseSensitive)->Range(4, 1024);
 
-void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
+void CT_FourByte_ExactMatching_CaseInsensitive(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTInitializerFourByteIndexer initializer;
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  patterns->emplace_back(0, createPattern(patternValue.data()));
+  patterns->emplace_back(0, createCaseInsensitivePattern(patternValue.data()));
   int const patternIndex = 0;
   initializer.addPattern(patternIndex, patterns->at(patternIndex));
 
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
+  auto const ct = initializer.ct<CountOnMatcher>(onMatcher, patterns);
 
   byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
@@ -109,131 +86,6 @@ void CT_FourByte_ExactMatching_Match_Loop(benchmark::State& state) {
     ct.exactMatching(data, size);
   }
 }
-
-BENCHMARK(CT_FourByte_ExactMatching_Match_Loop)->Range(4, 1024);
-
-void CT_FourByte_ExactMatching_NoMatch_Start_Memcmp(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-
-  CTInitializerFourByteIndexer initializer;
-  int range = state.range(0);
-  std::string patternValue(4, 'a');
-  patternValue += 'b';
-  if (range > 4) {
-    patternValue += std::string(range - 5, 'a');
-  }
-  std::string input(range, 'a');
-
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, createPattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
-
-  byte const* data = reinterpret_cast<byte const*>(input.data());
-  int size = patternValue.size();
-
-  benchmark::DoNotOptimize(&data);
-  benchmark::DoNotOptimize(&size);
-  for (auto _ : state) {
-    ct.exactMatching(data, size);
-  }
-}
-BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Start_Memcmp)->Range(4, 1024);
-
-void CT_FourByte_ExactMatching_NoMatch_Start_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-
-  CTInitializerFourByteIndexer initializer;
-  int range = state.range(0);
-  std::string patternValue(4, 'a');
-  patternValue += 'b';
-  if (range > 4) {
-    patternValue += std::string(range - 5, 'a');
-  }
-  std::string input(range, 'a');
-
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, createPattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
-
-  byte const* data = reinterpret_cast<byte const*>(input.data());
-  int size = patternValue.size();
-
-  benchmark::DoNotOptimize(&data);
-  benchmark::DoNotOptimize(&size);
-  for (auto _ : state) {
-    ct.exactMatching(data, size);
-  }
-}
-BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Start_Loop)->Range(4, 1024);
-
-void CT_FourByte_ExactMatching_NoMatch_Half_Memcmp(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-
-  CTInitializerFourByteIndexer initializer;
-  int range = state.range(0);
-  std::string patternValue(range / 2, 'a');
-  patternValue += 'b';
-  patternValue += std::string(range / 2 - 1, 'a');
-  std::string input(range, 'a');
-
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, createPattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::MemcmpMatcher>(onMatcher, patterns);
-
-  byte const* data = reinterpret_cast<byte const*>(input.data());
-  int size = patternValue.size();
-
-  benchmark::DoNotOptimize(&data);
-  benchmark::DoNotOptimize(&size);
-  for (auto _ : state) {
-    ct.exactMatching(data, size);
-  }
-}
-BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Memcmp)->Range(4, 1024);
-
-void CT_FourByte_ExactMatching_NoMatch_Half_Loop(benchmark::State& state) {
-  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-
-  CTInitializerFourByteIndexer initializer;
-  int range = state.range(0);
-  std::string patternValue(range / 2, 'a');
-  patternValue += 'b';
-  patternValue += std::string(range / 2 - 1, 'a');
-  std::string input(range, 'a');
-
-  benchmark::DoNotOptimize(&patternValue);
-
-  patterns->emplace_back(0, createPattern(patternValue.data()));
-  int const patternIndex = 0;
-  initializer.addPattern(patternIndex, patterns->at(patternIndex));
-
-  auto const ct =
-      initializer.ct<CountOnMatcher, dfc::LoopMatcher>(onMatcher, patterns);
-
-  byte const* data = reinterpret_cast<byte const*>(input.data());
-  int size = patternValue.size();
-
-  benchmark::DoNotOptimize(&data);
-  benchmark::DoNotOptimize(&size);
-  for (auto _ : state) {
-    ct.exactMatching(data, size);
-  }
-}
-BENCHMARK(CT_FourByte_ExactMatching_NoMatch_Half_Loop)->Range(4, 1024);
+BENCHMARK(CT_FourByte_ExactMatching_CaseInsensitive)->Range(4, 1024);
 
 }  // namespace

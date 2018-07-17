@@ -27,15 +27,12 @@ struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename SegmentType, SegmentType Hash, int Size, typename OnMatcher,
-          typename Matcher = MemcmpMatcher>
+template <typename SegmentType, SegmentType Hash, int Size, typename OnMatcher>
 class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
   static_assert(std::is_base_of<dfc::OnMatcher, OnMatcher>::value,
                 "OnMatcher template parameter is not an OnMatcher");
-  static_assert(std::is_base_of<dfc::Matcher, Matcher>::value,
-                "Matcher template parameter is not an Matcher");
 
   using Entry = CompactTableEntry<SegmentType>;
   using Bucket = std::vector<Entry>;
