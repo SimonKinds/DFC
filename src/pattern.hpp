@@ -16,25 +16,9 @@ class Pattern {
   virtual int size() const noexcept = 0;
   virtual bool caseSensitive() const noexcept = 0;
 
-  bool operator==(Pattern const& other) const {
-    return size() == other.size() && memcmp(data(), other.data(), size()) == 0;
-  }
-
-  bool operator<(Pattern const& other) const {
-    if (size() != other.size()) {
-      return size() < other.size();
-    }
-
-    return memcmp(data(), other.data(), size()) == -1;
-  }
-
-  bool operator>(Pattern const& other) const {
-    if (size() != other.size()) {
-      return size() > other.size();
-    }
-
-    return memcmp(data(), other.data(), size()) == 1;
-  }
+  virtual bool operator==(Pattern const& other) const;
+  virtual bool operator<(Pattern const& other) const;
+  virtual bool operator>(Pattern const& other) const;
 };
 
 class RawPattern final : public Pattern {

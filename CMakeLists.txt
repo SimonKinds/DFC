@@ -6,7 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(third-party/benchmark)
 
+set(DFC_SRCS 
+  src/pattern.cpp
+ )
+
 add_executable(test-dfc
+  ${DFC_SRCS}
+
   src/util-test.cpp
 
   src/test-main.cpp
@@ -20,6 +26,8 @@ add_executable(test-dfc
 target_include_directories(test-dfc PRIVATE third-party)
 
 add_executable(bm-dfc
+  ${DFC_SRCS}
+
   src/util-test.cpp
 
   src/bm-indexer.cpp
