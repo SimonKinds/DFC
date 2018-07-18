@@ -8,6 +8,7 @@ add_subdirectory(third-party/benchmark)
 
 set(DFC_SRCS 
   src/pattern.cpp
+  src/pattern-aggregator.cpp
  )
 
 add_executable(test-dfc
