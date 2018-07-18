@@ -1,7 +1,8 @@
 #ifndef DFC_SEGMENTER_HPP
 #define DFC_SEGMENTER_HPP
 
-#include <type_traits>
+#include <array>
+
 #include "byte.hpp"
 #include "pattern.hpp"
 
