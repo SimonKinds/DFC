@@ -2,7 +2,7 @@
 #define DFC_TEST_UTILS_HPP
 #include <cstdint>
 
-#include "pattern.hpp"
+#include "raw-pattern.hpp"
 
 namespace dfc {
 namespace test {

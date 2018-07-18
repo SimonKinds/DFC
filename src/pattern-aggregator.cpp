@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "pattern-aggregator.hpp"
 
 namespace dfc {

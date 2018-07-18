@@ -2,7 +2,7 @@
 #define DFC_MATCHER_HPP
 
 #include "byte.hpp"
-#include "pattern.hpp"
+#include "immutable-pattern.hpp"
 
 namespace dfc {
 class Matcher {
@@ -40,6 +40,7 @@ class Matcher {
     return std::memcmp(in, pattern.data(), pattern.size()) == 0;
   }
 
+  // TODO: try to improve
   inline bool matchesCaseInsensitive(byte const* const in,
                                      ImmutablePattern const& pattern) const
       noexcept {

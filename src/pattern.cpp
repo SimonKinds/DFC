@@ -1,8 +1,11 @@
+#include <cstring>
+
 #include "pattern.hpp"
 
 namespace dfc {
 bool Pattern::operator==(Pattern const& other) const {
-  return size() == other.size() && memcmp(data(), other.data(), size()) == 0;
+  return size() == other.size() &&
+         std::memcmp(data(), other.data(), size()) == 0;
 }
 
 bool Pattern::operator<(Pattern const& other) const {
@@ -10,7 +13,7 @@ bool Pattern::operator<(Pattern const& other) const {
     return size() < other.size();
   }
 
-  return memcmp(data(), other.data(), size()) == -1;
+  return std::memcmp(data(), other.data(), size()) < 0;
 }
 
 bool Pattern::operator>(Pattern const& other) const {
@@ -18,6 +21,6 @@ bool Pattern::operator>(Pattern const& other) const {
     return size() > other.size();
   }
 
-  return memcmp(data(), other.data(), size()) == 1;
+  return std::memcmp(data(), other.data(), size()) > 0;
 }
 }  // namespace dfc

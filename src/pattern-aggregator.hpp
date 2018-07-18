@@ -1,10 +1,9 @@
 #ifndef DFC_PATTERN_AGGREGATOR_HPP
 #define DFC_PATTERN_AGGREGATOR_HPP
 
-#include <algorithm>
 #include <vector>
 
-#include "pattern.hpp"
+#include "immutable-pattern.hpp"
 
 namespace dfc {
 class PatternAggregator {
