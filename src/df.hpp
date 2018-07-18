@@ -29,6 +29,10 @@ class DirectFilter {
  public:
   explicit DirectFilter(Filter const& filter) : filter_(filter) {}
 
+  inline bool isSet(char const* const in) const noexcept {
+    return isSet(reinterpret_cast<byte const*>(in));
+  }
+
   inline bool isSet(byte const* const in) const noexcept {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);

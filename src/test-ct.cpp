@@ -4,6 +4,7 @@
 #include "util-test.hpp"
 
 using dfc::SaveOnMatcher;
+using dfc::test::createCaseInsensitivePattern;
 using dfc::test::createPattern;
 
 namespace {
@@ -55,6 +56,7 @@ TEST_CASE("CT") {
 
     REQUIRE(onMatcher->matchedPids.size() == 0);
   }
+
   SECTION("Does not set add pattern if it is outside the range constraint") {
     auto patternValue = "this is a very long pattern";
 
@@ -67,6 +69,30 @@ TEST_CASE("CT") {
     ct.exactMatching(patternValue, std::strlen(patternValue));
 
     REQUIRE(onMatcher->matchedPids.size() == 0);
+  }
+
+  SECTION("Sets for all variants of input if case insensitive") {
+    // initializer with two characters pattern
+    dfc::CompactTableInitializer<dfc::PatternRange<2, 10>, uint16_t, 1, ctSize>
+        initializer;
+    auto patternValue = "ab";
+
+    dfc::Pid const pid = 1;
+    patterns->emplace_back(pid, createCaseInsensitivePattern(patternValue));
+    int const patternIndex = 0;
+    initializer.addPattern(patternIndex, patterns->at(patternIndex));
+
+    auto const ct = initializer.ct(onMatcher, patterns);
+    ct.exactMatching("ab", 2);
+    ct.exactMatching("aB", 2);
+    ct.exactMatching("Ab", 2);
+    ct.exactMatching("AB", 2);
+
+    REQUIRE(onMatcher->matchedPids.size() == 4);
+    REQUIRE(onMatcher->matchedPids[0] == pid);
+    REQUIRE(onMatcher->matchedPids[1] == pid);
+    REQUIRE(onMatcher->matchedPids[2] == pid);
+    REQUIRE(onMatcher->matchedPids[3] == pid);
   }
 
   SECTION("Multiple patterns") {

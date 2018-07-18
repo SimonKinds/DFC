@@ -5,6 +5,7 @@
 #include "segmenter.hpp"
 #include "util-test.hpp"
 
+using dfc::test::createCaseInsensitivePattern;
 using dfc::test::twoBytePattern;
 
 namespace {
@@ -27,13 +28,7 @@ TEST_CASE("Sets bit if pattern is within the size constraint") {
   init.addPattern(twoBytePattern());
 
   auto const df = init.df();
-
-  int ors = 0;
-  for (auto const byte : df.filter()) {
-    ors |= byte;
-  }
-
-  REQUIRE(ors != 0);
+  REQUIRE(df.isSet(twoBytePattern().data()));
 }
 
 TEST_CASE("Does not set bit if pattern is outside the size constraint") {
@@ -42,12 +37,18 @@ TEST_CASE("Does not set bit if pattern is outside the size constraint") {
   init.addPattern(twoBytePattern());
 
   auto const df = init.df();
+  REQUIRE(!df.isSet(twoBytePattern().data()));
+}
 
-  int ors = 0;
-  for (auto const byte : df.filter()) {
-    ors |= byte;
-  }
+TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
+  dfc::DirectFilterInitializer<dfc::PatternRange<1, 3>, uint16_t> init;
 
-  REQUIRE(ors == 0);
+  init.addPattern(createCaseInsensitivePattern("ab"));
+
+  auto const df = init.df();
+  REQUIRE(df.isSet("ab"));
+  REQUIRE(df.isSet("Ab"));
+  REQUIRE(df.isSet("aB"));
+  REQUIRE(df.isSet("AB"));
 }
 }  // namespace
