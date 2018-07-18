@@ -23,14 +23,14 @@ TEST_CASE("Segments out the desired amount of characters") {
 }
 
 TEST_CASE("Permutations with upper and lower case characters") {
-  auto const value = 'b' << 8 | 'a';
-  byte const* in = reinterpret_cast<byte const*>(&value);
-  std::array<uint16_t, 4> expectedPermutations = {
-      'a' << 8 | 'b',
-      'A' << 8 | 'b',
-      'a' << 8 | 'B',
-      'A' << 8 | 'B',
+  auto twoCharsToInt = [](char const* val) {
+    return (static_cast<int>(val[1]) << 8 | static_cast<int>(val[0]));
   };
+
+  auto const in = "ab";
+  std::array<int, 4> expectedPermutations = {
+      twoCharsToInt("ab"), twoCharsToInt("aB"), twoCharsToInt("Ab"),
+      twoCharsToInt("AB")};
 
   auto const permutations = TwoByteSegmenter().permutations(in);
   auto const countOccurrences = [=](auto val) {

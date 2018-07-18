@@ -3,7 +3,6 @@
 
 #include <array>
 
-#include "byte.hpp"
 #include "pattern.hpp"
 
 namespace dfc {
@@ -14,6 +13,10 @@ struct Segmenter {
 
   auto permutations(Pattern const& pattern) const noexcept {
     return permutations(pattern.data());
+  }
+
+  auto permutations(char const* const in) const noexcept {
+    return permutations(reinterpret_cast<byte const*>(in));
   }
 
   auto permutations(byte const* const in) const noexcept {
@@ -27,10 +30,10 @@ struct Segmenter {
 
       for (int characterIndex = 0; characterIndex < segmentSize;
            ++characterIndex) {
-        permutation <<= 8;
-        permutation |= (((permutationIndex >> characterIndex) & 1) != 0)
-                           ? std::toupper(in[characterIndex])
-                           : in[characterIndex];
+        byte const value = (((permutationIndex >> characterIndex) & 1) != 0)
+                               ? std::toupper(in[characterIndex])
+                               : in[characterIndex];
+        permutation |= value << (8 * characterIndex);
       }
 
       permutations[permutationIndex] = static_cast<SegmentType>(permutation);
