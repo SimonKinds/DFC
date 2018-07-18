@@ -35,6 +35,8 @@ class Matcher {
   inline bool matchesCaseSensitive(byte const* const in,
                                    ImmutablePattern const& pattern) const
       noexcept {
+    // memcmp is faster in all cases (up to 16x for 1024 characters) when
+    // comparing byte for byte
     return std::memcmp(in, pattern.data(), pattern.size()) == 0;
   }
 
