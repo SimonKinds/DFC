@@ -4,6 +4,7 @@
 #include "util-test.hpp"
 
 using dfc::test::createCaseInsensitivePattern;
+using dfc::test::createPattern;
 using dfc::test::twoBytePattern;
 
 namespace {
@@ -43,5 +44,25 @@ TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
   REQUIRE(df.contains("Ab"));
   REQUIRE(df.contains("aB"));
   REQUIRE(df.contains("AB"));
+}
+
+TEST_CASE("Extends pattern to segment size if smaller") {
+  dfc::DirectFilter<dfc::PatternRange<1, 5>, uint16_t> df;
+
+  auto const pattern = "a";
+
+  df.addPattern(createPattern(pattern));
+
+  int matches = 0;
+  for (int i = 0; i < 255; ++i) {
+    std::string input(pattern);
+    input += static_cast<char>(i);
+
+    if (df.contains(input.c_str())) {
+      ++matches;
+    }
+  }
+
+  REQUIRE(matches == 255);
 }
 }  // namespace
