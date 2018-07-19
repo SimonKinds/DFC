@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "pattern.hpp"
+#include "immutable-pattern.hpp"
 
 namespace dfc {
 struct OnMatcher {
