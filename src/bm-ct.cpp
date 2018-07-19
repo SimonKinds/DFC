@@ -13,7 +13,7 @@ using CTInitializerFourByteIndexer =
 
 struct CountOnMatcher final : public dfc::OnMatcher {
   int mutable matchCount;
-  void onMatch(dfc::ImmutablePattern const& pattern) const noexcept final {
+  void onMatch(dfc::ImmutablePattern const& pattern) const noexcept {
     (void)(pattern);
     ++matchCount;
   }

@@ -12,16 +12,16 @@ struct OnMatcher {
   virtual void onMatch(ImmutablePattern const& pattern) const = 0;
 };
 
-struct PrintOnMatcher : public OnMatcher {
-  void onMatch(ImmutablePattern const& pattern) const noexcept final override {
+struct PrintOnMatcher final : public OnMatcher {
+  void onMatch(ImmutablePattern const& pattern) const noexcept {
     printf("(%d)\t\t%*.s\n", pattern.pid(), pattern.size(), pattern.data());
   }
 };
 
-struct SaveOnMatcher : public OnMatcher {
+struct SaveOnMatcher final : public OnMatcher {
   std::vector<dfc::Pid> mutable matchedPids;
 
-  void onMatch(dfc::ImmutablePattern const& pattern) const final {
+  void onMatch(dfc::ImmutablePattern const& pattern) const {
     matchedPids.emplace_back(pattern.pid());
   }
 };
