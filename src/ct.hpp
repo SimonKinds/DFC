@@ -27,12 +27,10 @@ struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename SegmentType, SegmentType Hash, int Size, typename OnMatcher>
+template <typename SegmentType, SegmentType Hash, int Size>
 class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
-  static_assert(std::is_base_of<dfc::OnMatcher, OnMatcher>::value,
-                "OnMatcher template parameter is not an OnMatcher");
 
   using Entry = CompactTableEntry<SegmentType>;
   using Bucket = std::vector<Entry>;
@@ -43,26 +41,25 @@ class CompactTable {
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
-  std::shared_ptr<OnMatcher const> const onMatcher_{};
   Matcher const matcher_{};
 
   std::shared_ptr<std::vector<ImmutablePattern> const> patterns_;
 
  public:
-  CompactTable(Table const& table, std::shared_ptr<OnMatcher const> onMatcher,
+  CompactTable(Table const& table,
                std::shared_ptr<std::vector<ImmutablePattern> const> patterns)
-      : table_(table),
-        onMatcher_(std::move(onMatcher)),
-        patterns_(std::move(patterns)) {}
+      : table_(table), patterns_(std::move(patterns)) {}
 
-  void exactMatching(char const* const in, int const remaining) const noexcept {
-    exactMatching(reinterpret_cast<byte const*>(in), remaining);
+  void exactMatching(char const* const in, int const remaining,
+                     OnMatcher const& onMatcher) const noexcept {
+    exactMatching(reinterpret_cast<byte const*>(in), remaining, onMatcher);
   }
 
-  void exactMatching(byte const* const in, int const remaining) const {
+  void exactMatching(byte const* const in, int const remaining,
+                     OnMatcher const& onMatcher) const {
     auto const& bucket = getBucket(in);
 
-    findMatchesInBucket(bucket, in, remaining);
+    findMatchesInBucket(bucket, in, remaining, onMatcher);
   }
 
  private:
@@ -74,7 +71,8 @@ class CompactTable {
   }
 
   void findMatchesInBucket(Bucket const& bucket, byte const* const in,
-                           int const remaining) const {
+                           int const remaining,
+                           OnMatcher const& onMatcher) const {
     auto const segment = segmenter_.segment(in);
 
     auto entry = std::cbegin(bucket);
@@ -84,7 +82,7 @@ class CompactTable {
       if (entry->segment == segment) {
         found = true;
 
-        findMatchesInEntry(*entry, in, remaining);
+        findMatchesInEntry(*entry, in, remaining, onMatcher);
       }
 
       ++entry;
@@ -92,12 +90,13 @@ class CompactTable {
   }
 
   void findMatchesInEntry(Entry const& entry, byte const* const in,
-                          int const remaining) const {
+                          int const remaining,
+                          OnMatcher const& onMatcher) const {
     for (auto const pidIndex : entry.pids) {
       auto const& pattern = patterns_->at(pidIndex);
 
       if (matcher_.matches(in, remaining, pattern)) {
-        onMatcher_->onMatch(pattern);
+        onMatcher.onMatch(pattern);
       }
     }
   }

@@ -6,15 +6,17 @@
 #include "util-test.hpp"
 
 namespace {
+using dfc::SaveOnMatcher;
+
 auto createEmptyDf() {
   dfc::DirectFilterInitializer<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t>
       init;
   return init.df();
 }
-auto createEmptyCt(std::shared_ptr<dfc::SaveOnMatcher> onMatcher) {
+auto createEmptyCt() {
   dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
       init;
-  return init.ct<dfc::SaveOnMatcher>(std::move(onMatcher), nullptr);
+  return init.ct(nullptr);
 }
 
 auto createDfWithPattern(dfc::RawPattern pattern) {
@@ -25,39 +27,38 @@ auto createDfWithPattern(dfc::RawPattern pattern) {
   return init.df();
 }
 
-auto createCtWithPattern(std::shared_ptr<dfc::SaveOnMatcher> onMatcher,
-                         dfc::RawPattern pattern) {
+auto createCtWithPattern(dfc::RawPattern pattern) {
   dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
       init;
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
   patterns->emplace_back(0, std::move(pattern));
   init.addPattern(0, patterns->at(0));
 
-  return init.ct(std::move(onMatcher), patterns);
+  return init.ct(patterns);
 }
 
 using Df = decltype(createEmptyDf());
-using Ct = decltype(createEmptyCt(nullptr));
+using Ct = decltype(createEmptyCt());
 
 TEST_CASE("No match if input is not a pattern") {
-  auto onMatcher = std::make_shared<dfc::SaveOnMatcher>();
-  dfc::MatchPath<Df, Ct> path(createEmptyDf(), createEmptyCt(onMatcher));
+  SaveOnMatcher onMatcher;
+  dfc::MatchPath<Df, Ct> path(createEmptyDf(), createEmptyCt());
 
   std::string in("test");
-  path.match(in.data(), in.size());
+  path.match(in.data(), in.size(), onMatcher);
 
-  REQUIRE(onMatcher->matchedPids.empty());
+  REQUIRE(onMatcher.matchedPids.empty());
 }
 
 TEST_CASE("Match if input equals pattern") {
-  auto onMatcher = std::make_shared<dfc::SaveOnMatcher>();
+  SaveOnMatcher onMatcher;
   std::string in("in");
   dfc::MatchPath<Df, Ct> path(
       createDfWithPattern(dfc::test::createPattern(in.data())),
-      createCtWithPattern(onMatcher, dfc::test::createPattern(in.data())));
+      createCtWithPattern(dfc::test::createPattern(in.data())));
 
-  path.match(in.data(), in.size());
+  path.match(in.data(), in.size(), onMatcher);
 
-  REQUIRE(onMatcher->matchedPids.size() == 1);
+  REQUIRE(onMatcher.matchedPids.size() == 1);
 }
 }  // namespace

@@ -3,6 +3,7 @@
 
 #include <utility>
 #include "byte.hpp"
+#include "on-matcher.hpp"
 
 namespace dfc {
 template <typename DF, typename CT>
@@ -15,13 +16,15 @@ class MatchPath {
   explicit MatchPath(DF df, CT ct) noexcept
       : df_(std::move(df)), ct_(std::move(ct)) {}
 
-  inline void match(char const* const in, int const remaining) const {
-    match(reinterpret_cast<byte const*>(in), remaining);
+  inline void match(char const* const in, int const remaining,
+                    OnMatcher const& onMatcher) const {
+    match(reinterpret_cast<byte const*>(in), remaining, onMatcher);
   }
 
-  inline void match(byte const* const in, int const remaining) const {
+  inline void match(byte const* const in, int const remaining,
+                    OnMatcher const& onMatcher) const {
     if (df_.isSet(in)) {
-      ct_.exactMatching(in, remaining);
+      ct_.exactMatching(in, remaining, onMatcher);
     }
   }
 
