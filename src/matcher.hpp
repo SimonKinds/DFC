@@ -8,6 +8,24 @@
 
 namespace dfc {
 class Matcher {
+  using XlatCaseType =
+      std::array<uint8_t, std::numeric_limits<uint8_t>::max() + 1>;
+
+  static constexpr XlatCaseType initializeXlatCase() {
+    XlatCaseType xlatcase{};
+    for (int i = 0; i < static_cast<int>(xlatcase.size()); ++i) {
+      int lower = i;
+      if (i >= 65 && i <= 90) {
+        lower = i + 32;
+      }
+      xlatcase[i] = lower;
+    }
+
+    return xlatcase;
+  }
+
+  XlatCaseType const xlatcase = initializeXlatCase();
+
  public:
   inline bool matches(char const* const in, int const remaining,
                       ImmutablePattern const& pattern) const noexcept {
@@ -48,21 +66,15 @@ class Matcher {
                                      ImmutablePattern const& pattern) const
       noexcept {
     auto const data = pattern.data();
+
     bool matches = true;
     int i = 0;
     while (i < pattern.size() && matches) {
-      matches = toLower(data[i]) == toLower(in[i]);
+      matches = xlatcase[data[i]] == xlatcase[in[i]];
       ++i;
     }
 
     return matches;
-  }
-
-  uint8_t toLower(uint8_t val) const noexcept {
-    if (val >= 65 && val <= 90) {
-      return val + 32;
-    }
-    return val;
   }
 };
 }  // namespace dfc
