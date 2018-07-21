@@ -65,16 +65,16 @@ class Matcher {
   inline bool matchesCaseInsensitive(byte const* const in,
                                      ImmutablePattern const& pattern) const
       noexcept {
-    auto const data = pattern.data();
+    auto const patternData = pattern.data();
 
-    bool matches = true;
+    bool doesMatch = true;
     int i = 0;
-    while (i < pattern.size() && matches) {
-      matches = xlatcase[data[i]] == xlatcase[in[i]];
+    while (i < pattern.size() && doesMatch) {
+      doesMatch = xlatcase[patternData[i]] == xlatcase[in[i]];
       ++i;
     }
 
-    return matches;
+    return doesMatch;
   }
 };
 }  // namespace dfc
