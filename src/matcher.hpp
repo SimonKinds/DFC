@@ -4,27 +4,12 @@
 #include <array>
 #include <limits>
 #include "byte.hpp"
+#include "character-transformer.hpp"
 #include "immutable-pattern.hpp"
 
 namespace dfc {
 class Matcher {
-  using XlatCaseType =
-      std::array<uint8_t, std::numeric_limits<uint8_t>::max() + 1>;
-
-  static constexpr XlatCaseType initializeXlatCase() {
-    XlatCaseType xlatcase{};
-    for (int i = 0; i < static_cast<int>(xlatcase.size()); ++i) {
-      int lower = i;
-      if (i >= 65 && i <= 90) {
-        lower = i + 32;
-      }
-      xlatcase[i] = lower;
-    }
-
-    return xlatcase;
-  }
-
-  XlatCaseType const xlatcase = initializeXlatCase();
+  CharacterTransformer charTransformer_;
 
  public:
   inline bool matches(char const* const in, int const remaining,
@@ -70,11 +55,15 @@ class Matcher {
     bool doesMatch = true;
     int i = 0;
     while (i < pattern.size() && doesMatch) {
-      doesMatch = xlatcase[patternData[i]] == xlatcase[in[i]];
+      doesMatch = toLower(patternData[i]) == toLower(in[i]);
       ++i;
     }
 
     return doesMatch;
+  }
+
+  inline uint8_t toLower(uint8_t val) const noexcept {
+    return charTransformer_.toLower(val);
   }
 };
 }  // namespace dfc
