@@ -23,6 +23,7 @@ add_executable(test-dfc
   src/test-matcher.cpp
   src/test-match-path.cpp
   src/test-segmenter.cpp
+  src/test-indexer.cpp
 )
 target_include_directories(test-dfc PRIVATE third-party)
 
