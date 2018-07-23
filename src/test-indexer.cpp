@@ -7,12 +7,17 @@ using dfc::DirectFilterIndexer;
 
 namespace {
 TEST_CASE("DF indexer shifts by 3 bits") {
-  DirectFilterIndexer<int, 1, int> indexer;
+  auto const hash = 1;
+
+  DirectFilterIndexer<int, hash, int> indexer;
   REQUIRE(indexer.index(0xff) == 0x1f);
 }
-TEST_CASE("DF indexer hash before shift") {
+TEST_CASE("DF indexer hashes before shift") {
   auto const hash = 1u << 3u;
+
   DirectFilterIndexer<int, hash, int> indexer;
+  // if the shift happens before the hash, we would lose the 3 LSB in the
+  // process
   REQUIRE(indexer.index(0xff) == 0xff);
 }
 
@@ -21,15 +26,16 @@ TEST_CASE("CT indexer uses the mask") {
   auto const mask = 0xfe;
   CompactTableIndexer<int, hash, mask> indexer;
 
+  // with a hash of 1, the output depends only on the mask and the input
   REQUIRE(indexer.index(0xff) == mask);
 }
 TEST_CASE("CT indexer hashes before mask") {
   auto const hash = 2;
   auto const mask = 0xff;
-  auto const expected = 0xfe;
 
   CompactTableIndexer<int, hash, mask> indexer;
 
-  REQUIRE(indexer.index(0xff) == expected);
+  // wish a hash of 2, the input will be shifted by 1 bit before using the mask
+  REQUIRE(indexer.index(0xff) == 0xfe);
 }
 }  // namespace
