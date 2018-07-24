@@ -33,7 +33,6 @@ add_executable(bm-dfc
   src/util-test.cpp
 
   src/bm-indexer.cpp
-  src/bm-df-initializer.cpp
   src/bm-df.cpp
   src/bm-ct.cpp
 )

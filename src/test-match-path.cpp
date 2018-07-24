@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
 #include "ct-initializer.hpp"
-#include "df-initializer.hpp"
+#include "df.hpp"
 #include "match-path.hpp"
 #include "util-test.hpp"
 
@@ -9,9 +9,8 @@ namespace {
 using dfc::SaveOnMatcher;
 
 auto createEmptyDf() {
-  dfc::DirectFilterInitializer<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t>
-      init;
-  return init.df();
+  dfc::DirectFilter<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t> df;
+  return df;
 }
 auto createEmptyCt() {
   dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
@@ -19,12 +18,11 @@ auto createEmptyCt() {
   return init.ct(nullptr);
 }
 
-auto createDfWithPattern(dfc::RawPattern pattern) {
-  dfc::DirectFilterInitializer<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t>
-      init;
-  init.addPattern(pattern);
+auto createDfWithPattern(const dfc::RawPattern& pattern) {
+  dfc::DirectFilter<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t> df;
+  df.addPattern(pattern);
 
-  return init.df();
+  return df;
 }
 
 auto createCtWithPattern(dfc::RawPattern pattern) {
