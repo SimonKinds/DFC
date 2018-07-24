@@ -43,23 +43,20 @@ class CompactTable {
   CompactTableIndexer<SegmentType, Hash, Size - 1> const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
 
-  Matcher const matcher_;
+  Matcher const matcher_{};
 
-  std::shared_ptr<std::vector<ImmutablePattern> const> const patterns_;
+  std::vector<ImmutablePattern> patterns_{};
 
-  Table table_;
+  Table table_{};
 
  public:
-  CompactTable(std::shared_ptr<std::vector<ImmutablePattern>> patterns)
-      : patterns_(std::move(patterns)) {}
-
   void findAllMatches(char const* const in, int const remaining,
-                     OnMatcher const& onMatcher) const noexcept {
+                      OnMatcher const& onMatcher) const noexcept {
     findAllMatches(reinterpret_cast<byte const*>(in), remaining, onMatcher);
   }
 
   void findAllMatches(byte const* const in, int const remaining,
-                     OnMatcher const& onMatcher) const {
+                      OnMatcher const& onMatcher) const {
     auto const& bucket = getBucket(in);
 
     findMatchesInBucket(bucket, in, remaining, onMatcher);
@@ -96,7 +93,7 @@ class CompactTable {
                           int const remaining,
                           OnMatcher const& onMatcher) const {
     for (auto const pidIndex : entry.pids) {
-      auto const& pattern = patterns_->at(pidIndex);
+      auto const& pattern = patterns_.at(pidIndex);
 
       if (matcher_.matches(in, remaining, pattern)) {
         onMatcher.onMatch(pattern);
@@ -105,30 +102,35 @@ class CompactTable {
   }
 
  public:
-  void addPattern(PidIndex const pidIndex, Pattern const& pattern) noexcept {
+  void addPattern(ImmutablePattern const& pattern) noexcept {
     if (patternRange_.includes(pattern)) {
+      PidIndex const index = patterns_.size();
+
       if (pattern.caseSensitive()) {
-        addPatternWithoutPermutations(pidIndex, pattern);
+        addPatternToTableWithoutPermutations(index, pattern);
       } else {
-        addPatternWithPermutations(pidIndex, pattern);
+        addPatternToTableWithPermutations(index, pattern);
       }
+
+      patterns_.emplace_back(pattern);
     }
   }
 
  private:
-  void addPatternWithoutPermutations(PidIndex pidIndex,
-                                     Pattern const& pattern) {
-    addPatternForSegment(pidIndex, segmenter_.segment(pattern));
+  void addPatternToTableWithoutPermutations(PidIndex pidIndex,
+                                            Pattern const& pattern) {
+    addPatternToTableForSegment(pidIndex, segmenter_.segment(pattern));
   }
 
-  void addPatternWithPermutations(PidIndex pidIndex,
-                                  Pattern const& pattern) noexcept {
+  void addPatternToTableWithPermutations(PidIndex pidIndex,
+                                         Pattern const& pattern) noexcept {
     for (auto const segment : segmenter_.permutations(pattern)) {
-      addPatternForSegment(pidIndex, segment);
+      addPatternToTableForSegment(pidIndex, segment);
     }
   }
 
-  void addPatternForSegment(PidIndex pidIndex, SegmentType segment) noexcept {
+  void addPatternToTableForSegment(PidIndex pidIndex,
+                                   SegmentType segment) noexcept {
     auto const bucketIndex = indexer_.index(segment);
 
     auto& bucket = table_[bucketIndex];

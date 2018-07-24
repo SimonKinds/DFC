@@ -6,6 +6,7 @@
 #include "util-test.hpp"
 
 namespace {
+using dfc::ImmutablePattern;
 using dfc::SaveOnMatcher;
 
 auto createEmptyDf() {
@@ -13,7 +14,7 @@ auto createEmptyDf() {
   return df;
 }
 auto createEmptyCt() {
-  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct(nullptr);
+  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct;
   return ct;
 }
 
@@ -25,11 +26,8 @@ auto createDfWithPattern(const dfc::RawPattern& pattern) {
 }
 
 auto createCtWithPattern(dfc::RawPattern pattern) {
-  auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct(patterns);
-
-  patterns->emplace_back(0, std::move(pattern));
-  ct.addPattern(0, patterns->at(0));
+  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct;
+  ct.addPattern(ImmutablePattern(0, pattern));
 
   return ct;
 }
