@@ -10,7 +10,7 @@ using TwoByteDirectFilterIndexer =
 using FourByteHashDirectFilterIndexer =
     dfc::DirectFilterIndexer<uint32_t, 4909, uint16_t>;
 
-static void DF_TwoByte(benchmark::State& state) {
+static void DF_TwoByte_Indexer(benchmark::State& state) {
   uint16_t segment = std::numeric_limits<uint16_t>::max();
   benchmark::DoNotOptimize(&segment);
   TwoByteDirectFilterIndexer indexer;
@@ -18,9 +18,9 @@ static void DF_TwoByte(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(DF_TwoByte);
+BENCHMARK(DF_TwoByte_Indexer);
 
-static void DF_FourByteHash(benchmark::State& state) {
+static void DF_FourByteHash_Indexer(benchmark::State& state) {
   uint32_t segment = std::numeric_limits<uint32_t>::max();
   benchmark::DoNotOptimize(&segment);
   FourByteHashDirectFilterIndexer indexer;
@@ -28,9 +28,9 @@ static void DF_FourByteHash(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(DF_FourByteHash);
+BENCHMARK(DF_FourByteHash_Indexer);
 
-static void CT_IndexerSmall(benchmark::State& state) {
+static void CT_Small_Indexer(benchmark::State& state) {
   auto segment = std::numeric_limits<uint8_t>::max();
   benchmark::DoNotOptimize(&segment);
   dfc::CompactTableIndexer<uint8_t, 1, 0xff> indexer;
@@ -38,9 +38,9 @@ static void CT_IndexerSmall(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(CT_IndexerSmall);
+BENCHMARK(CT_Small_Indexer);
 
-static void CT_IndexerLarge(benchmark::State& state) {
+static void CT_Large_Indexer(benchmark::State& state) {
   auto segment = std::numeric_limits<uint32_t>::max();
   benchmark::DoNotOptimize(&segment);
   dfc::CompactTableIndexer<uint16_t, 44257, 0x1fff> indexer;
@@ -48,5 +48,5 @@ static void CT_IndexerLarge(benchmark::State& state) {
     benchmark::DoNotOptimize(indexer.index(segment));
   }
 }
-BENCHMARK(CT_IndexerLarge);
+BENCHMARK(CT_Large_Indexer);
 }  // namespace
