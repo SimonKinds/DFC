@@ -23,22 +23,21 @@ class DirectFilter {
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
-  using Indexer = DirectFilterIndexer<SegmentType, Hash, IndexType>;
 
   Filter filter_{};
 
   PatternRange const patternRange_{};
 
-  Indexer const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
+  DirectFilterIndexer<SegmentType, Hash, IndexType> const indexer_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
  public:
-  inline bool isSet(char const* const in) const noexcept {
-    return isSet(reinterpret_cast<byte const*>(in));
+  inline bool contains(char const* const in) const noexcept {
+    return contains(reinterpret_cast<byte const*>(in));
   }
 
-  inline bool isSet(byte const* const in) const noexcept {
+  inline bool contains(byte const* const in) const noexcept {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
     auto const mask = masker_.mask(segment);

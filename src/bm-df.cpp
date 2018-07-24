@@ -31,7 +31,7 @@ void DF_FourByteHash_AddPattern(benchmark::State& state) {
 }
 BENCHMARK(DF_FourByteHash_AddPattern);
 
-void DF_TwoByte_Index(benchmark::State& state) {
+void DF_TwoByte_Contains(benchmark::State& state) {
   const auto pattern = twoBytePattern();
   dfc::DirectFilter<dfc::PatternRange<1, 3>, uint16_t> df;
   df.addPattern(pattern);
@@ -42,12 +42,12 @@ void DF_TwoByte_Index(benchmark::State& state) {
   benchmark::DoNotOptimize(&data);
 
   for (auto _ : state) {
-    benchmark::DoNotOptimize(df.isSet(data));
+    benchmark::DoNotOptimize(df.contains(data));
   }
 }
-BENCHMARK(DF_TwoByte_Index);
+BENCHMARK(DF_TwoByte_Contains);
 
-void DF_FourByteHash_Index(benchmark::State& state) {
+void DF_FourByteHash_Contains(benchmark::State& state) {
   const auto pattern = fiveBytePattern();
 
   dfc::DirectFilter<dfc::PatternRange<4, 10>, uint32_t, 4909, uint16_t> df;
@@ -59,8 +59,8 @@ void DF_FourByteHash_Index(benchmark::State& state) {
   benchmark::DoNotOptimize(&data);
 
   for (auto _ : state) {
-    benchmark::DoNotOptimize(df.isSet(data));
+    benchmark::DoNotOptimize(df.contains(data));
   }
 }
-BENCHMARK(DF_FourByteHash_Index);
+BENCHMARK(DF_FourByteHash_Contains);
 }  // namespace

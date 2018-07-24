@@ -23,7 +23,7 @@ TEST_CASE("Sets bit if pattern is within the size constraint") {
 
   df.addPattern(twoBytePattern());
 
-  REQUIRE(df.isSet(twoBytePattern().data()));
+  REQUIRE(df.contains(twoBytePattern().data()));
 }
 
 TEST_CASE("Does not set bit if pattern is outside the size constraint") {
@@ -31,7 +31,7 @@ TEST_CASE("Does not set bit if pattern is outside the size constraint") {
 
   df.addPattern(twoBytePattern());
 
-  REQUIRE(!df.isSet(twoBytePattern().data()));
+  REQUIRE(!df.contains(twoBytePattern().data()));
 }
 
 TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
@@ -39,9 +39,9 @@ TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
 
   df.addPattern(createCaseInsensitivePattern("ab"));
 
-  REQUIRE(df.isSet("ab"));
-  REQUIRE(df.isSet("Ab"));
-  REQUIRE(df.isSet("aB"));
-  REQUIRE(df.isSet("AB"));
+  REQUIRE(df.contains("ab"));
+  REQUIRE(df.contains("Ab"));
+  REQUIRE(df.contains("aB"));
+  REQUIRE(df.contains("AB"));
 }
 }  // namespace

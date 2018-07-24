@@ -23,7 +23,7 @@ class MatchPath {
 
   inline void match(byte const* const in, int const remaining,
                     OnMatcher const& onMatcher) const {
-    if (df_.isSet(in)) {
+    if (df_.contains(in)) {
       ct_.exactMatching(in, remaining, onMatcher);
     }
   }
