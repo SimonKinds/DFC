@@ -19,7 +19,7 @@ struct CountOnMatcher final : public dfc::OnMatcher {
 };
 CountOnMatcher onMatcher;
 
-void CT_OneByte_ExactMatching(benchmark::State& state) {
+void CT_OneByte_FindAllMatches(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   dfc::CompactTable<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100> ct(patterns);
@@ -31,12 +31,12 @@ void CT_OneByte_ExactMatching(benchmark::State& state) {
   ct.addPattern(patternIndex, patterns->at(patternIndex));
 
   for (auto _ : state) {
-    ct.exactMatching(patternValue.data(), 1, onMatcher);
+    ct.findAllMatches(patternValue.data(), 1, onMatcher);
   }
 }
-BENCHMARK(CT_OneByte_ExactMatching);
+BENCHMARK(CT_OneByte_FindAllMatches);
 
-void CT_FourByte_ExactMatching_CaseSensitive(benchmark::State& state) {
+void CT_FourByte_FindAllMatches_CaseSensitive(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTFourByteIndexer ct(patterns);
@@ -53,12 +53,12 @@ void CT_FourByte_ExactMatching_CaseSensitive(benchmark::State& state) {
   benchmark::DoNotOptimize(&data);
   benchmark::DoNotOptimize(&size);
   for (auto _ : state) {
-    ct.exactMatching(data, size, onMatcher);
+    ct.findAllMatches(data, size, onMatcher);
   }
 }
-BENCHMARK(CT_FourByte_ExactMatching_CaseSensitive)->Range(4, 1024);
+BENCHMARK(CT_FourByte_FindAllMatches_CaseSensitive)->Range(4, 1024);
 
-void CT_FourByte_ExactMatching_CaseInsensitive(benchmark::State& state) {
+void CT_FourByte_FindAllMatches_CaseInsensitive(benchmark::State& state) {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   CTFourByteIndexer ct(patterns);
@@ -75,9 +75,9 @@ void CT_FourByte_ExactMatching_CaseInsensitive(benchmark::State& state) {
   benchmark::DoNotOptimize(&data);
   benchmark::DoNotOptimize(&size);
   for (auto _ : state) {
-    ct.exactMatching(data, size, onMatcher);
+    ct.findAllMatches(data, size, onMatcher);
   }
 }
-BENCHMARK(CT_FourByte_ExactMatching_CaseInsensitive)->Range(4, 1024);
+BENCHMARK(CT_FourByte_FindAllMatches_CaseInsensitive)->Range(4, 1024);
 
 }  // namespace

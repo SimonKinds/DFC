@@ -53,12 +53,12 @@ class CompactTable {
   CompactTable(std::shared_ptr<std::vector<ImmutablePattern>> patterns)
       : patterns_(std::move(patterns)) {}
 
-  void exactMatching(char const* const in, int const remaining,
+  void findAllMatches(char const* const in, int const remaining,
                      OnMatcher const& onMatcher) const noexcept {
-    exactMatching(reinterpret_cast<byte const*>(in), remaining, onMatcher);
+    findAllMatches(reinterpret_cast<byte const*>(in), remaining, onMatcher);
   }
 
-  void exactMatching(byte const* const in, int const remaining,
+  void findAllMatches(byte const* const in, int const remaining,
                      OnMatcher const& onMatcher) const {
     auto const& bucket = getBucket(in);
 

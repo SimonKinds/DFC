@@ -19,7 +19,7 @@ TEST_CASE("CT") {
   SECTION("Is empty by default") {
     for (int i = 0; i < ctSize; ++i) {
       byte in = i;
-      ct.exactMatching(&in, 1, onMatcher);
+      ct.findAllMatches(&in, 1, onMatcher);
     }
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
@@ -33,7 +33,7 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    ct.exactMatching(patternValue, 1, onMatcher);
+    ct.findAllMatches(patternValue, 1, onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 1);
     REQUIRE(onMatcher.matchedPids[0] == pid);
@@ -47,7 +47,7 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    ct.exactMatching("y", 1, onMatcher);
+    ct.findAllMatches("y", 1, onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
   }
@@ -60,7 +60,7 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    ct.exactMatching(patternValue, std::strlen(patternValue), onMatcher);
+    ct.findAllMatches(patternValue, std::strlen(patternValue), onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
   }
@@ -76,10 +76,10 @@ TEST_CASE("CT") {
     int const patternIndex = 0;
     ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    ct.exactMatching("ab", 2, onMatcher);
-    ct.exactMatching("aB", 2, onMatcher);
-    ct.exactMatching("Ab", 2, onMatcher);
-    ct.exactMatching("AB", 2, onMatcher);
+    ct.findAllMatches("ab", 2, onMatcher);
+    ct.findAllMatches("aB", 2, onMatcher);
+    ct.findAllMatches("Ab", 2, onMatcher);
+    ct.findAllMatches("AB", 2, onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 4);
     REQUIRE(onMatcher.matchedPids[0] == pid);
@@ -96,7 +96,7 @@ TEST_CASE("CT") {
       ct.addPattern(0, patterns->at(0));
       ct.addPattern(1, patterns->at(1));
 
-      ct.exactMatching("x", 1, onMatcher);
+      ct.findAllMatches("x", 1, onMatcher);
 
       REQUIRE(onMatcher.matchedPids.size() == 2);
       REQUIRE(onMatcher.matchedPids[0] == firstPatternPid);
@@ -109,8 +109,8 @@ TEST_CASE("CT") {
       ct.addPattern(0, patterns->at(0));
       ct.addPattern(1, patterns->at(1));
 
-      ct.exactMatching("x", 1, onMatcher);
-      ct.exactMatching("y", 1, onMatcher);
+      ct.findAllMatches("x", 1, onMatcher);
+      ct.findAllMatches("y", 1, onMatcher);
 
       REQUIRE(onMatcher.matchedPids.size() == 2);
       REQUIRE(onMatcher.matchedPids[0] == firstPatternPid);
