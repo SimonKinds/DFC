@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "ct-initializer.hpp"
+#include "ct.hpp"
 #include "df.hpp"
 #include "match-path.hpp"
 #include "util-test.hpp"
@@ -13,9 +13,8 @@ auto createEmptyDf() {
   return df;
 }
 auto createEmptyCt() {
-  dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
-      init;
-  return init.ct(nullptr);
+  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct(nullptr);
+  return ct;
 }
 
 auto createDfWithPattern(const dfc::RawPattern& pattern) {
@@ -26,13 +25,13 @@ auto createDfWithPattern(const dfc::RawPattern& pattern) {
 }
 
 auto createCtWithPattern(dfc::RawPattern pattern) {
-  dfc::CompactTableInitializer<dfc::PatternRange<2, 100>, uint16_t, 1, 100>
-      init;
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
-  patterns->emplace_back(0, std::move(pattern));
-  init.addPattern(0, patterns->at(0));
+  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct(patterns);
 
-  return init.ct(patterns);
+  patterns->emplace_back(0, std::move(pattern));
+  ct.addPattern(0, patterns->at(0));
+
+  return ct;
 }
 
 using Df = decltype(createEmptyDf());

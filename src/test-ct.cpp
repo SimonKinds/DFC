@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "ct-initializer.hpp"
+#include "ct.hpp"
 #include "util-test.hpp"
 
 using dfc::SaveOnMatcher;
@@ -14,12 +14,9 @@ TEST_CASE("CT") {
   auto patterns = std::make_shared<std::vector<dfc::ImmutablePattern>>();
 
   int const ctSize = 0x100;
-  dfc::CompactTableInitializer<dfc::PatternRange<1, 10>, uint8_t, 1, ctSize>
-      initializer;
+  dfc::CompactTable<dfc::PatternRange<1, 10>, uint8_t, 1, ctSize> ct(patterns);
 
   SECTION("Is empty by default") {
-    auto const ct = initializer.ct(patterns);
-
     for (int i = 0; i < ctSize; ++i) {
       byte in = i;
       ct.exactMatching(&in, 1, onMatcher);
@@ -34,9 +31,8 @@ TEST_CASE("CT") {
     dfc::Pid const pid = 1;
     patterns->emplace_back(pid, createPattern(patternValue));
     int const patternIndex = 0;
-    initializer.addPattern(patternIndex, patterns->at(patternIndex));
+    ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct(patterns);
     ct.exactMatching(patternValue, 1, onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 1);
@@ -49,9 +45,8 @@ TEST_CASE("CT") {
     dfc::Pid const pid = 1;
     patterns->emplace_back(pid, createPattern(patternValue));
     int const patternIndex = 0;
-    initializer.addPattern(patternIndex, patterns->at(patternIndex));
+    ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct(patterns);
     ct.exactMatching("y", 1, onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
@@ -63,26 +58,24 @@ TEST_CASE("CT") {
     dfc::Pid const pid = 1;
     patterns->emplace_back(pid, createPattern(patternValue));
     int const patternIndex = 0;
-    initializer.addPattern(patternIndex, patterns->at(patternIndex));
+    ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct(patterns);
     ct.exactMatching(patternValue, std::strlen(patternValue), onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
   }
 
   SECTION("Sets for all variants of input if case insensitive") {
-    // initializer with two characters pattern
-    dfc::CompactTableInitializer<dfc::PatternRange<2, 10>, uint16_t, 1, ctSize>
-        initializer;
+    // ct with two characters pattern
+    dfc::CompactTable<dfc::PatternRange<2, 10>, uint16_t, 1, ctSize> ct(
+        patterns);
     auto patternValue = "ab";
 
     dfc::Pid const pid = 1;
     patterns->emplace_back(pid, createCaseInsensitivePattern(patternValue));
     int const patternIndex = 0;
-    initializer.addPattern(patternIndex, patterns->at(patternIndex));
+    ct.addPattern(patternIndex, patterns->at(patternIndex));
 
-    auto const ct = initializer.ct(patterns);
     ct.exactMatching("ab", 2, onMatcher);
     ct.exactMatching("aB", 2, onMatcher);
     ct.exactMatching("Ab", 2, onMatcher);
@@ -100,10 +93,9 @@ TEST_CASE("CT") {
     SECTION("Can match multiple equal segments") {
       patterns->emplace_back(firstPatternPid, createPattern("x"));
       patterns->emplace_back(secondPatternPid, createPattern("x"));
-      initializer.addPattern(0, patterns->at(0));
-      initializer.addPattern(1, patterns->at(1));
+      ct.addPattern(0, patterns->at(0));
+      ct.addPattern(1, patterns->at(1));
 
-      auto const ct = initializer.ct(patterns);
       ct.exactMatching("x", 1, onMatcher);
 
       REQUIRE(onMatcher.matchedPids.size() == 2);
@@ -114,10 +106,9 @@ TEST_CASE("CT") {
     SECTION("Can match multiple different segments") {
       patterns->emplace_back(firstPatternPid, createPattern("x"));
       patterns->emplace_back(secondPatternPid, createPattern("y"));
-      initializer.addPattern(0, patterns->at(0));
-      initializer.addPattern(1, patterns->at(1));
+      ct.addPattern(0, patterns->at(0));
+      ct.addPattern(1, patterns->at(1));
 
-      auto const ct = initializer.ct(patterns);
       ct.exactMatching("x", 1, onMatcher);
       ct.exactMatching("y", 1, onMatcher);
 

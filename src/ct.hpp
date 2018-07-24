@@ -1,20 +1,18 @@
-#ifndef DFC_CT_HPP
-#define DFC_CT_HPP
+#ifndef DFC_CT_INITIALIZER_HPP
+#define DFC_CT_INITIALIZER_HPP
 
 #include <array>
-#include <limits>
 #include <vector>
 
 #include "byte.hpp"
-#include "df-masker.hpp"
 #include "indexer.hpp"
 #include "matcher.hpp"
 #include "on-matcher.hpp"
-#include "pattern.hpp"
+#include "pattern-range.hpp"
+#include "pid.hpp"
 #include "segmenter.hpp"
 
 namespace dfc {
-
 template <typename SegmentType>
 struct CompactTableEntry {
   static_assert(std::is_integral<SegmentType>::value,
@@ -27,28 +25,33 @@ struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename SegmentType, SegmentType Hash, int Size>
+template <typename PatternRange, typename SegmentType, SegmentType Hash,
+          int Size>
 class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
+  static_assert(
+      PatternRange::startInclusive == sizeof(SegmentType),
+      "SegmentType must be equal in size to the smallest pattern length");
 
   using Entry = CompactTableEntry<SegmentType>;
   using Bucket = std::vector<Entry>;
   using Table = std::array<Bucket, Size>;
-  Table const table_;
+
+  PatternRange const patternRange_{};
 
   CompactTableIndexer<SegmentType, Hash, Size - 1> const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
-  DirectFilterMasker<SegmentType> const masker_{};
 
-  Matcher const matcher_{};
+  Matcher const matcher_;
 
-  std::shared_ptr<std::vector<ImmutablePattern> const> patterns_;
+  std::shared_ptr<std::vector<ImmutablePattern> const> const patterns_;
+
+  Table table_;
 
  public:
-  CompactTable(Table const& table,
-               std::shared_ptr<std::vector<ImmutablePattern> const> patterns)
-      : table_(table), patterns_(std::move(patterns)) {}
+  CompactTable(std::shared_ptr<std::vector<ImmutablePattern>> patterns)
+      : patterns_(std::move(patterns)) {}
 
   void exactMatching(char const* const in, int const remaining,
                      OnMatcher const& onMatcher) const noexcept {
@@ -98,6 +101,51 @@ class CompactTable {
       if (matcher_.matches(in, remaining, pattern)) {
         onMatcher.onMatch(pattern);
       }
+    }
+  }
+
+ public:
+  void addPattern(PidIndex const pidIndex, Pattern const& pattern) noexcept {
+    if (patternRange_.includes(pattern)) {
+      if (pattern.caseSensitive()) {
+        addPatternWithoutPermutations(pidIndex, pattern);
+      } else {
+        addPatternWithPermutations(pidIndex, pattern);
+      }
+    }
+  }
+
+ private:
+  void addPatternWithoutPermutations(PidIndex pidIndex,
+                                     Pattern const& pattern) {
+    addPatternForSegment(pidIndex, segmenter_.segment(pattern));
+  }
+
+  void addPatternWithPermutations(PidIndex pidIndex,
+                                  Pattern const& pattern) noexcept {
+    for (auto const segment : segmenter_.permutations(pattern)) {
+      addPatternForSegment(pidIndex, segment);
+    }
+  }
+
+  void addPatternForSegment(PidIndex pidIndex, SegmentType segment) noexcept {
+    auto const bucketIndex = indexer_.index(segment);
+
+    auto& bucket = table_[bucketIndex];
+
+    auto entry = std::begin(bucket);
+    auto const end = std::cend(bucket);
+    bool found = false;
+    while (entry != end && !found) {
+      if (entry->segment == segment) {
+        entry->pids.emplace_back(pidIndex);
+        found = true;
+      }
+      ++entry;
+    }
+
+    if (!found) {
+      bucket.emplace_back(segment, pidIndex);
     }
   }
 };
