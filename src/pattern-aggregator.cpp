@@ -1,5 +1,6 @@
-#include <algorithm>
 #include "pattern-aggregator.hpp"
+
+#include <algorithm>
 
 namespace dfc {
 void PatternAggregator::add(RawPattern pat) {
