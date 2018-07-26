@@ -98,41 +98,38 @@ class DirectFilter {
 
   using SegmentPermutation = std::array<byte, sizeof(SegmentType)>;
   std::vector<SegmentPermutation> extendSegment(Pattern const& pattern) const {
-    SegmentPermutation segment;
-    std::memcpy(segment.data(), pattern.data(), pattern.size());
+    auto const characterValues = std::numeric_limits<uint8_t>::max() + 1;
+    auto const permutationCount =
+        std::pow(characterValues, segmentSize() - pattern.size());
 
-    return extendSegment(segment, pattern.size(), segmentSize());
+    SegmentPermutation permutation;
+    std::memcpy(permutation.data(), pattern.data(), pattern.size());
+    std::vector<SegmentPermutation> permutations(permutationCount, permutation);
+
+    extendSegment(std::begin(permutations), pattern.size(), segmentSize());
+
+    return permutations;
   }
 
-  std::vector<SegmentPermutation> extendSegment(
-      SegmentPermutation const& prefix, int const index,
-      int const maxSize) const {
-    auto const characterValues = std::numeric_limits<uint8_t>::max() + 1;
-    auto const remainingPermutations =
-        std::pow(characterValues, maxSize - index) - 1;
-
-    if (remainingPermutations == 0) {
-      return {prefix};
+  void extendSegment(typename std::vector<SegmentPermutation>::iterator it,
+                     int const index, int const maxSize) const {
+    if (index == maxSize) {
+      return;
     }
 
-    std::vector<SegmentPermutation> permutations;
-    permutations.reserve(remainingPermutations);
+    auto const characterValues = std::numeric_limits<uint8_t>::max() + 1;
+    auto const permutationsOnNextLevel =
+        std::pow(characterValues, maxSize - (index + 1)) - 1;
 
     for (int i = 0; i < characterValues; ++i) {
       // extend current pattern with the value of i
-      SegmentPermutation segment;
-      std::memcpy(segment.data(), prefix.data(), index);
-      segment[index] = i;
+      it->at(index) = i;
 
       // pass new pattern to extendSegment
-      auto newPermutations = extendSegment(segment, index + 1, maxSize);
+      extendSegment(it, index + 1, maxSize);
 
-      // move the returned values from into the permutations vector
-      std::move(std::begin(newPermutations), std::end(newPermutations),
-                std::back_inserter(permutations));
+      it += permutationsOnNextLevel + 1;
     }
-
-    return permutations;
   }
 
   int segmentSize() const noexcept { return sizeof(SegmentType); }

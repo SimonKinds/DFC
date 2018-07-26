@@ -46,7 +46,7 @@ TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
   REQUIRE(df.contains("AB"));
 }
 
-TEST_CASE("Extends pattern to segment size if smaller") {
+TEST_CASE("Extends pattern to all permutations of segment size if smaller") {
   dfc::DirectFilter<dfc::PatternRange<1, 5>, uint16_t> df;
 
   auto const pattern = "a";
@@ -54,7 +54,7 @@ TEST_CASE("Extends pattern to segment size if smaller") {
   df.addPattern(createPattern(pattern));
 
   int matches = 0;
-  for (int i = 0; i < 255; ++i) {
+  for (int i = 0; i < 256; ++i) {
     std::string input(pattern);
     input += static_cast<char>(i);
 
@@ -63,6 +63,7 @@ TEST_CASE("Extends pattern to segment size if smaller") {
     }
   }
 
-  REQUIRE(matches == 255);
+  REQUIRE(matches == 256);
 }
+
 }  // namespace
