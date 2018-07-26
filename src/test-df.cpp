@@ -66,4 +66,12 @@ TEST_CASE("Extends pattern to all permutations of segment size if smaller") {
   REQUIRE(matches == 256);
 }
 
+TEST_CASE("Only allows extending segment by one byte") {
+  using DF = dfc::DirectFilter<dfc::PatternRange<1, 5>, uint32_t>;
+  DF df;
+
+  REQUIRE_THROWS_AS(df.addPattern(createPattern("aa")),
+                    DF::TooManyPermutationsException);
+}
+
 }  // namespace

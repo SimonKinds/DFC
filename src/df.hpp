@@ -52,7 +52,7 @@ class DirectFilter {
     return filter_[index] & mask;
   }
 
-  void addPattern(Pattern const& pattern) noexcept {
+  void addPattern(Pattern const& pattern) {
     if (patternRange_.includes(pattern)) {
       if (shouldExtendSegment(pattern)) {
         auto permutations = extendSegment(pattern);
@@ -63,11 +63,6 @@ class DirectFilter {
         addPattern(pattern.data(), pattern.caseSensitive());
       }
     }
-  }
-
- private:
-  bool shouldExtendSegment(Pattern const& pattern) const noexcept {
-    return pattern.size() < static_cast<int>(sizeof(SegmentType));
   }
 
  private:
@@ -96,43 +91,43 @@ class DirectFilter {
     filter_[index] |= mask;
   }
 
+  bool shouldExtendSegment(Pattern const& pattern) const noexcept {
+    return pattern.size() < static_cast<int>(sizeof(SegmentType));
+  }
+
+ public:
+  struct TooManyPermutationsException : public std::exception {
+    char const* what() const throw() {
+      return "The supplied pattern requires a segment extension of more than 1 "
+             "byte";
+    }
+  };
+
+ private:
   using SegmentPermutation = std::array<byte, sizeof(SegmentType)>;
   std::vector<SegmentPermutation> extendSegment(Pattern const& pattern) const {
-    auto const characterValues = std::numeric_limits<uint8_t>::max() + 1;
-    auto const permutationCount =
-        std::pow(characterValues, segmentSize() - pattern.size());
+    // if we allow 2 bytes, we're already at 16k permutations
+    auto const allowedBytesToExtend = 1;
+
+    if (sizeof(SegmentType) - pattern.size() > allowedBytesToExtend) {
+      throw TooManyPermutationsException();
+    }
+
+    auto const characterValueCount = std::numeric_limits<uint8_t>::max() + 1;
+    auto const permutationCount = characterValueCount;
 
     SegmentPermutation permutation;
     std::memcpy(permutation.data(), pattern.data(), pattern.size());
     std::vector<SegmentPermutation> permutations(permutationCount, permutation);
 
-    extendSegment(std::begin(permutations), pattern.size(), segmentSize());
+    auto it = std::begin(permutations);
+    for (int val = 0; val < characterValueCount; ++val) {
+      it->at(allowedBytesToExtend) = val;
+      ++it;
+    }
 
     return permutations;
   }
-
-  void extendSegment(typename std::vector<SegmentPermutation>::iterator it,
-                     int const index, int const maxSize) const {
-    if (index == maxSize) {
-      return;
-    }
-
-    auto const characterValues = std::numeric_limits<uint8_t>::max() + 1;
-    auto const permutationsOnNextLevel =
-        std::pow(characterValues, maxSize - (index + 1)) - 1;
-
-    for (int i = 0; i < characterValues; ++i) {
-      // extend current pattern with the value of i
-      it->at(index) = i;
-
-      // pass new pattern to extendSegment
-      extendSegment(it, index + 1, maxSize);
-
-      it += permutationsOnNextLevel + 1;
-    }
-  }
-
-  int segmentSize() const noexcept { return sizeof(SegmentType); }
 };
 }  // namespace dfc
 
