@@ -13,6 +13,7 @@
 #include "indexer.hpp"
 #include "pattern-range.hpp"
 #include "pattern.hpp"
+#include "segment-extender.hpp"
 #include "segmenter.hpp"
 
 namespace dfc {
@@ -66,6 +67,16 @@ class DirectFilter {
   }
 
  private:
+  bool shouldExtendSegment(Pattern const& pattern) const noexcept {
+    return pattern.size() < static_cast<int>(sizeof(SegmentType));
+  }
+
+  auto extendSegment(Pattern const& pattern) const {
+    SegmentExtender<SegmentType> extender;
+
+    return extender.extend(pattern);
+  }
+
   void addPattern(byte const* const pattern, bool caseSensitive) noexcept {
     if (caseSensitive) {
       addPatternWithoutPermutations(pattern);
@@ -89,44 +100,6 @@ class DirectFilter {
     auto const mask = masker_.mask(segment);
 
     filter_[index] |= mask;
-  }
-
-  bool shouldExtendSegment(Pattern const& pattern) const noexcept {
-    return pattern.size() < static_cast<int>(sizeof(SegmentType));
-  }
-
- public:
-  struct TooManyPermutationsException : public std::exception {
-    char const* what() const throw() {
-      return "The supplied pattern requires a segment extension of more than 1 "
-             "byte";
-    }
-  };
-
- private:
-  using SegmentPermutation = std::array<byte, sizeof(SegmentType)>;
-  std::vector<SegmentPermutation> extendSegment(Pattern const& pattern) const {
-    // if we allow 2 bytes, we're already at 16k permutations
-    auto const allowedBytesToExtend = 1;
-
-    if (sizeof(SegmentType) - pattern.size() > allowedBytesToExtend) {
-      throw TooManyPermutationsException();
-    }
-
-    auto const characterValueCount = std::numeric_limits<uint8_t>::max() + 1;
-    auto const permutationCount = characterValueCount;
-
-    SegmentPermutation permutation;
-    std::memcpy(permutation.data(), pattern.data(), pattern.size());
-    std::vector<SegmentPermutation> permutations(permutationCount, permutation);
-
-    auto it = std::begin(permutations);
-    for (int val = 0; val < characterValueCount; ++val) {
-      it->at(allowedBytesToExtend) = val;
-      ++it;
-    }
-
-    return permutations;
   }
 };
 }  // namespace dfc
