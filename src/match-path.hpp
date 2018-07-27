@@ -2,10 +2,13 @@
 #define DFC_MATCH_PATH_HPP
 
 #include <utility>
+
 #include "byte.hpp"
+#include "df.hpp"
 #include "on-matcher.hpp"
 
 namespace dfc {
+
 template <typename DF, typename CT>
 class MatchPath {
  private:
@@ -27,8 +30,6 @@ class MatchPath {
       ct_.findAllMatches(in, remaining, onMatcher);
     }
   }
-
-  CT const& ct() const noexcept { return ct_; }
 };
 }  // namespace dfc
 
