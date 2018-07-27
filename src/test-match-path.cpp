@@ -8,36 +8,14 @@
 namespace {
 using dfc::ImmutablePattern;
 using dfc::SaveOnMatcher;
+using dfc::test::createPattern;
 
-auto createEmptyDf() {
-  dfc::DirectFilter<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t> df;
-  return df;
-}
-auto createEmptyCt() {
-  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct;
-  return ct;
-}
+using Df = dfc::DirectFilter<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t>;
+using Ct = dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100>;
 
-auto createDfWithPattern(const dfc::RawPattern& pattern) {
-  dfc::DirectFilter<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t> df;
-  df.addPattern(pattern);
-
-  return df;
-}
-
-auto createCtWithPattern(dfc::RawPattern pattern) {
-  dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100> ct;
-  ct.addPattern(ImmutablePattern(0, pattern));
-
-  return ct;
-}
-
-using Df = decltype(createEmptyDf());
-using Ct = decltype(createEmptyCt());
-
-TEST_CASE("No match if input is not a pattern") {
+TEST_CASE("No match if no patterns are added") {
   SaveOnMatcher onMatcher;
-  dfc::MatchPath<Df, Ct> path(createEmptyDf(), createEmptyCt());
+  dfc::MatchPath<Df, Ct> path;
 
   std::string in("test");
   path.match(in.data(), in.size(), onMatcher);
@@ -48,12 +26,14 @@ TEST_CASE("No match if input is not a pattern") {
 TEST_CASE("Match if input equals pattern") {
   SaveOnMatcher onMatcher;
   std::string in("in");
-  dfc::MatchPath<Df, Ct> path(
-      createDfWithPattern(dfc::test::createPattern(in.data())),
-      createCtWithPattern(dfc::test::createPattern(in.data())));
+  dfc::MatchPath<Df, Ct> path;
+
+  dfc::Pid const pid = 123;
+  path.addPattern(ImmutablePattern(pid, createPattern(in.data())));
 
   path.match(in.data(), in.size(), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.size() == 1);
+  REQUIRE(onMatcher.matchedPids[0] == pid);
 }
 }  // namespace

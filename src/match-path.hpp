@@ -12,12 +12,14 @@ namespace dfc {
 template <typename DF, typename CT>
 class MatchPath {
  private:
-  DF const df_;
-  CT const ct_;
+  DF df_;
+  CT ct_;
 
  public:
-  explicit MatchPath(DF df, CT ct) noexcept
-      : df_(std::move(df)), ct_(std::move(ct)) {}
+  void addPattern(ImmutablePattern const& pattern) {
+    df_.addPattern(pattern);
+    ct_.addPattern(pattern);
+  }
 
   inline void match(char const* const in, int const remaining,
                     OnMatcher const& onMatcher) const {
