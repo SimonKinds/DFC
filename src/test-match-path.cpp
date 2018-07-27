@@ -10,7 +10,7 @@ using dfc::ImmutablePattern;
 using dfc::SaveOnMatcher;
 using dfc::test::createPattern;
 
-using Df = dfc::DirectFilter<dfc::PatternRange<2, 2>, uint16_t, 1, uint16_t>;
+using Df = dfc::DirectFilter<dfc::PatternRange<2, 100>, uint16_t, 1, uint16_t>;
 using Ct = dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100>;
 
 TEST_CASE("No match if no patterns are added") {
@@ -25,7 +25,7 @@ TEST_CASE("No match if no patterns are added") {
 
 TEST_CASE("Match if input equals pattern") {
   SaveOnMatcher onMatcher;
-  std::string in("in");
+  std::string in("test");
   dfc::MatchPath<Df, Ct> path;
 
   dfc::Pid const pid = 123;
