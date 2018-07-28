@@ -5,8 +5,8 @@
 
 #include "byte.hpp"
 #include "df.hpp"
-#include "is-compact-table.hpp"
-#include "is-direct-filter.hpp"
+#include "is-ct.hpp"
+#include "is-df.hpp"
 #include "on-matcher.hpp"
 
 namespace dfc {
