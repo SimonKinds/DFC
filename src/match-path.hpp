@@ -5,6 +5,7 @@
 
 #include "byte.hpp"
 #include "df.hpp"
+#include "is-compact-table.hpp"
 #include "is-direct-filter.hpp"
 #include "on-matcher.hpp"
 
@@ -14,6 +15,8 @@ template <typename DF, typename CT>
 class MatchPath {
   static_assert(is_direct_filter<DF>::value,
                 "First template parameter must be a direct filter");
+  static_assert(is_compact_table<CT>::value,
+                "Second template parameter must be a compact table");
 
  private:
   DF df_;
