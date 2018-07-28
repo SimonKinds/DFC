@@ -5,12 +5,16 @@
 
 #include "byte.hpp"
 #include "df.hpp"
+#include "is-direct-filter.hpp"
 #include "on-matcher.hpp"
 
 namespace dfc {
 
 template <typename DF, typename CT>
 class MatchPath {
+  static_assert(is_direct_filter<DF>::value,
+                "First template parameter must be a direct filter");
+
  private:
   DF df_;
   CT ct_;
