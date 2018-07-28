@@ -10,7 +10,7 @@ namespace {
 void DF_TwoByte_AddPattern(benchmark::State& state) {
   auto const pattern = twoBytePattern();
 
-  dfc::DirectFilter<dfc::PatternRange<1, 3>, uint16_t> df;
+  dfc::DirectFilter<uint16_t> df;
   for (auto _ : state) {
     df.addPattern(pattern);
     auto const& filter = df.filter();
@@ -22,7 +22,7 @@ BENCHMARK(DF_TwoByte_AddPattern);
 void DF_FourByteHash_AddPattern(benchmark::State& state) {
   auto const pattern = fiveBytePattern();
 
-  dfc::DirectFilter<dfc::PatternRange<4, 10>, uint32_t, 4909, uint16_t> df;
+  dfc::DirectFilter<uint32_t, 4909, uint16_t> df;
   for (auto _ : state) {
     df.addPattern(pattern);
     auto const& filter = df.filter();
@@ -33,7 +33,7 @@ BENCHMARK(DF_FourByteHash_AddPattern);
 
 void DF_TwoByte_Contains(benchmark::State& state) {
   const auto pattern = twoBytePattern();
-  dfc::DirectFilter<dfc::PatternRange<1, 3>, uint16_t> df;
+  dfc::DirectFilter<uint16_t> df;
   df.addPattern(pattern);
 
   const auto data = pattern.data();
@@ -50,7 +50,7 @@ BENCHMARK(DF_TwoByte_Contains);
 void DF_FourByteHash_Contains(benchmark::State& state) {
   const auto pattern = fiveBytePattern();
 
-  dfc::DirectFilter<dfc::PatternRange<4, 10>, uint32_t, 4909, uint16_t> df;
+  dfc::DirectFilter<uint32_t, 4909, uint16_t> df;
   df.addPattern(pattern);
 
   const auto data = pattern.data();

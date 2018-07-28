@@ -18,7 +18,7 @@
 
 namespace dfc {
 
-template <typename PatternRange, typename SegmentType, SegmentType Hash = 1,
+template <typename SegmentType, SegmentType Hash = 1,
           typename IndexType = SegmentType>
 class DirectFilter {
   static_assert(std::is_integral<SegmentType>::value,
@@ -31,8 +31,6 @@ class DirectFilter {
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
 
   Filter filter_{};
-
-  PatternRange const patternRange_{};
 
   Segmenter<SegmentType> const segmenter_{};
   DirectFilterIndexer<SegmentType, Hash, IndexType> const indexer_{};
@@ -54,15 +52,13 @@ class DirectFilter {
   }
 
   void addPattern(Pattern const& pattern) {
-    if (patternRange_.includes(pattern)) {
-      if (shouldExtendSegment(pattern)) {
-        auto permutations = extendSegment(pattern);
-        for (auto const& permutation : permutations) {
-          addPattern(permutation.data(), pattern.caseSensitive());
-        }
-      } else {
-        addPattern(pattern.data(), pattern.caseSensitive());
+    if (shouldExtendSegment(pattern)) {
+      auto permutations = extendSegment(pattern);
+      for (auto const& permutation : permutations) {
+        addPattern(permutation.data(), pattern.caseSensitive());
       }
+    } else {
+      addPattern(pattern.data(), pattern.caseSensitive());
     }
   }
 
