@@ -7,25 +7,31 @@
 #include "df.hpp"
 #include "is-ct.hpp"
 #include "is-df.hpp"
+#include "is-pattern-range.hpp"
 #include "on-matcher.hpp"
 
 namespace dfc {
 
-template <typename DF, typename CT>
+template <typename PatternRange, typename DF, typename CT>
 class MatchPath {
+  static_assert(is_pattern_range<PatternRange>::value,
+                "First template parameter must be a pattern range");
   static_assert(is_direct_filter<DF>::value,
-                "First template parameter must be a direct filter");
+                "Second template parameter must be a direct filter");
   static_assert(is_compact_table<CT>::value,
-                "Second template parameter must be a compact table");
+                "Last template parameter must be a compact table");
 
  private:
+  PatternRange const patternRange_{};
   DF df_;
   CT ct_;
 
  public:
   void addPattern(ImmutablePattern const& pattern) {
-    df_.addPattern(pattern);
-    ct_.addPattern(pattern);
+    if (patternRange_.includes(pattern)) {
+      df_.addPattern(pattern);
+      ct_.addPattern(pattern);
+    }
   }
 
   inline void match(char const* const in, int const remaining,

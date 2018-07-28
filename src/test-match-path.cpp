@@ -10,12 +10,13 @@ using dfc::ImmutablePattern;
 using dfc::SaveOnMatcher;
 using dfc::test::createPattern;
 
-using Df = dfc::DirectFilter<dfc::PatternRange<2, 100>, uint16_t, 1, uint16_t>;
-using Ct = dfc::CompactTable<dfc::PatternRange<2, 100>, uint16_t, 1, 100>;
+using PatternRange = dfc::PatternRange<2, 100>;
+using Df = dfc::DirectFilter<PatternRange, uint16_t, 1, uint16_t>;
+using Ct = dfc::CompactTable<PatternRange, uint16_t, 1, 100>;
 
 TEST_CASE("No match if no patterns are added") {
   SaveOnMatcher onMatcher;
-  dfc::MatchPath<Df, Ct> path;
+  dfc::MatchPath<PatternRange, Df, Ct> path;
 
   std::string in("test");
   path.match(in.data(), in.size(), onMatcher);
@@ -26,7 +27,7 @@ TEST_CASE("No match if no patterns are added") {
 TEST_CASE("Match if input equals pattern") {
   SaveOnMatcher onMatcher;
   std::string in("test");
-  dfc::MatchPath<Df, Ct> path;
+  dfc::MatchPath<PatternRange, Df, Ct> path;
 
   dfc::Pid const pid = 123;
   path.addPattern(ImmutablePattern(pid, createPattern(in.data())));
@@ -35,5 +36,23 @@ TEST_CASE("Match if input equals pattern") {
 
   REQUIRE(onMatcher.matchedPids.size() == 1);
   REQUIRE(onMatcher.matchedPids[0] == pid);
+}
+
+TEST_CASE("Does not add pattern if pattern is outside of range contraints") {
+  dfc::MatchPath<PatternRange, Df, Ct> path;
+
+  std::string firstPattern(PatternRange::startInclusive - 1, 'a');
+  path.addPattern(
+      ImmutablePattern(dfc::Pid(1), createPattern(firstPattern.data())));
+
+  std::string secondPattern(PatternRange::endInclusive + 1, 'b');
+  path.addPattern(
+      ImmutablePattern(dfc::Pid(2), createPattern(secondPattern.data())));
+
+  SaveOnMatcher onMatcher;
+  path.match(firstPattern.data(), firstPattern.size(), onMatcher);
+  path.match(secondPattern.data(), secondPattern.size(), onMatcher);
+
+  REQUIRE(onMatcher.matchedPids.empty());
 }
 }  // namespace
