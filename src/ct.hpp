@@ -47,6 +47,12 @@ class CompactTable {
 
   std::vector<ImmutablePattern> patterns_{};
 
+  /*
+   * do not explicitly initialize as gcc compile times goes through the roof for
+   * large arrays. Since the buckets (std::vector at the time of writing) have a
+   * non-trivial constructor, the entries of the array are ensured to be
+   * properly intialized
+   */
   Table table_;
 
  public:
