@@ -47,7 +47,7 @@ class CompactTable {
 
   std::vector<ImmutablePattern> patterns_{};
 
-  Table table_{};
+  Table table_;
 
  public:
   void findAllMatches(char const* const in, int const remaining,
