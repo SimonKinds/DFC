@@ -11,5 +11,9 @@ RawPattern createCaseInsensitivePattern(char const* const str) {
   return RawPattern(reinterpret_cast<byte const*>(str), std::strlen(str),
                     false);
 }
+
+ImmutablePattern createImmutablePattern(Pid const pid, char const* const str) {
+  return ImmutablePattern(pid, createPattern(str));
+}
 }  // namespace test
 }  // namespace dfc

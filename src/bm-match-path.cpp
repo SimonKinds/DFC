@@ -4,23 +4,44 @@
 #include "df.hpp"
 #include "match-path.hpp"
 #include "util-benchmark.hpp"
+#include "util-test.hpp"
 
 using dfc::CompactTable;
 using dfc::DirectFilter;
 using dfc::PatternRange;
+using dfc::test::createImmutablePattern;
+
+using TwoByteMatchPath =
+    dfc::MatchPath<PatternRange<2, 100>, DirectFilter<uint16_t>,
+                   CompactTable<uint16_t, 1, 0x100>>;
 
 namespace {
-void MatchPath_TwoByte_Empty(benchmark::State& state) {
-  dfc::MatchPath<PatternRange<2, 100>, DirectFilter<uint16_t>,
-                 CompactTable<uint16_t, 1, 0x100>>
-      path;
+void MatchPath_TwoByte_NoHit(benchmark::State& state) {
+  TwoByteMatchPath path;
 
-  auto input = "ab";
   dfc::benchmark::CountOnMatcher onMatcher;
 
   for (auto _ : state) {
-    path.match(input, 2, onMatcher);
+    path.match("ab", 2, onMatcher);
+    int count = onMatcher.matchCount;
+    benchmark::DoNotOptimize(count);
+    benchmark::ClobberMemory();
   }
 }
-BENCHMARK(MatchPath_TwoByte_Empty);
+BENCHMARK(MatchPath_TwoByte_NoHit);
+
+void MatchPath_TwoByte_Hit(benchmark::State& state) {
+  TwoByteMatchPath path;
+  path.addPattern(createImmutablePattern(0, "ab"));
+
+  dfc::benchmark::CountOnMatcher onMatcher;
+  for (auto _ : state) {
+    path.match("ab", 2, onMatcher);
+    int count = onMatcher.matchCount;
+    benchmark::DoNotOptimize(count);
+    benchmark::ClobberMemory();
+  }
+}
+BENCHMARK(MatchPath_TwoByte_Hit);
+
 }  // namespace

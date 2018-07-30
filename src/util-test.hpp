@@ -2,7 +2,7 @@
 #define DFC_TEST_UTILS_HPP
 #include <cstdint>
 
-#include "raw-pattern.hpp"
+#include "immutable-pattern.hpp"
 
 namespace dfc {
 namespace test {
@@ -11,6 +11,8 @@ RawPattern fiveBytePattern();
 
 RawPattern createPattern(char const* const str);
 RawPattern createCaseInsensitivePattern(char const* const str);
+
+ImmutablePattern createImmutablePattern(Pid const pid, char const* const str);
 }  // namespace test
 }  // namespace dfc
 
