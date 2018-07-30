@@ -42,6 +42,28 @@ public:
     if (df_.contains(input.data())) {
       ct_.findAllMatches(input, onMatcher);
     }
+
+    if (shouldExtendInput(input)) {
+      auto segments = extendInput(input);
+
+      for (auto const &segment : segments) {
+        if (df_.contains(segment.data())) {
+          ct_.findAllMatches(InputView(segment.data(), segment.size()),
+                             onMatcher);
+        }
+      }
+    }
+  }
+
+  inline bool shouldExtendInput(InputView const &input) const noexcept {
+    const auto size = input.size();
+    return size == 1 && size < PatternRange::startInclusive;
+  }
+
+  inline auto extendInput(InputView const &input) const {
+    SegmentExtender<typename DF::segment_type> extender;
+
+    return extender.extend(input.data(), input.size());
   }
 };
 } // namespace dfc

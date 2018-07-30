@@ -26,6 +26,10 @@ class DirectFilter {
   static_assert(std::is_integral<IndexType>::value,
                 "IndexType must be integral");
 
+ public:
+  using segment_type = SegmentType;
+
+ private:
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;

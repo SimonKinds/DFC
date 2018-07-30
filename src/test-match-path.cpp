@@ -10,6 +10,7 @@ using dfc::ImmutablePattern;
 using dfc::InputView;
 using dfc::SaveOnMatcher;
 using dfc::test::createImmutablePattern;
+using dfc::test::createPattern;
 
 using PatternRange = dfc::PatternRange<2, 100>;
 using Df = dfc::DirectFilter<uint16_t, 1, uint16_t>;
@@ -52,5 +53,23 @@ TEST_CASE("Does not add pattern if pattern is outside of range contraints") {
   path.match(InputView(secondPattern.data()), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.empty());
+}
+TEST_CASE(
+    "Extends input by one byte if length is larger than smallest pattern but "
+    "shorter than segment type of DF") {
+  SaveOnMatcher onMatcher;
+  // smallest pattern = 2B
+  dfc::MatchPath<dfc::PatternRange<2, 100>, Df, Ct> path;
+
+  path.addPattern(ImmutablePattern(1, createPattern("aa")));
+  path.addPattern(ImmutablePattern(2, createPattern("ab")));
+  path.addPattern(ImmutablePattern(3, createPattern("ac")));
+
+  path.match(InputView("a"), onMatcher);
+
+  REQUIRE(onMatcher.matchedPids.size() == 3);
+  REQUIRE(onMatcher.matchedPids[0] == 1);
+  REQUIRE(onMatcher.matchedPids[1] == 2);
+  REQUIRE(onMatcher.matchedPids[2] == 3);
 }
 } // namespace
