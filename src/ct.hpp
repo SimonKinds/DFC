@@ -25,20 +25,18 @@ struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename PatternRange, typename SegmentType, SegmentType Hash,
-          int Size>
+template <typename SegmentType, SegmentType Hash, int Size>
 class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
-  static_assert(
-      PatternRange::startInclusive == sizeof(SegmentType),
-      "SegmentType must be equal in size to the smallest pattern length");
 
+ public:
+  using segment_type = SegmentType;
+
+ private:
   using Entry = CompactTableEntry<SegmentType>;
   using Bucket = std::vector<Entry>;
   using Table = std::array<Bucket, Size>;
-
-  PatternRange const patternRange_{};
 
   CompactTableIndexer<SegmentType, Hash, Size - 1> const indexer_{};
   Segmenter<SegmentType> const segmenter_{};
@@ -109,17 +107,15 @@ class CompactTable {
 
  public:
   void addPattern(ImmutablePattern const& pattern) noexcept {
-    if (patternRange_.includes(pattern)) {
-      PidIndex const index = patterns_.size();
+    PidIndex const index = patterns_.size();
 
-      if (pattern.caseSensitive()) {
-        addPatternToTableWithoutPermutations(index, pattern);
-      } else {
-        addPatternToTableWithPermutations(index, pattern);
-      }
-
-      patterns_.emplace_back(pattern);
+    if (pattern.caseSensitive()) {
+      addPatternToTableWithoutPermutations(index, pattern);
+    } else {
+      addPatternToTableWithPermutations(index, pattern);
     }
+
+    patterns_.emplace_back(pattern);
   }
 
  private:

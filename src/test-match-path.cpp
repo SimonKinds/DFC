@@ -12,7 +12,7 @@ using dfc::test::createPattern;
 
 using PatternRange = dfc::PatternRange<2, 100>;
 using Df = dfc::DirectFilter<uint16_t, 1, uint16_t>;
-using Ct = dfc::CompactTable<PatternRange, uint16_t, 1, 100>;
+using Ct = dfc::CompactTable<uint16_t, 1, 100>;
 
 TEST_CASE("No match if no patterns are added") {
   SaveOnMatcher onMatcher;

@@ -20,6 +20,10 @@ class MatchPath {
                 "Second template parameter must be a direct filter");
   static_assert(is_compact_table<CT>::value,
                 "Last template parameter must be a compact table");
+  static_assert(PatternRange::startInclusive ==
+                    sizeof(typename CT::segment_type),
+                "The segment type of the CT must be equal in size to the "
+                "smallest pattern length");
 
  private:
   PatternRange const patternRange_{};

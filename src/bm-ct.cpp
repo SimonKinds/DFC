@@ -9,13 +9,12 @@ using dfc::test::createCaseInsensitivePattern;
 using dfc::test::createPattern;
 
 namespace {
-using CTFourByteIndexer =
-    dfc::CompactTable<dfc::PatternRange<4, 1000000>, uint32_t, 49157, 0x20000>;
+using CTFourByteIndexer = dfc::CompactTable<uint32_t, 49157, 0x20000>;
 
 dfc::benchmark::CountOnMatcher onMatcher;
 
 void CT_OneByte_FindAllMatches(benchmark::State& state) {
-  dfc::CompactTable<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100> ct;
+  dfc::CompactTable<uint8_t, 1, 0x100> ct;
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 

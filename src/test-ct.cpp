@@ -14,7 +14,7 @@ TEST_CASE("CT") {
   SaveOnMatcher onMatcher;
 
   int const ctSize = 0x100;
-  dfc::CompactTable<dfc::PatternRange<1, 10>, uint8_t, 1, ctSize> ct;
+  dfc::CompactTable<uint8_t, 1, ctSize> ct;
 
   SECTION("Is empty by default") {
     for (int i = 0; i < ctSize; ++i) {
@@ -48,20 +48,9 @@ TEST_CASE("CT") {
     REQUIRE(onMatcher.matchedPids.size() == 0);
   }
 
-  SECTION("Does not set add pattern if it is outside the range constraint") {
-    auto patternValue = "this is a very long pattern";
-
-    dfc::Pid const pid = 1;
-    ct.addPattern(ImmutablePattern(pid, createPattern(patternValue)));
-
-    ct.findAllMatches(patternValue, std::strlen(patternValue), onMatcher);
-
-    REQUIRE(onMatcher.matchedPids.size() == 0);
-  }
-
   SECTION("Sets for all variants of input if case insensitive") {
     // ct with two characters pattern
-    dfc::CompactTable<dfc::PatternRange<2, 10>, uint16_t, 1, ctSize> ct;
+    dfc::CompactTable<uint16_t, 1, ctSize> ct;
     auto patternValue = "ab";
 
     dfc::Pid const pid = 1;

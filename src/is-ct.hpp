@@ -5,16 +5,14 @@
 
 namespace dfc {
 
-template <typename PatternRange, typename SegmentType, SegmentType Hash,
-          int Size>
+template <typename SegmentType, SegmentType Hash, int Size>
 class CompactTable;
 
 template <typename>
 struct is_compact_table : std::false_type {};
 
-template <typename PatternRange, typename SegmentType, SegmentType Hash,
-          int Size>
-struct is_compact_table<CompactTable<PatternRange, SegmentType, Hash, Size>>
+template <typename SegmentType, SegmentType Hash, int Size>
+struct is_compact_table<CompactTable<SegmentType, Hash, Size>>
     : std::true_type {};
 
 }  // namespace dfc
