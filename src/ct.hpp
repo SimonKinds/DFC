@@ -1,5 +1,5 @@
-#ifndef DFC_CT_INITIALIZER_HPP
-#define DFC_CT_INITIALIZER_HPP
+#ifndef DFC_CT_HPP
+#define DFC_CT_HPP
 
 #include <array>
 #include <vector>

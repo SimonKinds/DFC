@@ -1,5 +1,5 @@
-#ifndef DFC_DF_INITIALIZER_HPP
-#define DFC_DF_INITIALIZER_HPP
+#ifndef DFC_DF_HPP
+#define DFC_DF_HPP
 
 #include <algorithm>
 #include <array>
