@@ -97,7 +97,7 @@ class CompactTable {
                           int const remaining,
                           OnMatcher const& onMatcher) const {
     for (auto const pidIndex : entry.pids) {
-      auto const& pattern = patterns_.at(pidIndex);
+      auto const& pattern = patterns_[pidIndex];
 
       if (matcher_.matches(in, remaining, pattern)) {
         onMatcher.onMatch(pattern);
