@@ -1,6 +1,7 @@
 #include "benchmark/benchmark.h"
 
 #include "ct.hpp"
+#include "util-benchmark.hpp"
 #include "util-test.hpp"
 
 using dfc::ImmutablePattern;
@@ -11,15 +12,7 @@ namespace {
 using CTFourByteIndexer =
     dfc::CompactTable<dfc::PatternRange<4, 1000000>, uint32_t, 49157, 0x20000>;
 
-struct CountOnMatcher final : public dfc::OnMatcher {
-  int mutable matchCount = 0;
-
-  void onMatch(dfc::ImmutablePattern const& pattern) const noexcept final {
-    (void)(pattern);
-    ++matchCount;
-  }
-};
-CountOnMatcher onMatcher;
+dfc::benchmark::CountOnMatcher onMatcher;
 
 void CT_OneByte_FindAllMatches(benchmark::State& state) {
   dfc::CompactTable<dfc::PatternRange<1, 100>, uint8_t, 1, 0x100> ct;

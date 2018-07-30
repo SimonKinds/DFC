@@ -35,5 +35,6 @@ add_executable(bm-dfc
   src/bm-indexer.cpp
   src/bm-df.cpp
   src/bm-ct.cpp
+  src/bm-match-path.cpp
 )
 target_link_libraries(bm-dfc benchmark_main)
