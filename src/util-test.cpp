@@ -15,5 +15,9 @@ RawPattern createCaseInsensitivePattern(char const* const str) {
 ImmutablePattern createImmutablePattern(Pid const pid, char const* const str) {
   return ImmutablePattern(pid, createPattern(str));
 }
+ImmutablePattern createCaseInsensitiveImmutablePattern(Pid const pid,
+                                                       char const* const str) {
+  return ImmutablePattern(pid, createCaseInsensitivePattern(str));
+}
 }  // namespace test
 }  // namespace dfc

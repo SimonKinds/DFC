@@ -13,6 +13,8 @@ RawPattern createPattern(char const* const str);
 RawPattern createCaseInsensitivePattern(char const* const str);
 
 ImmutablePattern createImmutablePattern(Pid const pid, char const* const str);
+ImmutablePattern createCaseInsensitiveImmutablePattern(Pid const pid,
+                                                       char const* const str);
 }  // namespace test
 }  // namespace dfc
 

@@ -5,7 +5,9 @@
 
 using dfc::ImmutablePattern;
 using dfc::SaveOnMatcher;
+using dfc::test::createCaseInsensitiveImmutablePattern;
 using dfc::test::createCaseInsensitivePattern;
+using dfc::test::createImmutablePattern;
 using dfc::test::createPattern;
 
 namespace {
@@ -29,7 +31,7 @@ TEST_CASE("CT") {
     auto patternValue = "x";
 
     dfc::Pid const pid = 1;
-    ct.addPattern(ImmutablePattern(pid, createPattern(patternValue)));
+    ct.addPattern(createImmutablePattern(pid, patternValue));
 
     ct.findAllMatches(patternValue, 1, onMatcher);
 
@@ -41,7 +43,7 @@ TEST_CASE("CT") {
     auto patternValue = "x";
 
     dfc::Pid const pid = 1;
-    ct.addPattern(ImmutablePattern(pid, createPattern(patternValue)));
+    ct.addPattern(createImmutablePattern(pid, patternValue));
 
     ct.findAllMatches("y", 1, onMatcher);
 
@@ -54,8 +56,7 @@ TEST_CASE("CT") {
     auto patternValue = "ab";
 
     dfc::Pid const pid = 1;
-    ct.addPattern(
-        ImmutablePattern(pid, createCaseInsensitivePattern(patternValue)));
+    ct.addPattern(createCaseInsensitiveImmutablePattern(pid, patternValue));
 
     ct.findAllMatches("ab", 2, onMatcher);
     ct.findAllMatches("aB", 2, onMatcher);
@@ -72,8 +73,8 @@ TEST_CASE("CT") {
   SECTION("Multiple patterns") {
     dfc::Pid const firstPatternPid = 1, secondPatternPid = 2;
     SECTION("Can match multiple equal segments") {
-      ct.addPattern(ImmutablePattern(firstPatternPid, createPattern("x")));
-      ct.addPattern(ImmutablePattern(secondPatternPid, createPattern("x")));
+      ct.addPattern(createImmutablePattern(firstPatternPid, "x"));
+      ct.addPattern(createImmutablePattern(secondPatternPid, "x"));
 
       ct.findAllMatches("x", 1, onMatcher);
 
@@ -83,8 +84,8 @@ TEST_CASE("CT") {
     }
 
     SECTION("Can match multiple different segments") {
-      ct.addPattern(ImmutablePattern(firstPatternPid, createPattern("x")));
-      ct.addPattern(ImmutablePattern(secondPatternPid, createPattern("y")));
+      ct.addPattern(createImmutablePattern(firstPatternPid, "x"));
+      ct.addPattern(createImmutablePattern(secondPatternPid, "y"));
 
       ct.findAllMatches("x", 1, onMatcher);
       ct.findAllMatches("y", 1, onMatcher);

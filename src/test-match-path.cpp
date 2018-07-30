@@ -8,7 +8,7 @@
 namespace {
 using dfc::ImmutablePattern;
 using dfc::SaveOnMatcher;
-using dfc::test::createPattern;
+using dfc::test::createImmutablePattern;
 
 using PatternRange = dfc::PatternRange<2, 100>;
 using Df = dfc::DirectFilter<uint16_t, 1, uint16_t>;
@@ -30,7 +30,7 @@ TEST_CASE("Match if input equals pattern") {
   dfc::MatchPath<PatternRange, Df, Ct> path;
 
   dfc::Pid const pid = 123;
-  path.addPattern(ImmutablePattern(pid, createPattern(in.data())));
+  path.addPattern(createImmutablePattern(pid, in.data()));
 
   path.match(in.data(), in.size(), onMatcher);
 
@@ -42,12 +42,10 @@ TEST_CASE("Does not add pattern if pattern is outside of range contraints") {
   dfc::MatchPath<PatternRange, Df, Ct> path;
 
   std::string firstPattern(PatternRange::startInclusive - 1, 'a');
-  path.addPattern(
-      ImmutablePattern(dfc::Pid(1), createPattern(firstPattern.data())));
+  path.addPattern(createImmutablePattern(dfc::Pid(1), firstPattern.data()));
 
   std::string secondPattern(PatternRange::endInclusive + 1, 'b');
-  path.addPattern(
-      ImmutablePattern(dfc::Pid(2), createPattern(secondPattern.data())));
+  path.addPattern(createImmutablePattern(dfc::Pid(2), secondPattern.data()));
 
   SaveOnMatcher onMatcher;
   path.match(firstPattern.data(), firstPattern.size(), onMatcher);

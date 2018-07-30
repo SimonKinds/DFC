@@ -5,8 +5,8 @@
 #include "util-test.hpp"
 
 using dfc::ImmutablePattern;
-using dfc::test::createCaseInsensitivePattern;
-using dfc::test::createPattern;
+using dfc::test::createCaseInsensitiveImmutablePattern;
+using dfc::test::createImmutablePattern;
 
 namespace {
 using CTFourByteIndexer = dfc::CompactTable<uint32_t, 49157, 0x20000>;
@@ -18,7 +18,7 @@ void CT_OneByte_FindAllMatches(benchmark::State& state) {
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 
-  ct.addPattern(ImmutablePattern(0, createPattern(patternValue.data())));
+  ct.addPattern(createImmutablePattern(0, patternValue.data()));
 
   for (auto _ : state) {
     ct.findAllMatches(patternValue.data(), 1, onMatcher);
@@ -33,7 +33,7 @@ void CT_FourByte_FindAllMatches_CaseSensitive(benchmark::State& state) {
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  ct.addPattern(ImmutablePattern(0, createPattern(patternValue.data())));
+  ct.addPattern(createImmutablePattern(0, patternValue.data()));
 
   byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
@@ -53,8 +53,7 @@ void CT_FourByte_FindAllMatches_CaseInsensitive(benchmark::State& state) {
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  ct.addPattern(
-      ImmutablePattern(0, createCaseInsensitivePattern(patternValue.data())));
+  ct.addPattern(createCaseInsensitiveImmutablePattern(0, patternValue.data()));
 
   byte const* data = reinterpret_cast<byte const*>(patternValue.data());
   int size = patternValue.size();
