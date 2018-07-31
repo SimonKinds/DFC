@@ -75,4 +75,58 @@ void MatchPath_FourByte_Hit(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_FourByte_Hit);
 
+void MatchPath_FourByte_ManyMisses(benchmark::State& state) {
+  TwoByteDfFourByteCtMatchPath path;
+  path.addPattern(createImmutablePattern(0, "abab"));
+
+  dfc::benchmark::CountOnMatcher onMatcher;
+  for (auto _ : state) {
+    for (int i = 0; i < 100; ++i) {
+      path.match("abaa", 4, onMatcher);
+    }
+    int count = onMatcher.matchCount;
+    benchmark::DoNotOptimize(count);
+    benchmark::ClobberMemory();
+  }
+}
+BENCHMARK(MatchPath_FourByte_ManyMisses);
+
+void MatchPath_FourByte_ManyHits(benchmark::State& state) {
+  TwoByteDfFourByteCtMatchPath path;
+  path.addPattern(createImmutablePattern(0, "abab"));
+
+  dfc::benchmark::CountOnMatcher onMatcher;
+  for (auto _ : state) {
+    for (int i = 0; i < 100; ++i) {
+      path.match("abab", 4, onMatcher);
+    }
+
+    int count = onMatcher.matchCount;
+    benchmark::DoNotOptimize(count);
+    benchmark::ClobberMemory();
+  }
+}
+BENCHMARK(MatchPath_FourByte_ManyHits);
+
+void MatchPath_FourByte_FiftyPercentHits(benchmark::State& state) {
+  TwoByteDfFourByteCtMatchPath path;
+  path.addPattern(createImmutablePattern(0, "abab"));
+
+  dfc::benchmark::CountOnMatcher onMatcher;
+  for (auto _ : state) {
+    for (int i = 0; i < 100; ++i) {
+      if (i % 2 == 0) {
+        path.match("abaa", 4, onMatcher);
+      } else {
+        path.match("abab", 4, onMatcher);
+      }
+    }
+
+    int count = onMatcher.matchCount;
+    benchmark::DoNotOptimize(count);
+    benchmark::ClobberMemory();
+  }
+}
+BENCHMARK(MatchPath_FourByte_FiftyPercentHits);
+
 }  // namespace
