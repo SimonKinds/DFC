@@ -53,7 +53,7 @@ void MatchPath_FourByte_NoHit(benchmark::State& state) {
   dfc::benchmark::CountOnMatcher onMatcher;
 
   for (auto _ : state) {
-    path.match("abab", 2, onMatcher);
+    path.match("abab", 4, onMatcher);
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();
@@ -67,7 +67,7 @@ void MatchPath_FourByte_Hit(benchmark::State& state) {
 
   dfc::benchmark::CountOnMatcher onMatcher;
   for (auto _ : state) {
-    path.match("abab", 2, onMatcher);
+    path.match("abab", 4, onMatcher);
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();

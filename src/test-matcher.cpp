@@ -4,6 +4,7 @@
 #include "util-test.hpp"
 
 using dfc::ImmutablePattern;
+using dfc::test::createCaseInsensitiveImmutablePattern;
 using dfc::test::createCaseInsensitivePattern;
 using dfc::test::fiveBytePattern;
 
@@ -30,6 +31,13 @@ TEST_CASE("Matcher matches all variants of case insensitive patterns") {
   REQUIRE(matcher.matches("Ab", 2, pattern));
   REQUIRE(matcher.matches("aB", 2, pattern));
   REQUIRE(matcher.matches("AB", 2, pattern));
+}
+
+TEST_CASE("Matcher does not match if remaining bytes are fewer than pattern") {
+  auto const pattern = createCaseInsensitiveImmutablePattern(0, "ab");
+
+  dfc::Matcher matcher;
+  REQUIRE(matcher.matches("a", 1, pattern) == false);
 }
 
 }  // namespace
