@@ -2,7 +2,8 @@ language: cpp
 
 matrix:
   include:
-    - os: linux
+    - name: gcc
+      os: linux
       addons:
         apt:
           sources:
@@ -11,7 +12,8 @@ matrix:
             - g++-8
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
-    - os: linux
+    - name: clang
+      os: linux
       addons:
         apt:
           sources:
