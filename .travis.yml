@@ -1,19 +1,32 @@
 language: cpp
 
-os: linux
+matrix:
+  include:
+    - name: gcc
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+    - name: clang
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-6.0
+          packages:
+            - g++-8 # needed to get an updated standard library
+            - clang-6.0
+      env:
+        - MATRIX_EVAL="CC=clang-6.0 && CXX=clang++-6.0"
 
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-6.0
-    packages:
-      - g++-8
-      - clang-6.0
-
-env:
-  - CC=gcc-8 CXX=g++-8
-  - CC=clang-6.0 CXX=clang++-6.0
+before_install:
+    - eval "${MATRIX_EVAL}"
 
 script:
   - ./scripts/test.sh Debug
