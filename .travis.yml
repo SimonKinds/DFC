@@ -3,11 +3,11 @@ language: cpp
 os: linux
 
 addons:
-  apt:
-    sources:
+  - apt:
+    - sources:
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-6.0
-    packages:
+    - packages:
       - g++-8
       - clang-6.0
 
