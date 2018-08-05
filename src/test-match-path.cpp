@@ -7,6 +7,7 @@
 
 namespace {
 using dfc::ImmutablePattern;
+using dfc::InputView;
 using dfc::SaveOnMatcher;
 using dfc::test::createImmutablePattern;
 
@@ -18,8 +19,7 @@ TEST_CASE("No match if no patterns are added") {
   SaveOnMatcher onMatcher;
   dfc::MatchPath<PatternRange, Df, Ct> path;
 
-  std::string in("test");
-  path.match(in.data(), in.size(), onMatcher);
+  path.match(InputView("test"), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.empty());
 }
@@ -32,7 +32,7 @@ TEST_CASE("Match if input equals pattern") {
   dfc::Pid const pid = 123;
   path.addPattern(createImmutablePattern(pid, in.data()));
 
-  path.match(in.data(), in.size(), onMatcher);
+  path.match(InputView(in.data()), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.size() == 1);
   REQUIRE(onMatcher.matchedPids[0] == pid);
@@ -48,9 +48,9 @@ TEST_CASE("Does not add pattern if pattern is outside of range contraints") {
   path.addPattern(createImmutablePattern(dfc::Pid(2), secondPattern.data()));
 
   SaveOnMatcher onMatcher;
-  path.match(firstPattern.data(), firstPattern.size(), onMatcher);
-  path.match(secondPattern.data(), secondPattern.size(), onMatcher);
+  path.match(InputView(firstPattern.data()), onMatcher);
+  path.match(InputView(secondPattern.data()), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.empty());
 }
-}  // namespace
+} // namespace

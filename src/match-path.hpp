@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "byte.hpp"
+#include "ct.hpp"
 #include "df.hpp"
 #include "is-ct.hpp"
 #include "is-df.hpp"
@@ -12,8 +13,7 @@
 
 namespace dfc {
 
-template <typename PatternRange, typename DF, typename CT>
-class MatchPath {
+template <typename PatternRange, typename DF, typename CT> class MatchPath {
   static_assert(is_pattern_range<PatternRange>::value,
                 "First template parameter must be a pattern range");
   static_assert(is_direct_filter<DF>::value,
@@ -25,31 +25,25 @@ class MatchPath {
                 "The segment type of the CT must be equal in size to the "
                 "smallest pattern length");
 
- private:
+private:
   PatternRange const patternRange_{};
   DF df_;
   CT ct_;
 
- public:
-  void addPattern(ImmutablePattern const& pattern) {
+public:
+  void addPattern(ImmutablePattern const &pattern) {
     if (patternRange_.includes(pattern)) {
       df_.addPattern(pattern);
       ct_.addPattern(pattern);
     }
   }
 
-  inline void match(char const* const in, int const remaining,
-                    OnMatcher const& onMatcher) const {
-    match(reinterpret_cast<byte const*>(in), remaining, onMatcher);
-  }
-
-  inline void match(byte const* const in, int const remaining,
-                    OnMatcher const& onMatcher) const {
-    if (df_.contains(in)) {
-      ct_.findAllMatches(in, remaining, onMatcher);
+  inline void match(InputView const &input, OnMatcher const &onMatcher) const {
+    if (df_.contains(input.data())) {
+      ct_.findAllMatches(input, onMatcher);
     }
   }
 };
-}  // namespace dfc
+} // namespace dfc
 
 #endif

@@ -3,32 +3,29 @@
 
 #include <array>
 #include <limits>
+
 #include "byte.hpp"
 #include "character-transformer.hpp"
 #include "immutable-pattern.hpp"
+#include "input-view.hpp"
 
 namespace dfc {
 class Matcher {
-  CharacterTransformer charTransformer_;
+  CharacterTransformer const charTransformer_{};
 
- public:
-  inline bool matches(char const* const in, int const remaining,
-                      ImmutablePattern const& pattern) const noexcept {
-    return matches(reinterpret_cast<byte const*>(in), remaining, pattern);
-  }
-
-  inline bool matches(byte const* const in, int const remaining,
-                      ImmutablePattern const& pattern) const noexcept {
-    if (pattern.size() <= remaining) {
-      return matchesWithoutBounds(in, pattern);
+public:
+  inline bool matches(InputView const &input,
+                      ImmutablePattern const &pattern) const noexcept {
+    if (pattern.size() <= input.size()) {
+      return matchesWithoutBounds(input.data(), pattern);
     }
 
     return false;
   }
 
- private:
-  inline bool matchesWithoutBounds(byte const* const in,
-                                   ImmutablePattern const& pattern) const
+private:
+  inline bool matchesWithoutBounds(byte const *const in,
+                                   ImmutablePattern const &pattern) const
       noexcept {
     if (pattern.caseSensitive()) {
       return matchesCaseSensitive(in, pattern);
@@ -37,8 +34,8 @@ class Matcher {
     }
   }
 
-  inline bool matchesCaseSensitive(byte const* const in,
-                                   ImmutablePattern const& pattern) const
+  inline bool matchesCaseSensitive(byte const *const in,
+                                   ImmutablePattern const &pattern) const
       noexcept {
     /*
      * memcmp is faster in all cases (up to 16x for 1024 characters) instead of
@@ -47,8 +44,8 @@ class Matcher {
     return std::memcmp(in, pattern.data(), pattern.size()) == 0;
   }
 
-  inline bool matchesCaseInsensitive(byte const* const in,
-                                     ImmutablePattern const& pattern) const
+  inline bool matchesCaseInsensitive(byte const *const in,
+                                     ImmutablePattern const &pattern) const
       noexcept {
     auto const patternData = pattern.data();
 
@@ -66,6 +63,6 @@ class Matcher {
     return charTransformer_.toLower(val);
   }
 };
-}  // namespace dfc
+} // namespace dfc
 
 #endif

@@ -8,6 +8,7 @@
 
 using dfc::CompactTable;
 using dfc::DirectFilter;
+using dfc::InputView;
 using dfc::PatternRange;
 using dfc::test::createImmutablePattern;
 
@@ -19,13 +20,15 @@ using TwoByteDfFourByteCtMatchPath =
                    CompactTable<uint32_t, 49157, 0x20000>>;
 
 namespace {
-void MatchPath_TwoByte_NoHit(benchmark::State& state) {
+void MatchPath_TwoByte_NoHit(benchmark::State &state) {
   TwoByteMatchPath path;
 
+  InputView input("ab");
   dfc::benchmark::CountOnMatcher onMatcher;
 
   for (auto _ : state) {
-    path.match("ab", 2, onMatcher);
+    path.match(input, onMatcher);
+
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();
@@ -33,13 +36,16 @@ void MatchPath_TwoByte_NoHit(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_TwoByte_NoHit);
 
-void MatchPath_TwoByte_Hit(benchmark::State& state) {
+void MatchPath_TwoByte_Hit(benchmark::State &state) {
   TwoByteMatchPath path;
   path.addPattern(createImmutablePattern(0, "ab"));
 
+  InputView input("ab");
   dfc::benchmark::CountOnMatcher onMatcher;
+
   for (auto _ : state) {
-    path.match("ab", 2, onMatcher);
+    path.match(input, onMatcher);
+
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();
@@ -47,13 +53,15 @@ void MatchPath_TwoByte_Hit(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_TwoByte_Hit);
 
-void MatchPath_FourByte_NoHit(benchmark::State& state) {
+void MatchPath_FourByte_NoHit(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
 
+  InputView input("abab");
   dfc::benchmark::CountOnMatcher onMatcher;
 
   for (auto _ : state) {
-    path.match("abab", 4, onMatcher);
+    path.match(input, onMatcher);
+
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();
@@ -61,13 +69,15 @@ void MatchPath_FourByte_NoHit(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_FourByte_NoHit);
 
-void MatchPath_FourByte_Hit(benchmark::State& state) {
+void MatchPath_FourByte_Hit(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
   path.addPattern(createImmutablePattern(0, "abab"));
 
+  InputView input("abab");
   dfc::benchmark::CountOnMatcher onMatcher;
+
   for (auto _ : state) {
-    path.match("abab", 4, onMatcher);
+    path.match(input, onMatcher);
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();
@@ -75,14 +85,16 @@ void MatchPath_FourByte_Hit(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_FourByte_Hit);
 
-void MatchPath_FourByte_ManyMisses(benchmark::State& state) {
+void MatchPath_FourByte_ManyMisses(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
   path.addPattern(createImmutablePattern(0, "abab"));
 
+  InputView input("abaa");
   dfc::benchmark::CountOnMatcher onMatcher;
+
   for (auto _ : state) {
     for (int i = 0; i < 100; ++i) {
-      path.match("abaa", 4, onMatcher);
+      path.match(input, onMatcher);
     }
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
@@ -91,14 +103,16 @@ void MatchPath_FourByte_ManyMisses(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_FourByte_ManyMisses);
 
-void MatchPath_FourByte_ManyHits(benchmark::State& state) {
+void MatchPath_FourByte_ManyHits(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
   path.addPattern(createImmutablePattern(0, "abab"));
 
+  InputView input("abab");
   dfc::benchmark::CountOnMatcher onMatcher;
+
   for (auto _ : state) {
     for (int i = 0; i < 100; ++i) {
-      path.match("abab", 4, onMatcher);
+      path.match(input, onMatcher);
     }
 
     int count = onMatcher.matchCount;
@@ -108,17 +122,20 @@ void MatchPath_FourByte_ManyHits(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_FourByte_ManyHits);
 
-void MatchPath_FourByte_FiftyPercentHits(benchmark::State& state) {
+void MatchPath_FourByte_FiftyPercentHits(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
   path.addPattern(createImmutablePattern(0, "abab"));
 
+  InputView nonMatchingInput("abaa");
+  InputView matchingInput("abab");
   dfc::benchmark::CountOnMatcher onMatcher;
+
   for (auto _ : state) {
     for (int i = 0; i < 100; ++i) {
       if (i % 2 == 0) {
-        path.match("abaa", 4, onMatcher);
+        path.match(nonMatchingInput, onMatcher);
       } else {
-        path.match("abab", 4, onMatcher);
+        path.match(matchingInput, onMatcher);
       }
     }
 
@@ -129,4 +146,4 @@ void MatchPath_FourByte_FiftyPercentHits(benchmark::State& state) {
 }
 BENCHMARK(MatchPath_FourByte_FiftyPercentHits);
 
-}  // namespace
+} // namespace

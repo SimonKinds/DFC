@@ -13,8 +13,7 @@
 #include "segmenter.hpp"
 
 namespace dfc {
-template <typename SegmentType>
-struct CompactTableEntry {
+template <typename SegmentType> struct CompactTableEntry {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
 
@@ -25,15 +24,14 @@ struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename SegmentType, SegmentType Hash, int Size>
-class CompactTable {
+template <typename SegmentType, SegmentType Hash, int Size> class CompactTable {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
 
- public:
+public:
   using segment_type = SegmentType;
 
- private:
+private:
   using Entry = CompactTableEntry<SegmentType>;
   using Bucket = std::vector<Entry>;
   using Table = std::array<Bucket, Size>;
@@ -53,31 +51,25 @@ class CompactTable {
    */
   Table table_;
 
- public:
-  void findAllMatches(char const* const in, int const remaining,
-                      OnMatcher const& onMatcher) const noexcept {
-    findAllMatches(reinterpret_cast<byte const*>(in), remaining, onMatcher);
+public:
+  void findAllMatches(InputView const &input,
+                      OnMatcher const &onMatcher) const {
+    auto const &bucket = getBucket(input.data());
+
+    findMatchesInBucket(bucket, input, onMatcher);
   }
 
-  void findAllMatches(byte const* const in, int const remaining,
-                      OnMatcher const& onMatcher) const {
-    auto const& bucket = getBucket(in);
-
-    findMatchesInBucket(bucket, in, remaining, onMatcher);
-  }
-
- private:
-  Bucket const& getBucket(byte const* const in) const {
+private:
+  Bucket const &getBucket(byte const *const in) const {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
 
     return table_[index];
   }
 
-  void findMatchesInBucket(Bucket const& bucket, byte const* const in,
-                           int const remaining,
-                           OnMatcher const& onMatcher) const {
-    auto const segment = segmenter_.segment(in);
+  void findMatchesInBucket(Bucket const &bucket, InputView const &input,
+                           OnMatcher const &onMatcher) const {
+    auto const segment = segmenter_.segment(input.data());
 
     auto entry = std::cbegin(bucket);
     auto const end = std::cend(bucket);
@@ -86,27 +78,26 @@ class CompactTable {
       if (entry->segment == segment) {
         found = true;
 
-        findMatchesInEntry(*entry, in, remaining, onMatcher);
+        findMatchesInEntry(*entry, input, onMatcher);
       }
 
       ++entry;
     }
   }
 
-  void findMatchesInEntry(Entry const& entry, byte const* const in,
-                          int const remaining,
-                          OnMatcher const& onMatcher) const {
+  void findMatchesInEntry(Entry const &entry, InputView const &input,
+                          OnMatcher const &onMatcher) const {
     for (auto const pidIndex : entry.pids) {
-      auto const& pattern = patterns_[pidIndex];
+      auto const &pattern = patterns_[pidIndex];
 
-      if (matcher_.matches(in, remaining, pattern)) {
+      if (matcher_.matches(input, pattern)) {
         onMatcher.onMatch(pattern);
       }
     }
   }
 
- public:
-  void addPattern(ImmutablePattern const& pattern) noexcept {
+public:
+  void addPattern(ImmutablePattern const &pattern) noexcept {
     PidIndex const index = patterns_.size();
 
     if (pattern.caseSensitive()) {
@@ -118,14 +109,14 @@ class CompactTable {
     patterns_.emplace_back(pattern);
   }
 
- private:
+private:
   void addPatternToTableWithoutPermutations(PidIndex pidIndex,
-                                            Pattern const& pattern) {
+                                            Pattern const &pattern) {
     addPatternToTableForSegment(pidIndex, segmenter_.segment(pattern));
   }
 
   void addPatternToTableWithPermutations(PidIndex pidIndex,
-                                         Pattern const& pattern) noexcept {
+                                         Pattern const &pattern) noexcept {
     for (auto const segment : segmenter_.permutations(pattern)) {
       addPatternToTableForSegment(pidIndex, segment);
     }
@@ -135,7 +126,7 @@ class CompactTable {
                                    SegmentType segment) noexcept {
     auto const bucketIndex = indexer_.index(segment);
 
-    auto& bucket = table_[bucketIndex];
+    auto &bucket = table_[bucketIndex];
 
     auto entry = std::begin(bucket);
     auto const end = std::cend(bucket);
@@ -153,6 +144,6 @@ class CompactTable {
     }
   }
 };
-}  // namespace dfc
+} // namespace dfc
 
 #endif

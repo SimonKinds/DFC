@@ -4,6 +4,7 @@
 #include "util-test.hpp"
 
 using dfc::ImmutablePattern;
+using dfc::InputView;
 using dfc::SaveOnMatcher;
 using dfc::test::createCaseInsensitiveImmutablePattern;
 using dfc::test::createCaseInsensitivePattern;
@@ -20,8 +21,8 @@ TEST_CASE("CT") {
 
   SECTION("Is empty by default") {
     for (int i = 0; i < ctSize; ++i) {
-      byte in = i;
-      ct.findAllMatches(&in, 1, onMatcher);
+      char in = i;
+      ct.findAllMatches(InputView(&in), onMatcher);
     }
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
@@ -33,7 +34,7 @@ TEST_CASE("CT") {
     dfc::Pid const pid = 1;
     ct.addPattern(createImmutablePattern(pid, patternValue));
 
-    ct.findAllMatches(patternValue, 1, onMatcher);
+    ct.findAllMatches(InputView(patternValue), onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 1);
     REQUIRE(onMatcher.matchedPids[0] == pid);
@@ -45,7 +46,7 @@ TEST_CASE("CT") {
     dfc::Pid const pid = 1;
     ct.addPattern(createImmutablePattern(pid, patternValue));
 
-    ct.findAllMatches("y", 1, onMatcher);
+    ct.findAllMatches(InputView("y"), onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 0);
   }
@@ -58,10 +59,10 @@ TEST_CASE("CT") {
     dfc::Pid const pid = 1;
     ct.addPattern(createCaseInsensitiveImmutablePattern(pid, patternValue));
 
-    ct.findAllMatches("ab", 2, onMatcher);
-    ct.findAllMatches("aB", 2, onMatcher);
-    ct.findAllMatches("Ab", 2, onMatcher);
-    ct.findAllMatches("AB", 2, onMatcher);
+    ct.findAllMatches(InputView("ab"), onMatcher);
+    ct.findAllMatches(InputView("aB"), onMatcher);
+    ct.findAllMatches(InputView("Ab"), onMatcher);
+    ct.findAllMatches(InputView("AB"), onMatcher);
 
     REQUIRE(onMatcher.matchedPids.size() == 4);
     REQUIRE(onMatcher.matchedPids[0] == pid);
@@ -76,7 +77,7 @@ TEST_CASE("CT") {
       ct.addPattern(createImmutablePattern(firstPatternPid, "x"));
       ct.addPattern(createImmutablePattern(secondPatternPid, "x"));
 
-      ct.findAllMatches("x", 1, onMatcher);
+      ct.findAllMatches(InputView("x"), onMatcher);
 
       REQUIRE(onMatcher.matchedPids.size() == 2);
       REQUIRE(onMatcher.matchedPids[0] == firstPatternPid);
@@ -87,8 +88,8 @@ TEST_CASE("CT") {
       ct.addPattern(createImmutablePattern(firstPatternPid, "x"));
       ct.addPattern(createImmutablePattern(secondPatternPid, "y"));
 
-      ct.findAllMatches("x", 1, onMatcher);
-      ct.findAllMatches("y", 1, onMatcher);
+      ct.findAllMatches(InputView("x"), onMatcher);
+      ct.findAllMatches(InputView("y"), onMatcher);
 
       REQUIRE(onMatcher.matchedPids.size() == 2);
       REQUIRE(onMatcher.matchedPids[0] == firstPatternPid);
@@ -96,4 +97,4 @@ TEST_CASE("CT") {
     }
   }
 }
-}  // namespace
+} // namespace
