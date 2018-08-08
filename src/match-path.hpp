@@ -39,9 +39,14 @@ public:
   }
 
   inline void match(InputView const &input, OnMatcher const &onMatcher) const {
-    if (df_.contains(input.data())) {
+    if (doesInputFitInDf(input) && df_.contains(input.data())) {
       ct_.findAllMatches(input, onMatcher);
     }
+  }
+
+  inline bool doesInputFitInDf(InputView const &input) const noexcept {
+    return input.size() >= static_cast<decltype(input.size())>(
+                               sizeof(typename DF::segment_type));
   }
 
   /**
@@ -65,7 +70,8 @@ public:
 private:
   inline bool shouldExtendInput(InputView const &input) const noexcept {
     const auto size = input.size();
-    return size == 1 && size < PatternRange::startInclusive;
+    return size == 1 && size < PatternRange::startInclusive &&
+           static_cast<int>(sizeof(typename DF::segment_type)) == 2;
   }
 
   inline auto extendInput(InputView const &input) const {
