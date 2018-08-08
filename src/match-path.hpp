@@ -42,7 +42,14 @@ public:
     if (df_.contains(input.data())) {
       ct_.findAllMatches(input, onMatcher);
     }
+  }
 
+  /**
+   * as this should only ever happen as the size of the input is 1, keep it out
+   * of the hot path
+   */
+  inline void matchWithExtension(InputView const &input,
+                                 OnMatcher const &onMatcher) const {
     if (shouldExtendInput(input)) {
       auto segments = extendInput(input);
 
@@ -55,6 +62,7 @@ public:
     }
   }
 
+private:
   inline bool shouldExtendInput(InputView const &input) const noexcept {
     const auto size = input.size();
     return size == 1 && size < PatternRange::startInclusive;

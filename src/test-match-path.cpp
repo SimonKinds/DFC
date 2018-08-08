@@ -65,7 +65,7 @@ TEST_CASE(
   path.addPattern(ImmutablePattern(2, createPattern("ab")));
   path.addPattern(ImmutablePattern(3, createPattern("ac")));
 
-  path.match(InputView("a"), onMatcher);
+  path.matchWithExtension(InputView("a"), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.size() == 3);
   REQUIRE(onMatcher.matchedPids[0] == 1);
