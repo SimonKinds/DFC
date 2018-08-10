@@ -11,6 +11,7 @@
 
 #include "df-masker.hpp"
 #include "indexer.hpp"
+#include "input-view.hpp"
 #include "pattern-range.hpp"
 #include "pattern.hpp"
 #include "segment-extender.hpp"
@@ -18,18 +19,18 @@
 
 namespace dfc {
 
-template <typename SegmentType, SegmentType Hash = 1,
-          typename IndexType = SegmentType>
+template <typename SegmentType_, SegmentType_ Hash = 1,
+          typename IndexType = SegmentType_>
 class DirectFilter {
-  static_assert(std::is_integral<SegmentType>::value,
+  static_assert(std::is_integral<SegmentType_>::value,
                 "SegmentType must be integral");
   static_assert(std::is_integral<IndexType>::value,
                 "IndexType must be integral");
 
- public:
-  using segment_type = SegmentType;
+public:
+  using SegmentType = SegmentType_;
 
- private:
+private:
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
@@ -40,14 +41,16 @@ class DirectFilter {
   DirectFilterIndexer<SegmentType, Hash, IndexType> const indexer_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
- public:
-  Filter const& filter() const noexcept { return filter_; }
+public:
+  Filter const &filter() const noexcept { return filter_; }
 
-  inline bool contains(char const* const in) const noexcept {
-    return contains(reinterpret_cast<byte const*>(in));
+  inline int indexByteCount() const noexcept { return sizeof(SegmentType); }
+
+  inline bool contains(char const *const in) const noexcept {
+    return contains(reinterpret_cast<byte const *>(in));
   }
 
-  inline bool contains(byte const* const in) const noexcept {
+  inline bool contains(byte const *const in) const noexcept {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
     auto const mask = masker_.mask(segment);
@@ -55,10 +58,10 @@ class DirectFilter {
     return filter_[index] & mask;
   }
 
-  void addPattern(Pattern const& pattern) {
+  void addPattern(Pattern const &pattern) {
     if (shouldExtendSegment(pattern)) {
       auto permutations = extendSegment(pattern);
-      for (auto const& permutation : permutations) {
+      for (auto const &permutation : permutations) {
         addPattern(permutation.data(), pattern.caseSensitive());
       }
     } else {
@@ -66,18 +69,18 @@ class DirectFilter {
     }
   }
 
- private:
-  bool shouldExtendSegment(Pattern const& pattern) const noexcept {
+private:
+  bool shouldExtendSegment(Pattern const &pattern) const noexcept {
     return pattern.size() < static_cast<int>(sizeof(SegmentType));
   }
 
-  auto extendSegment(Pattern const& pattern) const {
+  auto extendSegment(Pattern const &pattern) const {
     SegmentExtender<SegmentType> extender;
 
     return extender.extend(pattern);
   }
 
-  void addPattern(byte const* const pattern, bool caseSensitive) noexcept {
+  void addPattern(byte const *const pattern, bool caseSensitive) noexcept {
     if (caseSensitive) {
       addPatternWithoutPermutations(pattern);
     } else {
@@ -85,11 +88,11 @@ class DirectFilter {
     }
   }
 
-  void addPatternWithoutPermutations(byte const* const pattern) noexcept {
+  void addPatternWithoutPermutations(byte const *const pattern) noexcept {
     addSegment(segmenter_.segment(pattern));
   }
 
-  void addPatternWithPermutations(byte const* const pattern) noexcept {
+  void addPatternWithPermutations(byte const *const pattern) noexcept {
     for (auto const segment : segmenter_.permutations(pattern)) {
       addSegment(segment);
     }
@@ -102,6 +105,6 @@ class DirectFilter {
     filter_[index] |= mask;
   }
 };
-}  // namespace dfc
+} // namespace dfc
 
 #endif

@@ -21,7 +21,7 @@ template <typename PatternRange, typename DF, typename CT> class MatchPath {
   static_assert(is_compact_table<CT>::value,
                 "Last template parameter must be a compact table");
   static_assert(PatternRange::startInclusive ==
-                    sizeof(typename CT::segment_type),
+                    sizeof(typename CT::SegmentType),
                 "The segment type of the CT must be equal in size to the "
                 "smallest pattern length");
 
@@ -47,13 +47,11 @@ public:
   }
 
   inline bool doesInputFitInDf(InputView const &input) const noexcept {
-    return input.size() >= static_cast<decltype(input.size())>(
-                               sizeof(typename DF::segment_type));
+    return input.size() >= df_.indexByteCount();
   }
 
   inline bool doesInputFitInCt(InputView const &input) const noexcept {
-    return input.size() >= static_cast<decltype(input.size())>(
-                               sizeof(typename CT::segment_type));
+    return input.size() >= ct_.indexByteCount();
   }
 
   /**
@@ -78,11 +76,11 @@ private:
   inline bool shouldExtendInput(InputView const &input) const noexcept {
     const auto size = input.size();
     return size == 1 && size < PatternRange::startInclusive &&
-           static_cast<int>(sizeof(typename DF::segment_type)) == 2;
+           static_cast<int>(sizeof(typename DF::SegmentType)) == 2;
   }
 
   inline auto extendInput(InputView const &input) const {
-    SegmentExtender<typename DF::segment_type> extender;
+    SegmentExtender<typename DF::SegmentType> extender;
 
     return extender.extend(input.data(), input.size());
   }

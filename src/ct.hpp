@@ -24,12 +24,13 @@ template <typename SegmentType> struct CompactTableEntry {
   std::vector<PidIndex> pids;
 };
 
-template <typename SegmentType, SegmentType Hash, int Size> class CompactTable {
-  static_assert(std::is_integral<SegmentType>::value,
+template <typename SegmentType_, SegmentType_ Hash, int Size>
+class CompactTable {
+  static_assert(std::is_integral<SegmentType_>::value,
                 "SegmentType must be integral");
 
 public:
-  using segment_type = SegmentType;
+  using SegmentType = SegmentType_;
 
 private:
   using Entry = CompactTableEntry<SegmentType>;
@@ -52,6 +53,8 @@ private:
   Table table_;
 
 public:
+  inline int indexByteCount() const noexcept { return sizeof(SegmentType); }
+
   void findAllMatches(InputView const &input,
                       OnMatcher const &onMatcher) const {
     auto const &bucket = getBucket(input.data());
