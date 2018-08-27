@@ -60,4 +60,4 @@ void CT_FourByte_FindAllMatches_CaseInsensitive(benchmark::State &state) {
 }
 BENCHMARK(CT_FourByte_FindAllMatches_CaseInsensitive)->Range(4, 1024);
 
-} // namespace
+}  // namespace

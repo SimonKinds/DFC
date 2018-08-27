@@ -11,7 +11,8 @@
 #include "pattern.hpp"
 
 namespace dfc {
-template <typename SegmentType> class SegmentExtender {
+template <typename SegmentType>
+class SegmentExtender {
   static int const segmentSize = sizeof(SegmentType);
   // if we allow 2 bytes, we're already at 16k permutations
   static int const allowedBytesToExtend = 1;
@@ -24,7 +25,7 @@ template <typename SegmentType> class SegmentExtender {
     return std::numeric_limits<uint8_t>::max() + 1;
   }
 
-public:
+ public:
   using SegmentPermutation = std::array<byte, segmentSize>;
   using PermutationCollection =
       std::array<SegmentPermutation, permutationCount()>;
@@ -57,14 +58,13 @@ public:
     return permutations;
   }
 
-private:
+ private:
   bool isAllowed(Pattern const &pattern) const noexcept {
     return segmentSize - pattern.size() <= allowedBytesToExtend;
   }
 
-  PermutationCollection
-  initializePermutationContainer(byte const *const prefix,
-                                 int const prefixSize) const {
+  PermutationCollection initializePermutationContainer(
+      byte const *const prefix, int const prefixSize) const {
     SegmentPermutation permutation;
     std::memcpy(permutation.data(), prefix, prefixSize);
 
@@ -86,6 +86,6 @@ private:
     }
   }
 };
-} // namespace dfc
+}  // namespace dfc
 
 #endif

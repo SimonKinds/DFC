@@ -43,4 +43,4 @@ TEST_CASE("Matcher does not match if remaining bytes are fewer than pattern") {
   REQUIRE(matcher.matches(InputView("a"), pattern) == false);
 }
 
-} // namespace
+}  // namespace

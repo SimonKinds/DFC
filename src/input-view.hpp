@@ -12,7 +12,7 @@ class InputView {
   byte const *const data_;
   int const size_;
 
-public:
+ public:
   explicit InputView(char const *const data)
       : InputView(data, std::strlen(data)) {}
 
@@ -26,6 +26,6 @@ public:
 
   int size() const noexcept { return size_; }
 };
-} // namespace dfc
+}  // namespace dfc
 
 #endif

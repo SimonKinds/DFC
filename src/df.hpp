@@ -27,10 +27,10 @@ class DirectFilter {
   static_assert(std::is_integral<IndexType>::value,
                 "IndexType must be integral");
 
-public:
+ public:
   using SegmentType = SegmentType_;
 
-private:
+ private:
   using Filter =
       typename std::array<byte,
                           ((std::numeric_limits<IndexType>::max() + 1) >> 3)>;
@@ -41,7 +41,7 @@ private:
   DirectFilterIndexer<SegmentType, Hash, IndexType> const indexer_{};
   DirectFilterMasker<SegmentType> const masker_{};
 
-public:
+ public:
   Filter const &filter() const noexcept { return filter_; }
 
   inline int indexByteCount() const noexcept { return sizeof(SegmentType); }
@@ -69,7 +69,7 @@ public:
     }
   }
 
-private:
+ private:
   bool shouldExtendSegment(Pattern const &pattern) const noexcept {
     return pattern.size() < static_cast<int>(sizeof(SegmentType));
   }
@@ -105,6 +105,6 @@ private:
     filter_[index] |= mask;
   }
 };
-} // namespace dfc
+}  // namespace dfc
 
 #endif

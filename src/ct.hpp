@@ -13,7 +13,8 @@
 #include "segmenter.hpp"
 
 namespace dfc {
-template <typename SegmentType> struct CompactTableEntry {
+template <typename SegmentType>
+struct CompactTableEntry {
   static_assert(std::is_integral<SegmentType>::value,
                 "SegmentType must be integral");
 
@@ -29,10 +30,10 @@ class CompactTable {
   static_assert(std::is_integral<SegmentType_>::value,
                 "SegmentType must be integral");
 
-public:
+ public:
   using SegmentType = SegmentType_;
 
-private:
+ private:
   using Entry = CompactTableEntry<SegmentType>;
   using Bucket = std::vector<Entry>;
   using Table = std::array<Bucket, Size>;
@@ -52,7 +53,7 @@ private:
    */
   Table table_;
 
-public:
+ public:
   inline int indexByteCount() const noexcept { return sizeof(SegmentType); }
 
   void findAllMatches(InputView const &input,
@@ -62,7 +63,7 @@ public:
     findMatchesInBucket(bucket, input, onMatcher);
   }
 
-private:
+ private:
   Bucket const &getBucket(byte const *const in) const {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
@@ -99,7 +100,7 @@ private:
     }
   }
 
-public:
+ public:
   void addPattern(ImmutablePattern const &pattern) noexcept {
     PidIndex const index = patterns_.size();
 
@@ -112,7 +113,7 @@ public:
     patterns_.emplace_back(pattern);
   }
 
-private:
+ private:
   void addPatternToTableWithoutPermutations(PidIndex pidIndex,
                                             Pattern const &pattern) {
     addPatternToTableForSegment(pidIndex, segmenter_.segment(pattern));
@@ -147,6 +148,6 @@ private:
     }
   }
 };
-} // namespace dfc
+}  // namespace dfc
 
 #endif

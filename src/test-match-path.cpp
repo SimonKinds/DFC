@@ -72,4 +72,4 @@ TEST_CASE(
   REQUIRE(onMatcher.matchedPids[1] == 2);
   REQUIRE(onMatcher.matchedPids[2] == 3);
 }
-} // namespace
+}  // namespace

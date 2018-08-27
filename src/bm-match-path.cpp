@@ -146,4 +146,4 @@ void MatchPath_FourByte_FiftyPercentHits(benchmark::State &state) {
 }
 BENCHMARK(MatchPath_FourByte_FiftyPercentHits);
 
-} // namespace
+}  // namespace

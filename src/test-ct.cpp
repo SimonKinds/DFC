@@ -97,4 +97,4 @@ TEST_CASE("CT") {
     }
   }
 }
-} // namespace
+}  // namespace

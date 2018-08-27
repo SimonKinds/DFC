@@ -13,7 +13,7 @@ namespace dfc {
 class Matcher {
   CharacterTransformer const charTransformer_{};
 
-public:
+ public:
   inline bool matches(InputView const &input,
                       ImmutablePattern const &pattern) const noexcept {
     if (pattern.size() <= input.size()) {
@@ -23,7 +23,7 @@ public:
     return false;
   }
 
-private:
+ private:
   inline bool matchesWithoutBounds(byte const *const in,
                                    ImmutablePattern const &pattern) const
       noexcept {
@@ -63,6 +63,6 @@ private:
     return charTransformer_.toLower(val);
   }
 };
-} // namespace dfc
+}  // namespace dfc
 
 #endif

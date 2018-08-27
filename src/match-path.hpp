@@ -13,7 +13,8 @@
 
 namespace dfc {
 
-template <typename PatternRange, typename DF, typename CT> class MatchPath {
+template <typename PatternRange, typename DF, typename CT>
+class MatchPath {
   static_assert(is_pattern_range<PatternRange>::value,
                 "First template parameter must be a pattern range");
   static_assert(is_direct_filter<DF>::value,
@@ -25,12 +26,12 @@ template <typename PatternRange, typename DF, typename CT> class MatchPath {
                 "The segment type of the CT must be equal in size to the "
                 "smallest pattern length");
 
-private:
+ private:
   PatternRange const patternRange_{};
   DF df_;
   CT ct_;
 
-public:
+ public:
   void addPattern(ImmutablePattern const &pattern) {
     if (patternRange_.includes(pattern)) {
       df_.addPattern(pattern);
@@ -72,7 +73,7 @@ public:
     }
   }
 
-private:
+ private:
   inline bool shouldExtendInput(InputView const &input) const noexcept {
     const auto size = input.size();
     return size == 1 && size < PatternRange::startInclusive &&
@@ -85,6 +86,6 @@ private:
     return extender.extend(input.data(), input.size());
   }
 };
-} // namespace dfc
+}  // namespace dfc
 
 #endif
