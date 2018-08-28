@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "df-interface.hpp"
 #include "df-masker.hpp"
 #include "indexer.hpp"
 #include "input-view.hpp"
@@ -21,7 +22,7 @@ namespace dfc {
 
 template <typename SegmentType_, SegmentType_ Hash = 1,
           typename IndexType = SegmentType_>
-class DirectFilter {
+class DirectFilter final : public DirectFilterInterface {
   static_assert(std::is_integral<SegmentType_>::value,
                 "SegmentType must be integral");
   static_assert(std::is_integral<IndexType>::value,
@@ -44,13 +45,13 @@ class DirectFilter {
  public:
   Filter const &filter() const noexcept { return filter_; }
 
-  inline int indexByteCount() const noexcept { return sizeof(SegmentType); }
+  constexpr int indexByteCount() const noexcept { return sizeof(SegmentType); }
 
-  inline bool contains(char const *const in) const noexcept {
+  constexpr bool contains(char const *const in) const noexcept {
     return contains(reinterpret_cast<byte const *>(in));
   }
 
-  inline bool contains(byte const *const in) const noexcept {
+  constexpr bool contains(byte const *const in) const noexcept {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
     auto const mask = masker_.mask(segment);
