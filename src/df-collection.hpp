@@ -17,19 +17,19 @@ class DirectFilterCollection final : public DirectFilterInterface {
   TupleType dfs_{};
 
  public:
-  constexpr int indexByteCount() const noexcept {
+  inline int indexByteCount() const noexcept final {
     return getMaxByteCount(std::make_index_sequence<dfCount()>());
   }
 
-  constexpr bool contains(char const *const in) const noexcept {
+  inline bool contains(char const *const in) const noexcept {
     return contains(reinterpret_cast<byte const *>(in));
   }
 
-  constexpr bool contains(byte const *const in) const noexcept {
+  inline bool contains(byte const *const in) const noexcept final {
     return contains(in, std::make_index_sequence<dfCount()>());
   }
 
-  void addPattern(Pattern const &pattern) {
+  void addPattern(Pattern const &pattern) final {
     addPattern(pattern, std::make_index_sequence<dfCount()>());
   }
 

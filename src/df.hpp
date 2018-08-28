@@ -45,13 +45,15 @@ class DirectFilter final : public DirectFilterInterface {
  public:
   Filter const &filter() const noexcept { return filter_; }
 
-  constexpr int indexByteCount() const noexcept { return sizeof(SegmentType); }
+  inline int indexByteCount() const noexcept final {
+    return sizeof(SegmentType);
+  }
 
-  constexpr bool contains(char const *const in) const noexcept {
+  inline bool contains(char const *const in) const noexcept {
     return contains(reinterpret_cast<byte const *>(in));
   }
 
-  constexpr bool contains(byte const *const in) const noexcept {
+  inline bool contains(byte const *const in) const noexcept final {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
     auto const mask = masker_.mask(segment);
@@ -59,7 +61,7 @@ class DirectFilter final : public DirectFilterInterface {
     return filter_[index] & mask;
   }
 
-  void addPattern(Pattern const &pattern) {
+  void addPattern(Pattern const &pattern) final {
     if (shouldExtendSegment(pattern)) {
       auto permutations = extendSegment(pattern);
       for (auto const &permutation : permutations) {
