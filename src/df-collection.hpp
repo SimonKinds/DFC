@@ -8,6 +8,8 @@
 
 namespace dfc {
 
+namespace impl {}
+
 template <typename... Ts>
 class DirectFilterCollection final : public DirectFilterInterface {
   static_assert((std::is_base_of_v<DirectFilterInterface, Ts> && ...),
@@ -38,13 +40,12 @@ class DirectFilterCollection final : public DirectFilterInterface {
 
   template <std::size_t I, std::size_t... Is>
   constexpr int getMaxByteCount(std::index_sequence<I, Is...>) const noexcept {
-    return std::max(std::get<I>(dfs_).indexByteCount(),
-                    getMaxByteCount(std::index_sequence<Is...>()));
-  }
-
-  template <std::size_t I>
-  constexpr int getMaxByteCount(std::index_sequence<I>) const noexcept {
-    return std::get<I>(dfs_).indexByteCount();
+    if constexpr (sizeof...(Is) == 0) {
+      return std::get<I>(dfs_).indexByteCount();
+    } else {
+      return std::max(std::get<I>(dfs_).indexByteCount(),
+                      getMaxByteCount(std::index_sequence<Is...>()));
+    }
   }
 
   template <std::size_t... Is>
