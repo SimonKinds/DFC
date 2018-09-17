@@ -7,6 +7,7 @@
 #include "ct.hpp"
 #include "df.hpp"
 #include "is-ct.hpp"
+#include "is-df.hpp"
 #include "is-pattern-range.hpp"
 #include "on-matcher.hpp"
 
@@ -16,7 +17,7 @@ template <typename PatternRange, typename DF, typename CT>
 class MatchPath {
   static_assert(is_pattern_range<PatternRange>::value,
                 "First template parameter must be a pattern range");
-  static_assert(std::is_base_of_v<DirectFilterInterface, DF>,
+  static_assert(is_direct_filter<DF>::value,
                 "Second template parameter must be a direct filter");
   static_assert(is_compact_table<CT>::value,
                 "Last template parameter must be a compact table");
