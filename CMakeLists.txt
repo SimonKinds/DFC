@@ -35,6 +35,7 @@ add_executable(bm-dfc
 
   src/bm-indexer.cpp
   src/bm-df.cpp
+  src/bm-df-collection.cpp
   src/bm-ct.cpp
   src/bm-match-path.cpp
 )
