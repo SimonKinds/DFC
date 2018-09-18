@@ -4,10 +4,10 @@
 #include <utility>
 
 #include "byte.hpp"
-#include "ct.hpp"
-#include "df.hpp"
-#include "is-ct.hpp"
-#include "is-df.hpp"
+#include "compact-table.hpp"
+#include "direct-filter.hpp"
+#include "is-compact-table.hpp"
+#include "is-direct-filter.hpp"
 #include "is-pattern-range.hpp"
 #include "on-matcher.hpp"
 

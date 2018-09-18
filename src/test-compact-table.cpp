@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "ct.hpp"
+#include "compact-table.hpp"
 #include "util-test.hpp"
 
 using dfc::ImmutablePattern;
@@ -13,7 +13,7 @@ using dfc::test::createPattern;
 
 namespace {
 
-TEST_CASE("CT") {
+TEST_CASE("Compact Table") {
   SaveOnMatcher onMatcher;
 
   int const ctSize = 0x100;

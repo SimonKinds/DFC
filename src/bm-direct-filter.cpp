@@ -1,6 +1,6 @@
 #include "benchmark/benchmark.h"
 
-#include "df.hpp"
+#include "direct-filter.hpp"
 #include "util-test.hpp"
 
 using dfc::test::fiveBytePattern;

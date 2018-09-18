@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
-#include "df-collection.hpp"
-#include "df.hpp"
+#include "direct-filter-collection.hpp"
+#include "direct-filter.hpp"
 #include "util-test.hpp"
 
 using dfc::DirectFilter;

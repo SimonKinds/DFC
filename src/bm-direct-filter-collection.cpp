@@ -1,6 +1,6 @@
 #include "benchmark/benchmark.h"
 
-#include "df-collection.hpp"
+#include "direct-filter-collection.hpp"
 #include "util-test.hpp"
 
 using dfc::DirectFilter;

@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "df-interface.hpp"
+#include "direct-filter-interface.hpp"
 
 namespace dfc {
 

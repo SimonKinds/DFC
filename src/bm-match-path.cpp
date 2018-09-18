@@ -1,7 +1,7 @@
 #include "benchmark/benchmark.h"
 
-#include "ct.hpp"
-#include "df.hpp"
+#include "compact-table.hpp"
+#include "direct-filter.hpp"
 #include "match-path.hpp"
 #include "util-benchmark.hpp"
 #include "util-test.hpp"

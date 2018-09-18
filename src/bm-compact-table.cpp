@@ -1,6 +1,6 @@
 #include "benchmark/benchmark.h"
 
-#include "ct.hpp"
+#include "compact-table.hpp"
 #include "util-benchmark.hpp"
 #include "util-test.hpp"
 

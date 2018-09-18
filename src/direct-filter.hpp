@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "df-interface.hpp"
-#include "df-masker.hpp"
+#include "direct-filter-interface.hpp"
+#include "direct-filter-masker.hpp"
 #include "indexer.hpp"
 #include "input-view.hpp"
 #include "pattern-range.hpp"

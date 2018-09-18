@@ -4,8 +4,8 @@
 #include <algorithm>
 #include <tuple>
 
-#include "df.hpp"
-#include "is-df.hpp"
+#include "direct-filter.hpp"
+#include "is-direct-filter.hpp"
 
 namespace dfc {
 
