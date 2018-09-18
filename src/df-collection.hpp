@@ -5,14 +5,13 @@
 #include <tuple>
 
 #include "df.hpp"
+#include "is-df.hpp"
 
 namespace dfc {
 
-namespace impl {}
-
 template <typename... Ts>
 class DirectFilterCollection final : public DirectFilterInterface {
-  static_assert((std::is_base_of_v<DirectFilterInterface, Ts> && ...),
+  static_assert((is_direct_filter<Ts>::value && ...),
                 "Must be a direct filter");
 
   using TupleType = std::tuple<Ts...>;
