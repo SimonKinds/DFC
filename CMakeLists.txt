@@ -18,13 +18,13 @@ add_executable(test-dfc
 
   src/test-main.cpp
   src/test-pattern-aggregator.cpp
-  src/test-direct-filter.cpp
+  src/test-flat-direct-filter.cpp
   src/test-compact-table.cpp
   src/test-matcher.cpp
   src/test-match-path.cpp
   src/test-segmenter.cpp
   src/test-indexer.cpp
-  src/test-direct-filter-collection.cpp
+  src/test-layered-direct-filter.cpp
 )
 target_include_directories(test-dfc PRIVATE third-party)
 
@@ -34,8 +34,8 @@ add_executable(bm-dfc
   src/util-test.cpp
 
   src/bm-indexer.cpp
-  src/bm-direct-filter.cpp
-  src/bm-direct-filter-collection.cpp
+  src/bm-flat-direct-filter.cpp
+  src/bm-layered-direct-filter.cpp
   src/bm-compact-table.cpp
   src/bm-match-path.cpp
 )

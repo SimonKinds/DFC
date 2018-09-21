@@ -1,14 +1,14 @@
-#ifndef DFC_DF_INTERFACE_HPP
-#define DFC_DF_INTERFACE_HPP
+#ifndef DFC_DF_HPP
+#define DFC_DF_HPP
 
 #include "byte.hpp"
 
 namespace dfc {
 class Pattern;
 
-class DirectFilterInterface {
+class DirectFilter {
  public:
-  virtual ~DirectFilterInterface() = default;
+  virtual ~DirectFilter() = default;
 
   virtual int indexByteCount() const noexcept = 0;
 

@@ -1,22 +1,22 @@
 #include "benchmark/benchmark.h"
 
 #include "compact-table.hpp"
-#include "direct-filter.hpp"
+#include "flat-direct-filter.hpp"
 #include "match-path.hpp"
 #include "util-benchmark.hpp"
 #include "util-test.hpp"
 
 using dfc::CompactTable;
-using dfc::DirectFilter;
+using dfc::FlatDirectFilter;
 using dfc::InputView;
 using dfc::PatternRange;
 using dfc::test::createImmutablePattern;
 
 using TwoByteMatchPath =
-    dfc::MatchPath<PatternRange<2, 100>, DirectFilter<uint16_t>,
+    dfc::MatchPath<PatternRange<2, 100>, FlatDirectFilter<uint16_t>,
                    CompactTable<uint16_t, 1, 0x100>>;
 using TwoByteDfFourByteCtMatchPath =
-    dfc::MatchPath<PatternRange<4, 100>, DirectFilter<uint16_t>,
+    dfc::MatchPath<PatternRange<4, 100>, FlatDirectFilter<uint16_t>,
                    CompactTable<uint32_t, 49157, 0x20000>>;
 
 namespace {

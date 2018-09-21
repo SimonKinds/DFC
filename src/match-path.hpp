@@ -5,7 +5,7 @@
 
 #include "byte.hpp"
 #include "compact-table.hpp"
-#include "direct-filter.hpp"
+#include "flat-direct-filter.hpp"
 #include "is-compact-table.hpp"
 #include "is-direct-filter.hpp"
 #include "is-pattern-range.hpp"

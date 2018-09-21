@@ -3,12 +3,12 @@
 
 #include <type_traits>
 
-#include "direct-filter-interface.hpp"
+#include "direct-filter.hpp"
 
 namespace dfc {
 
 template <typename DF>
-using is_direct_filter = std::is_base_of<DirectFilterInterface, DF>;
+using is_direct_filter = std::is_base_of<DirectFilter, DF>;
 
 }  // namespace dfc
 #endif

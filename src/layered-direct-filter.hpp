@@ -1,5 +1,5 @@
-#ifndef DFC_DF_COLLECTION_HPP
-#define DFC_DF_COLLECTION_HPP
+#ifndef DFC_LAYERED_DF_HPP
+#define DFC_LAYERED_DF_HPP
 
 #include <algorithm>
 #include <tuple>
@@ -9,8 +9,13 @@
 
 namespace dfc {
 
+/**
+ * A class that can stack multiple direct filters with a zero runtime overhead.
+ * Each template parameter must be a DirectFilter
+ */
+
 template <typename... Ts>
-class DirectFilterCollection final : public DirectFilterInterface {
+class LayeredDirectFilter final : public DirectFilter {
   static_assert((is_direct_filter<Ts>::value && ...),
                 "Must be a direct filter");
 

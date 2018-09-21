@@ -1,24 +1,24 @@
 #include "catch.hpp"
 
-#include "direct-filter-collection.hpp"
-#include "direct-filter.hpp"
+#include "flat-direct-filter.hpp"
+#include "layered-direct-filter.hpp"
 #include "util-test.hpp"
 
-using dfc::DirectFilter;
-using dfc::DirectFilterCollection;
+using dfc::FlatDirectFilter;
+using dfc::LayeredDirectFilter;
 using dfc::test::createPattern;
 
 TEST_CASE(
     "DF collection returns the maximum byte count required for indexing") {
-  DirectFilterCollection<DirectFilter<uint8_t>, DirectFilter<uint32_t>,
-                         DirectFilter<uint16_t>>
+  LayeredDirectFilter<FlatDirectFilter<uint8_t>, FlatDirectFilter<uint32_t>,
+                      FlatDirectFilter<uint16_t>>
       collection;
 
   REQUIRE(collection.indexByteCount() == 4);
 }
 
 TEST_CASE("DF collection iterates over all filters when adding patterns") {
-  DirectFilterCollection<DirectFilter<uint8_t>, DirectFilter<uint16_t>>
+  LayeredDirectFilter<FlatDirectFilter<uint8_t>, FlatDirectFilter<uint16_t>>
       collection;
 
   collection.addPattern(createPattern("12"));

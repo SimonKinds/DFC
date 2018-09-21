@@ -1,7 +1,7 @@
 #include "catch.hpp"
 
 #include "compact-table.hpp"
-#include "direct-filter.hpp"
+#include "flat-direct-filter.hpp"
 #include "match-path.hpp"
 #include "util-test.hpp"
 
@@ -13,7 +13,7 @@ using dfc::test::createImmutablePattern;
 using dfc::test::createPattern;
 
 using PatternRange = dfc::PatternRange<2, 100>;
-using Df = dfc::DirectFilter<uint16_t, 1, uint16_t>;
+using Df = dfc::FlatDirectFilter<uint16_t, 1, uint16_t>;
 using Ct = dfc::CompactTable<uint16_t, 1, 100>;
 
 TEST_CASE("No match if no patterns are added") {

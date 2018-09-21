@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "direct-filter.hpp"
+#include "flat-direct-filter.hpp"
 #include "util-test.hpp"
 
 using dfc::test::createCaseInsensitivePattern;
@@ -9,7 +9,7 @@ using dfc::test::twoBytePattern;
 
 namespace {
 TEST_CASE("Empty without patterns") {
-  dfc::DirectFilter<uint16_t> df;
+  dfc::FlatDirectFilter<uint16_t> df;
 
   int ors = 0;
   for (auto const byte : df.filter()) {
@@ -20,7 +20,7 @@ TEST_CASE("Empty without patterns") {
 }
 
 TEST_CASE("Sets bit if pattern is within the size constraint") {
-  dfc::DirectFilter<uint16_t> df;
+  dfc::FlatDirectFilter<uint16_t> df;
 
   df.addPattern(twoBytePattern());
 
@@ -28,7 +28,7 @@ TEST_CASE("Sets bit if pattern is within the size constraint") {
 }
 
 TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
-  dfc::DirectFilter<uint16_t> df;
+  dfc::FlatDirectFilter<uint16_t> df;
 
   df.addPattern(createCaseInsensitivePattern("ab"));
 
@@ -39,7 +39,7 @@ TEST_CASE("Sets bit for all permutations if pattern is case insensitive") {
 }
 
 TEST_CASE("Extends pattern to all permutations of segment size if smaller") {
-  dfc::DirectFilter<uint16_t> df;
+  dfc::FlatDirectFilter<uint16_t> df;
 
   auto const pattern = "a";
 
@@ -59,7 +59,7 @@ TEST_CASE("Extends pattern to all permutations of segment size if smaller") {
 }
 
 TEST_CASE("Only allows extending segment by one byte") {
-  dfc::DirectFilter<uint32_t> df;
+  dfc::FlatDirectFilter<uint32_t> df;
 
   REQUIRE_THROWS_AS(
       df.addPattern(createPattern("aa")),
