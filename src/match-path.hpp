@@ -13,6 +13,13 @@
 
 namespace dfc {
 
+/**
+ * A direct filter and compact table covering a certain pattern range
+ * First template parameter should be a PatternRange
+ * Second template paremeter should be a DirectFilter
+ * Third template parameter should be a CompactTable
+ */
+
 template <typename PatternRange, typename DF, typename CT>
 class MatchPath {
   static_assert(is_pattern_range<PatternRange>::value,
@@ -47,14 +54,6 @@ class MatchPath {
     }
   }
 
-  inline bool doesInputFitInDf(InputView const &input) const noexcept {
-    return input.size() >= df_.indexByteCount();
-  }
-
-  inline bool doesInputFitInCt(InputView const &input) const noexcept {
-    return input.size() >= ct_.indexByteCount();
-  }
-
   /**
    * as this should only ever happen as the size of the input is 1, keep it out
    * of the hot path
@@ -74,6 +73,14 @@ class MatchPath {
   }
 
  private:
+  inline bool doesInputFitInDf(InputView const &input) const noexcept {
+    return input.size() >= df_.indexByteCount();
+  }
+
+  inline bool doesInputFitInCt(InputView const &input) const noexcept {
+    return input.size() >= ct_.indexByteCount();
+  }
+
   inline bool shouldExtendInput(InputView const &input) const noexcept {
     const auto size = input.size();
     return size == 1 && size < PatternRange::startInclusive &&
