@@ -146,7 +146,7 @@ void MatchPath_FourByte_FiftyPercentHits(benchmark::State &state) {
 }
 BENCHMARK(MatchPath_FourByte_FiftyPercentHits);
 
-void MatchPath_TwoByte_matchWithExtension(benchmark::State &state) {
+void MatchPath_TwoByte_extendedInput(benchmark::State &state) {
   TwoByteMatchPath path;
   path.addPattern(createImmutablePattern(0, "ab"));
 
@@ -154,13 +154,13 @@ void MatchPath_TwoByte_matchWithExtension(benchmark::State &state) {
   dfc::benchmark::CountOnMatcher onMatcher;
 
   for (auto _ : state) {
-    path.matchWithExtension(input, onMatcher);
+    path.match(input, onMatcher);
 
     int count = onMatcher.matchCount;
     benchmark::DoNotOptimize(count);
     benchmark::ClobberMemory();
   }
 }
-BENCHMARK(MatchPath_TwoByte_matchWithExtension);
+BENCHMARK(MatchPath_TwoByte_extendedInput);
 
 }  // namespace

@@ -47,28 +47,11 @@ class MatchPath {
   }
 
   inline void match(InputView const &input, OnMatcher const &onMatcher) const {
-    if (doesInputFitInDf(input) && df_.contains(input.data())) {
-      if (doesInputFitInCt(input)) {
-        ct_.findAllMatches(input, onMatcher);
-      }
-    }
-  }
-
-  /**
-   * as this should only ever happen as the size of the input is 1, keep it out
-   * of the hot path
-   */
-  inline void matchWithExtension(InputView const &input,
-                                 OnMatcher const &onMatcher) const {
-    if (shouldExtendInput(input)) {
-      auto segments = extendInput(input);
-
-      for (auto const &segment : segments) {
-        if (df_.contains(segment.data())) {
-          ct_.findAllMatches(InputView(segment.data(), segment.size()),
-                             onMatcher);
-        }
-      }
+    if (doesInputFitInDf(input) && df_.contains(input.data()) &&
+        doesInputFitInCt(input)) {
+      ct_.findAllMatches(input, onMatcher);
+    } else if (shouldExtendInput(input)) {
+      extendInputAndMatch(input, onMatcher);
     }
   }
 
@@ -87,7 +70,19 @@ class MatchPath {
            static_cast<int>(sizeof(typename DF::SegmentType)) == 2;
   }
 
-  inline auto extendInput(InputView const &input) const {
+  void extendInputAndMatch(InputView const &input,
+                           OnMatcher const &onMatcher) const {
+    auto segments = extendInput(input);
+
+    for (auto const &segment : segments) {
+      if (df_.contains(segment.data())) {
+        ct_.findAllMatches(InputView(segment.data(), segment.size()),
+                           onMatcher);
+      }
+    }
+  }
+
+  auto extendInput(InputView const &input) const {
     SegmentExtender<typename DF::SegmentType> extender;
 
     return extender.extend(input.data(), input.size());
