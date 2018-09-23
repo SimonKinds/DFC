@@ -14,7 +14,8 @@ struct OnMatcher {
 
 struct PrintOnMatcher final : public OnMatcher {
   void onMatch(ImmutablePattern const& pattern) const noexcept {
-    printf("(%d)\t\t%*.s\n", pattern.pid(), pattern.size(), pattern.data());
+    printf("(%d)\t\t%*.s\n", pattern.pid().value(), pattern.size(),
+           pattern.data());
   }
 };
 

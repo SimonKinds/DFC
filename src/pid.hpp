@@ -2,8 +2,37 @@
 #define DFC_PID_HPP
 
 namespace dfc {
-using Pid = int;
-using PidIndex = int;
+struct Pid {
+  int pid_;
+
+  explicit Pid(int const pid) : pid_(pid) {}
+
+  Pid& operator=(Pid const& other) {
+    pid_ = other.pid_;
+
+    return *this;
+  }
+
+  int value() const noexcept { return pid_; }
+
+  Pid next() const { return Pid{pid_ + 1}; }
+
+  bool operator==(Pid const& other) const noexcept {
+    return this->pid_ == other.pid_;
+  }
+};
+
+struct PidIndex {
+  int const index_;
+
+  explicit PidIndex(int const index) : index_(index) {}
+  int value() const noexcept { return index_; }
+
+  bool operator==(PidIndex const& other) const noexcept {
+    return this->index_ == other.index_;
+  }
+};
+
 }  // namespace dfc
 
 #endif

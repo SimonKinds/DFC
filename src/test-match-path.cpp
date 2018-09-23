@@ -8,6 +8,7 @@
 namespace {
 using dfc::ImmutablePattern;
 using dfc::InputView;
+using dfc::Pid;
 using dfc::SaveOnMatcher;
 using dfc::test::createImmutablePattern;
 using dfc::test::createPattern;
@@ -30,7 +31,7 @@ TEST_CASE("Match if input equals pattern") {
   std::string in("test");
   dfc::MatchPath<PatternRange, Df, Ct> path;
 
-  dfc::Pid const pid = 123;
+  dfc::Pid const pid{123};
   path.addPattern(createImmutablePattern(pid, in.data()));
 
   path.match(InputView(in.data()), onMatcher);
@@ -61,15 +62,15 @@ TEST_CASE(
   // smallest pattern = 2B
   dfc::MatchPath<dfc::PatternRange<2, 100>, Df, Ct> path;
 
-  path.addPattern(ImmutablePattern(1, createPattern("aa")));
-  path.addPattern(ImmutablePattern(2, createPattern("ab")));
-  path.addPattern(ImmutablePattern(3, createPattern("ac")));
+  path.addPattern(ImmutablePattern(Pid{1}, createPattern("aa")));
+  path.addPattern(ImmutablePattern(Pid{2}, createPattern("ab")));
+  path.addPattern(ImmutablePattern(Pid{3}, createPattern("ac")));
 
   path.match(InputView("a"), onMatcher);
 
   REQUIRE(onMatcher.matchedPids.size() == 3);
-  REQUIRE(onMatcher.matchedPids[0] == 1);
-  REQUIRE(onMatcher.matchedPids[1] == 2);
-  REQUIRE(onMatcher.matchedPids[2] == 3);
+  REQUIRE(onMatcher.matchedPids[0] == Pid{1});
+  REQUIRE(onMatcher.matchedPids[1] == Pid{2});
+  REQUIRE(onMatcher.matchedPids[2] == Pid{3});
 }
 }  // namespace

@@ -23,10 +23,10 @@ std::vector<ImmutablePattern> PatternAggregator::createPatterns() const {
   std::vector<ImmutablePattern> newPatterns;
   newPatterns.reserve(patterns_.size());
 
-  Pid pid = 0;
+  Pid pid{0};
   for (auto&& pattern : patterns_) {
-    newPatterns.emplace_back(pid, std::move(pattern));
-    ++pid;
+    newPatterns.emplace_back(pid, pattern);
+    pid = pid.next();
   }
 
   return newPatterns;

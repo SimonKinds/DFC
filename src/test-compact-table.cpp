@@ -5,6 +5,7 @@
 
 using dfc::ImmutablePattern;
 using dfc::InputView;
+using dfc::Pid;
 using dfc::SaveOnMatcher;
 using dfc::test::createCaseInsensitiveImmutablePattern;
 using dfc::test::createCaseInsensitivePattern;
@@ -31,7 +32,7 @@ TEST_CASE("Compact Table") {
   SECTION("Matches if added and equal") {
     auto patternValue = "x";
 
-    dfc::Pid const pid = 1;
+    Pid const pid{1};
     ct.addPattern(createImmutablePattern(pid, patternValue));
 
     ct.findAllMatches(InputView(patternValue), onMatcher);
@@ -43,7 +44,7 @@ TEST_CASE("Compact Table") {
   SECTION("Does not match if incorrect segment") {
     auto patternValue = "x";
 
-    dfc::Pid const pid = 1;
+    Pid const pid{1};
     ct.addPattern(createImmutablePattern(pid, patternValue));
 
     ct.findAllMatches(InputView("y"), onMatcher);
@@ -56,7 +57,7 @@ TEST_CASE("Compact Table") {
     dfc::CompactTable<uint16_t, 1, ctSize> ct;
     auto patternValue = "ab";
 
-    dfc::Pid const pid = 1;
+    Pid const pid{1};
     ct.addPattern(createCaseInsensitiveImmutablePattern(pid, patternValue));
 
     ct.findAllMatches(InputView("ab"), onMatcher);
@@ -72,7 +73,8 @@ TEST_CASE("Compact Table") {
   }
 
   SECTION("Multiple patterns") {
-    dfc::Pid const firstPatternPid = 1, secondPatternPid = 2;
+    Pid const firstPatternPid{1}, secondPatternPid{2};
+
     SECTION("Can match multiple equal segments") {
       ct.addPattern(createImmutablePattern(firstPatternPid, "x"));
       ct.addPattern(createImmutablePattern(secondPatternPid, "x"));

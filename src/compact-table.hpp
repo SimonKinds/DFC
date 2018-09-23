@@ -92,7 +92,7 @@ class CompactTable {
   void findMatchesInEntry(Entry const &entry, InputView const &input,
                           OnMatcher const &onMatcher) const {
     for (auto const pidIndex : entry.pids) {
-      auto const &pattern = patterns_[pidIndex];
+      auto const &pattern = patterns_[pidIndex.value()];
 
       if (matcher_.matches(input, pattern)) {
         onMatcher.onMatch(pattern);
@@ -102,7 +102,7 @@ class CompactTable {
 
  public:
   void addPattern(ImmutablePattern const &pattern) noexcept {
-    PidIndex const index = patterns_.size();
+    PidIndex const index{static_cast<int>(patterns_.size())};
 
     if (pattern.caseSensitive()) {
       addPatternToTableWithoutPermutations(index, pattern);

@@ -10,6 +10,7 @@ using dfc::CompactTable;
 using dfc::FlatDirectFilter;
 using dfc::InputView;
 using dfc::PatternRange;
+using dfc::Pid;
 using dfc::test::createImmutablePattern;
 
 using TwoByteMatchPath =
@@ -38,7 +39,7 @@ BENCHMARK(MatchPath_TwoByte_NoHit);
 
 void MatchPath_TwoByte_Hit(benchmark::State &state) {
   TwoByteMatchPath path;
-  path.addPattern(createImmutablePattern(0, "ab"));
+  path.addPattern(createImmutablePattern(Pid{0}, "ab"));
 
   InputView input("ab");
   dfc::benchmark::CountOnMatcher onMatcher;
@@ -71,7 +72,7 @@ BENCHMARK(MatchPath_FourByte_NoHit);
 
 void MatchPath_FourByte_Hit(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
-  path.addPattern(createImmutablePattern(0, "abab"));
+  path.addPattern(createImmutablePattern(Pid{0}, "abab"));
 
   InputView input("abab");
   dfc::benchmark::CountOnMatcher onMatcher;
@@ -87,7 +88,7 @@ BENCHMARK(MatchPath_FourByte_Hit);
 
 void MatchPath_FourByte_ManyMisses(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
-  path.addPattern(createImmutablePattern(0, "abab"));
+  path.addPattern(createImmutablePattern(Pid{0}, "abab"));
 
   InputView input("abaa");
   dfc::benchmark::CountOnMatcher onMatcher;
@@ -105,7 +106,7 @@ BENCHMARK(MatchPath_FourByte_ManyMisses);
 
 void MatchPath_FourByte_ManyHits(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
-  path.addPattern(createImmutablePattern(0, "abab"));
+  path.addPattern(createImmutablePattern(Pid{0}, "abab"));
 
   InputView input("abab");
   dfc::benchmark::CountOnMatcher onMatcher;
@@ -124,7 +125,7 @@ BENCHMARK(MatchPath_FourByte_ManyHits);
 
 void MatchPath_FourByte_FiftyPercentHits(benchmark::State &state) {
   TwoByteDfFourByteCtMatchPath path;
-  path.addPattern(createImmutablePattern(0, "abab"));
+  path.addPattern(createImmutablePattern(Pid{0}, "abab"));
 
   InputView nonMatchingInput("abaa");
   InputView matchingInput("abab");
@@ -148,7 +149,7 @@ BENCHMARK(MatchPath_FourByte_FiftyPercentHits);
 
 void MatchPath_TwoByte_extendedInput(benchmark::State &state) {
   TwoByteMatchPath path;
-  path.addPattern(createImmutablePattern(0, "ab"));
+  path.addPattern(createImmutablePattern(Pid{0}, "ab"));
 
   InputView input("a");
   dfc::benchmark::CountOnMatcher onMatcher;

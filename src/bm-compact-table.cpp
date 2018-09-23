@@ -6,6 +6,7 @@
 
 using dfc::ImmutablePattern;
 using dfc::InputView;
+using dfc::Pid;
 using dfc::test::createCaseInsensitiveImmutablePattern;
 using dfc::test::createImmutablePattern;
 
@@ -19,7 +20,7 @@ void CT_OneByte_FindAllMatches(benchmark::State &state) {
   std::string patternValue("x");
   benchmark::DoNotOptimize(&patternValue);
 
-  ct.addPattern(createImmutablePattern(0, patternValue.data()));
+  ct.addPattern(createImmutablePattern(Pid{0}, patternValue.data()));
 
   InputView input(patternValue.data());
   for (auto _ : state) {
@@ -35,7 +36,7 @@ void CT_FourByte_FindAllMatches_CaseSensitive(benchmark::State &state) {
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  ct.addPattern(createImmutablePattern(0, patternValue.data()));
+  ct.addPattern(createImmutablePattern(Pid{0}, patternValue.data()));
 
   InputView input(patternValue.data());
   for (auto _ : state) {
@@ -51,7 +52,8 @@ void CT_FourByte_FindAllMatches_CaseInsensitive(benchmark::State &state) {
   std::string patternValue(state.range(0), 'a');
   benchmark::DoNotOptimize(&patternValue);
 
-  ct.addPattern(createCaseInsensitiveImmutablePattern(0, patternValue.data()));
+  ct.addPattern(
+      createCaseInsensitiveImmutablePattern(Pid{0}, patternValue.data()));
 
   InputView input(patternValue.data());
   for (auto _ : state) {
