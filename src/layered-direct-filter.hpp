@@ -9,6 +9,20 @@
 
 namespace dfc {
 
+namespace impl {
+template <typename A, typename B, typename... As>
+struct largest_segment_type {
+  using SegmentType = typename std::conditional<
+      sizeof(A::SegmentType) >= largest_segment_type<B, As...>::SegmentType,
+      typename A::SegmentType, typename B::SegmentType>::type;
+};
+
+template <typename A>
+struct largest_segment_type<A, void> {
+  using SegmentType = typename A::SegmentType;
+};
+}  // namespace impl
+
 /**
  * A class that can stack multiple direct filters with a zero runtime overhead.
  * Each template parameter must be a DirectFilter
@@ -23,6 +37,8 @@ class LayeredDirectFilter final : public DirectFilter {
   TupleType dfs_{};
 
  public:
+  using SegmentType = impl::largest_segment_type<Ts..., void>;
+
   inline int indexByteCount() const noexcept final {
     return getMaxByteCount(std::make_index_sequence<dfCount()>());
   }

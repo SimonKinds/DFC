@@ -2,6 +2,7 @@
 
 #include "compact-table.hpp"
 #include "flat-direct-filter.hpp"
+#include "layered-direct-filter.hpp"
 #include "match-path.hpp"
 #include "util-test.hpp"
 
@@ -15,6 +16,8 @@ using dfc::test::createPattern;
 
 using PatternRange = dfc::PatternRange<2, 100>;
 using Df = dfc::FlatDirectFilter<uint16_t, 1, uint16_t>;
+using LayeredDf =
+    dfc::LayeredDirectFilter<dfc::FlatDirectFilter<uint16_t, 1, uint16_t>>;
 using Ct = dfc::CompactTable<uint16_t, 1, 100>;
 
 TEST_CASE("No match if no patterns are added") {
@@ -72,5 +75,19 @@ TEST_CASE(
   REQUIRE(onMatcher.matchedPids[0] == Pid{1});
   REQUIRE(onMatcher.matchedPids[1] == Pid{2});
   REQUIRE(onMatcher.matchedPids[2] == Pid{3});
+}
+
+TEST_CASE("Works with layered direct filter") {
+  SaveOnMatcher onMatcher;
+  std::string in("test");
+  dfc::MatchPath<PatternRange, LayeredDf, Ct> path;
+
+  dfc::Pid const pid{123};
+  path.addPattern(createImmutablePattern(pid, in.data()));
+
+  path.match(InputView(in.data()), onMatcher);
+
+  REQUIRE(onMatcher.matchedPids.size() == 1);
+  REQUIRE(onMatcher.matchedPids[0] == pid);
 }
 }  // namespace
