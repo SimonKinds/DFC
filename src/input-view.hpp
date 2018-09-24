@@ -9,8 +9,8 @@
 namespace dfc {
 // A non-owning view into the input, much like a string_view
 class InputView {
-  byte const *const data_;
-  int const size_;
+  byte const *data_;
+  int size_;
 
  public:
   explicit InputView(char const *const data)
@@ -23,8 +23,9 @@ class InputView {
       : data_(data), size_(size) {}
 
   byte const *data() const noexcept { return data_; }
-
   int size() const noexcept { return size_; }
+
+  InputView next() const { return InputView{data_ + 1, size_ - 1}; }
 };
 }  // namespace dfc
 
