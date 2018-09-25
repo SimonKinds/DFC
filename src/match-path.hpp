@@ -47,21 +47,41 @@ class MatchPath {
   }
 
   inline void match(InputView const &input, OnMatcher const &onMatcher) const {
-    if (doesInputFitInDf(input) && df_.contains(input.data()) &&
-        doesInputFitInCt(input)) {
-      ct_.findAllMatches(input, onMatcher);
+    if (doesInputFitInDirectFilter(input) && doesDirectFilterContain(input) &&
+        doesInputFitInCompactTable(input)) {
+      findAllMatches(input, onMatcher);
     } else if (shouldExtendInput(input)) {
       extendInputAndMatch(input, onMatcher);
     }
   }
 
  private:
-  inline bool doesInputFitInDf(InputView const &input) const noexcept {
+  inline bool doesInputFitInDirectFilter(InputView const &input) const
+      noexcept {
     return input.size() >= df_.indexByteCount();
   }
 
-  inline bool doesInputFitInCt(InputView const &input) const noexcept {
+  inline bool doesInputFitInCompactTable(InputView const &input) const
+      noexcept {
     return input.size() >= ct_.indexByteCount();
+  }
+
+  inline bool doesDirectFilterContain(InputView const &input) const noexcept {
+    return df_.contains(input.data());
+  }
+
+  /**
+   * By marking with __attribute(noinline)__ it can speed up the cases where the
+   * compiler decides to inline too much, causing the direct filter hot path to
+   * contain too many instructions. Has a great positive impact when single DF,
+   * a minor negative impact when 5 DFs.
+   *
+   * Let the compiler do what it wants for now and check the hot path every now
+   * and then
+   */
+  void findAllMatches(InputView const &input,
+                      OnMatcher const &onMatcher) const {
+    ct_.findAllMatches(input, onMatcher);
   }
 
   inline bool shouldExtendInput(InputView const &input) const noexcept {

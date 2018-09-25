@@ -22,13 +22,18 @@ class ExecutionLoop {
   TupleType matchPaths_{};
 
  public:
+  /**
+   * Add the given pattern to all match paths
+   */
   void addPattern(ImmutablePattern const &pattern) {
     addPattern(pattern,
                std::make_index_sequence<std::tuple_size<TupleType>::value>());
   }
 
-  inline void match(InputView const &initialInput,
-                    OnMatcher const &onMatcher) const {
+  /**
+   * Finds all the occurences of the added patterns in the given input
+   */
+  void match(InputView const &initialInput, OnMatcher const &onMatcher) const {
     InputView input = initialInput;
     while (input.size() > 0) {
       match(input, onMatcher,

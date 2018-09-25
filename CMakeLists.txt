@@ -39,5 +39,6 @@ add_executable(bm-dfc
   src/bm-layered-direct-filter.cpp
   src/bm-compact-table.cpp
   src/bm-match-path.cpp
+  src/bm-execution-loop.cpp
 )
 target_link_libraries(bm-dfc benchmark_main)
