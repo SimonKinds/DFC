@@ -14,8 +14,8 @@ using dfc::Pid;
 using dfc::test::createImmutablePattern;
 
 using TwoByteMatchPath =
-    dfc::MatchPath<PatternRange<2, 100>, FlatDirectFilter<uint16_t>,
-                   CompactTable<uint16_t, 1, 0x100>>;
+    dfc::MatchPath<PatternRange<1, 100>, FlatDirectFilter<uint16_t>,
+                   CompactTable<uint8_t, 1, 0x100>>;
 using TwoByteDfFourByteCtMatchPath =
     dfc::MatchPath<PatternRange<4, 100>, FlatDirectFilter<uint16_t>,
                    CompactTable<uint32_t, 49157, 0x20000>>;

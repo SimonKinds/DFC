@@ -62,8 +62,9 @@ TEST_CASE(
     "Extends input by one byte if length is larger than smallest pattern but "
     "shorter than segment type of DF") {
   SaveOnMatcher onMatcher;
-  // smallest pattern = 2B
-  dfc::MatchPath<dfc::PatternRange<2, 100>, Df, Ct> path;
+  dfc::MatchPath<dfc::PatternRange<1, 100>, Df,
+                 dfc::CompactTable<uint8_t, 1, 0x100>>
+      path;
 
   path.addPattern(ImmutablePattern(Pid{1}, createPattern("aa")));
   path.addPattern(ImmutablePattern(Pid{2}, createPattern("ab")));

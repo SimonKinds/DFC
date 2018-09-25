@@ -86,8 +86,8 @@ class MatchPath {
 
   inline bool shouldExtendInput(InputView const &input) const noexcept {
     const auto size = input.size();
-    return size == 1 && size < PatternRange::startInclusive &&
-           static_cast<int>(sizeof(typename DF::SegmentType)) == 2;
+    return size == 1 && PatternRange::startInclusive == 1 &&
+           sizeof(typename DF::SegmentType) == 2;
   }
 
   void extendInputAndMatch(InputView const &inputToExtend,
