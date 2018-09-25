@@ -90,14 +90,15 @@ class MatchPath {
            static_cast<int>(sizeof(typename DF::SegmentType)) == 2;
   }
 
-  void extendInputAndMatch(InputView const &input,
+  void extendInputAndMatch(InputView const &inputToExtend,
                            OnMatcher const &onMatcher) const {
-    auto segments = extendInput(input);
+    auto const segments = extendInput(inputToExtend);
 
     for (auto const &segment : segments) {
-      if (df_.contains(segment.data())) {
-        ct_.findAllMatches(InputView(segment.data(), segment.size()),
-                           onMatcher);
+      InputView const input{segment.data(), static_cast<int>(segment.size())};
+
+      if (doesDirectFilterContain(input)) {
+        findAllMatches(input, onMatcher);
       }
     }
   }
