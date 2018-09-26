@@ -74,4 +74,21 @@ void ExecutionLoop_Single_Character_Five_MatchPaths_NoHit(
 }
 BENCHMARK(ExecutionLoop_Single_Character_Five_MatchPaths_NoHit);
 
+void ExecutionLoop_Single_Character_LongInput_NoHit(benchmark::State& state) {
+  dfc::ExecutionLoop<
+      dfc::MatchPath<dfc::PatternRange<1, 2>, dfc::FlatDirectFilter<uint8_t>,
+                     dfc::CompactTable<uint8_t, 1, 256>>>
+      executionLoop;
+
+  executionLoop.addPattern(dfc::test::createImmutablePattern(dfc::Pid{1}, "a"));
+  std::string inputString(1000, 'b');
+  dfc::InputView inputView(inputString.data(), inputString.size());
+
+  dfc::benchmark::CountOnMatcher onMatcher;
+  for (auto _ : state) {
+    executionLoop.match(inputView, onMatcher);
+  }
+}
+BENCHMARK(ExecutionLoop_Single_Character_LongInput_NoHit);
+
 }  // namespace
