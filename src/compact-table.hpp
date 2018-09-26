@@ -64,7 +64,7 @@ class CompactTable {
   }
 
  private:
-  Bucket const &getBucket(byte const *const in) const {
+  Bucket const &getBucket(byte const *const in) const noexcept {
     auto const segment = segmenter_.segment(in);
     auto const index = indexer_.index(segment);
 
@@ -115,7 +115,7 @@ class CompactTable {
 
  private:
   void addPatternToTableWithoutPermutations(PidIndex pidIndex,
-                                            Pattern const &pattern) {
+                                            Pattern const &pattern) noexcept {
     addPatternToTableForSegment(pidIndex, segmenter_.segment(pattern));
   }
 
