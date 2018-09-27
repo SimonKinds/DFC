@@ -14,11 +14,27 @@ class RawPattern final : public Pattern {
   std::shared_ptr<byte[]> data_;
 
  public:
-  explicit RawPattern(byte const* const data, int const size)
+  explicit RawPattern(std::string stringPattern)
+      : RawPattern(stringPattern.data(), stringPattern.size(),
+                   CaseSensitivity::CaseSensitive) {}
+
+  RawPattern(std::string stringPattern, CaseSensitivity caseSensitivity)
+      : RawPattern(stringPattern.data(), stringPattern.size(),
+                   caseSensitivity) {}
+
+  RawPattern(char const* const data, int const size)
+      : RawPattern(reinterpret_cast<byte const*>(data), size,
+                   CaseSensitivity::CaseSensitive) {}
+
+  RawPattern(byte const* const data, int const size)
       : RawPattern(data, size, CaseSensitivity::CaseSensitive) {}
 
-  explicit RawPattern(byte const* const data, int size,
-                      CaseSensitivity caseSensitivity)
+  RawPattern(char const* const data, int const size,
+             CaseSensitivity caseSensitivity)
+      : RawPattern(reinterpret_cast<byte const*>(data), size, caseSensitivity) {
+  }
+
+  RawPattern(byte const* const data, int size, CaseSensitivity caseSensitivity)
       : size_(size),
         caseSensitivity_(caseSensitivity),
         data_(std::make_unique<byte[]>(size)) {

@@ -26,6 +26,7 @@ add_executable(test-dfc
   src/test-indexer.cpp
   src/test-layered-direct-filter.cpp
   src/test-execution-loop.cpp
+  src/test-pattern-parser.cpp
 )
 target_include_directories(test-dfc PRIVATE third-party)
 
