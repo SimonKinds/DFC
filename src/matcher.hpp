@@ -4,8 +4,6 @@
 #include <array>
 #include <limits>
 
-#include "byte.hpp"
-#include "character-transformer.hpp"
 #include "immutable-pattern.hpp"
 #include "input-view.hpp"
 
