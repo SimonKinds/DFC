@@ -9,21 +9,21 @@ class ImmutablePattern final : public Pattern {
  private:
   Pid const pid_;
   int const size_;
-  bool const caseSensitive_;
+  CaseSensitivity const caseSensitivity_;
   std::shared_ptr<byte const[]> const data_;
 
  public:
   explicit ImmutablePattern(Pid const pid, RawPattern const& pattern)
       : pid_(pid),
         size_(pattern.size()),
-        caseSensitive_(pattern.caseSensitive()),
+        caseSensitivity_(pattern.caseSensitivity()),
         data_(pattern.ptr()) {}
 
   inline Pid pid() const noexcept { return pid_; }
   inline byte const* data() const noexcept override { return data_.get(); }
   inline int size() const noexcept override { return size_; }
-  inline bool caseSensitive() const noexcept override {
-    return caseSensitive_;
+  inline CaseSensitivity caseSensitivity() const noexcept override {
+    return caseSensitivity_;
   };
 };
 }  // namespace dfc

@@ -27,7 +27,7 @@ class Matcher {
   inline bool matchesWithoutBounds(byte const *const in,
                                    ImmutablePattern const &pattern) const
       noexcept {
-    if (pattern.caseSensitive()) {
+    if (pattern.caseSensitivity() == Pattern::CaseSensitivity::CaseSensitive) {
       return matchesCaseSensitive(in, pattern);
     } else {
       return matchesCaseInsensitive(in, pattern);

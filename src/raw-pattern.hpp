@@ -10,23 +10,26 @@ namespace dfc {
 class RawPattern final : public Pattern {
  private:
   int size_;
-  bool caseSensitive_;
+  CaseSensitivity caseSensitivity_;
   std::shared_ptr<byte[]> data_;
 
  public:
   explicit RawPattern(byte const* const data, int const size)
-      : RawPattern(data, size, true) {}
+      : RawPattern(data, size, CaseSensitivity::CaseSensitive) {}
 
-  explicit RawPattern(byte const* const data, int size, int caseSensitive)
+  explicit RawPattern(byte const* const data, int size,
+                      CaseSensitivity caseSensitivity)
       : size_(size),
-        caseSensitive_(caseSensitive),
+        caseSensitivity_(caseSensitivity),
         data_(std::make_unique<byte[]>(size)) {
     std::memcpy(data_.get(), data, size);
   }
 
   byte const* data() const noexcept override { return data_.get(); }
   int size() const noexcept override { return size_; }
-  bool caseSensitive() const noexcept override { return caseSensitive_; };
+  CaseSensitivity caseSensitivity() const noexcept override {
+    return caseSensitivity_;
+  }
 
   std::shared_ptr<byte[]> ptr() const { return data_; }
 };

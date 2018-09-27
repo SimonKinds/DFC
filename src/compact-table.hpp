@@ -104,7 +104,7 @@ class CompactTable {
   void addPattern(ImmutablePattern const &pattern) noexcept {
     PidIndex const index{static_cast<int>(patterns_.size())};
 
-    if (pattern.caseSensitive()) {
+    if (pattern.caseSensitivity() == Pattern::CaseSensitivity::CaseSensitive) {
       addPatternToTableWithoutPermutations(index, pattern);
     } else {
       addPatternToTableWithPermutations(index, pattern);

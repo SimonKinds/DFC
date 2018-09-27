@@ -68,10 +68,10 @@ class FlatDirectFilter final : public DirectFilter {
     if (shouldExtendSegment(pattern)) {
       auto permutations = extendSegment(pattern);
       for (auto const &permutation : permutations) {
-        addPattern(permutation.data(), pattern.caseSensitive());
+        addPattern(permutation.data(), pattern.caseSensitivity());
       }
     } else {
-      addPattern(pattern.data(), pattern.caseSensitive());
+      addPattern(pattern.data(), pattern.caseSensitivity());
     }
   }
 
@@ -86,8 +86,9 @@ class FlatDirectFilter final : public DirectFilter {
     return extender.extend(pattern);
   }
 
-  void addPattern(byte const *const pattern, bool caseSensitive) noexcept {
-    if (caseSensitive) {
+  void addPattern(byte const *const pattern,
+                  Pattern::CaseSensitivity caseSensitivity) noexcept {
+    if (caseSensitivity == Pattern::CaseSensitivity::CaseSensitive) {
       addPatternWithoutPermutations(pattern);
     } else {
       addPatternWithPermutations(pattern);
