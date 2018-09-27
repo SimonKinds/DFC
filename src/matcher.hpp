@@ -11,8 +11,6 @@
 
 namespace dfc {
 class Matcher {
-  CharacterTransformer const charTransformer_{};
-
  public:
   inline bool matches(InputView const &input,
                       ImmutablePattern const &pattern) const noexcept {
@@ -23,44 +21,38 @@ class Matcher {
     return false;
   }
 
- private:
-  inline bool matchesWithoutBounds(byte const *const in,
-                                   ImmutablePattern const &pattern) const
-      noexcept {
-    if (pattern.caseSensitivity() == Pattern::CaseSensitivity::CaseSensitive) {
-      return matchesCaseSensitive(in, pattern);
-    } else {
-      return matchesCaseInsensitive(in, pattern);
-    }
-  }
-
-  inline bool matchesCaseSensitive(byte const *const in,
-                                   ImmutablePattern const &pattern) const
-      noexcept {
+  inline static bool compareWithCaseSensitivity(byte const *const first,
+                                                byte const *const second,
+                                                int const size) noexcept {
     /*
      * memcmp is faster in all cases (up to 16x for 1024 characters) instead of
      * using a loop
      */
-    return std::memcmp(in, pattern.data(), pattern.size()) == 0;
+    return std::memcmp(first, second, size) == 0;
   }
 
-  inline bool matchesCaseInsensitive(byte const *const in,
-                                     ImmutablePattern const &pattern) const
-      noexcept {
-    auto const patternData = pattern.data();
-
+  inline static bool compareWithoutCaseSensitivity(byte const *const first,
+                                                   byte const *const second,
+                                                   int const size) noexcept {
     bool doesMatch = true;
     int i = 0;
-    while (i < pattern.size() && doesMatch) {
-      doesMatch = toLower(patternData[i]) == toLower(in[i]);
+    while (i < size && doesMatch) {
+      doesMatch = (first[i] | 32) == (second[i] | 32);
       ++i;
     }
 
     return doesMatch;
   }
 
-  inline uint8_t toLower(uint8_t val) const noexcept {
-    return charTransformer_.toLower(val);
+ private:
+  inline bool matchesWithoutBounds(byte const *const in,
+                                   ImmutablePattern const &pattern) const
+      noexcept {
+    if (pattern.caseSensitivity() == Pattern::CaseSensitivity::CaseSensitive) {
+      return compareWithCaseSensitivity(in, pattern.data(), pattern.size());
+    } else {
+      return compareWithoutCaseSensitivity(in, pattern.data(), pattern.size());
+    }
   }
 };
 }  // namespace dfc

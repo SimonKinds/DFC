@@ -16,9 +16,8 @@ TEST_CASE("PatternParser can parse simple pattern") {
 
   auto pattern = maybePattern.value();
 
-  REQUIRE(pattern.caseSensitivity() ==
-          dfc::Pattern::CaseSensitivity::CaseSensitive);
-  REQUIRE(pattern == dfc::RawPattern(line));
+  REQUIRE(pattern ==
+          dfc::RawPattern(line, dfc::Pattern::CaseSensitivity::CaseSensitive));
 }
 
 TEST_CASE("PatternParser returns no pattern if empty line") {
@@ -53,8 +52,7 @@ TEST_CASE("PatternParser can parse simple pattern as case insensitive") {
 
   auto pattern = maybePattern.value();
 
-  REQUIRE(pattern.caseSensitivity() ==
-          dfc::Pattern::CaseSensitivity::CaseInsensitive);
-  REQUIRE(pattern == dfc::RawPattern(line));
+  REQUIRE(pattern == dfc::RawPattern(
+                         line, dfc::Pattern::CaseSensitivity::CaseInsensitive));
 }
 }  // namespace
