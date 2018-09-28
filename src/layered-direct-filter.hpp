@@ -13,7 +13,8 @@ namespace impl {
 template <typename A, typename B, typename... As>
 struct largest_segment_type {
   using SegmentType = typename std::conditional<
-      sizeof(A::SegmentType) >= largest_segment_type<B, As...>::SegmentType,
+      sizeof(typename A::SegmentType) >=
+          sizeof(typename largest_segment_type<B, As...>::SegmentType),
       typename A::SegmentType, typename B::SegmentType>::type;
 };
 
