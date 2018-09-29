@@ -9,7 +9,14 @@ add_subdirectory(third-party/benchmark)
 set(DFC_SRCS 
   src/pattern.cpp
   src/pattern-aggregator.cpp
- )
+)
+
+add_executable(match
+  ${DFC_SRCS}
+
+  match/main.cpp
+)
+target_include_directories(match PRIVATE src)
 
 add_executable(test-dfc
   ${DFC_SRCS}
