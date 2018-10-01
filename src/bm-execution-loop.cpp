@@ -2,7 +2,6 @@
 
 #include "execution-loop.hpp"
 #include "match-path.hpp"
-#include "util-benchmark.hpp"
 #include "util-test.hpp"
 
 namespace {
@@ -14,7 +13,7 @@ void ExecutionLoop_Single_Character_Hit(benchmark::State& state) {
 
   executionLoop.addPattern(dfc::test::createImmutablePattern(dfc::Pid{1}, "a"));
 
-  dfc::benchmark::CountOnMatcher onMatcher;
+  dfc::CountOnMatcher onMatcher;
   for (auto _ : state) {
     executionLoop.match(dfc::InputView("a"), onMatcher);
   }
@@ -29,7 +28,7 @@ void ExecutionLoop_Single_Character_NoHit(benchmark::State& state) {
 
   executionLoop.addPattern(dfc::test::createImmutablePattern(dfc::Pid{1}, "a"));
 
-  dfc::benchmark::CountOnMatcher onMatcher;
+  dfc::CountOnMatcher onMatcher;
   for (auto _ : state) {
     executionLoop.match(dfc::InputView("b"), onMatcher);
   }
@@ -48,7 +47,7 @@ void ExecutionLoop_Single_Character_Five_MatchPaths_Hit(
 
   executionLoop.addPattern(dfc::test::createImmutablePattern(dfc::Pid{1}, "a"));
 
-  dfc::benchmark::CountOnMatcher onMatcher;
+  dfc::CountOnMatcher onMatcher;
   for (auto _ : state) {
     executionLoop.match(dfc::InputView("a"), onMatcher);
   }
@@ -67,7 +66,7 @@ void ExecutionLoop_Single_Character_Five_MatchPaths_NoHit(
 
   executionLoop.addPattern(dfc::test::createImmutablePattern(dfc::Pid{1}, "a"));
 
-  dfc::benchmark::CountOnMatcher onMatcher;
+  dfc::CountOnMatcher onMatcher;
   for (auto _ : state) {
     executionLoop.match(dfc::InputView("b"), onMatcher);
   }
@@ -84,7 +83,7 @@ void ExecutionLoop_Single_Character_LongInput_NoHit(benchmark::State& state) {
   std::string inputString(1000, 'b');
   dfc::InputView inputView(inputString.data(), inputString.size());
 
-  dfc::benchmark::CountOnMatcher onMatcher;
+  dfc::CountOnMatcher onMatcher;
   for (auto _ : state) {
     executionLoop.match(inputView, onMatcher);
   }

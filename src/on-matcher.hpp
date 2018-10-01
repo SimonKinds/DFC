@@ -27,6 +27,13 @@ struct SaveOnMatcher final : public OnMatcher {
   }
 };
 
+struct CountOnMatcher final : public OnMatcher {
+  int mutable matchCount = 0;
+
+  void onMatch(dfc::ImmutablePattern const&) const noexcept final {
+    ++matchCount;
+  }
+};
 }  // namespace dfc
 
 #endif

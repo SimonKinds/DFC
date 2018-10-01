@@ -9,7 +9,6 @@
 #include "match-path.hpp"
 #include "pattern-aggregator.hpp"
 #include "pattern-parser.hpp"
-#include "util-benchmark.hpp"
 
 using TwoByteDirectFilter = dfc::FlatDirectFilter<uint16_t>;
 using OneByteCompactTable = dfc::CompactTable<uint8_t, 1, 0x100>;
