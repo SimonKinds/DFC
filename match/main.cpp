@@ -1,3 +1,4 @@
+#include <chrono>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -114,25 +115,11 @@ DataFile readDataFile(std::string dataFilePath) {
   return dataFile.read();
 }
 
-void printMatchingPatternsToFile(
-    std::vector<dfc::ImmutablePattern> const& matchedPatterns) {
-  std::ofstream outFile("out-cpp");
-
-  std::for_each(std::cbegin(matchedPatterns), std::cend(matchedPatterns),
-                [&outFile](dfc::ImmutablePattern const& pattern) {
-                  outFile << std::string(
-                                 reinterpret_cast<char const*>(pattern.data()),
-                                 pattern.size())
-                          << '\n';
-                });
-}
 int countMatches(CustomExecutionLoop const& executionLoop,
                  DataFile const& dataFile) {
   dfc::SaveOnMatcher matcher;
   executionLoop.match(dfc::InputView(dataFile.data(), dataFile.size()),
                       matcher);
-
-  printMatchingPatternsToFile(matcher.matchedPatterns);
 
   return matcher.matchedPatterns.size();
 }
@@ -176,7 +163,17 @@ int main(int argc, char** argv) {
 
   printExecutionInformation(patternFile, dataFile);
 
-  std::cout << "Match count: " << countMatches(executionLoop, dataFile) << '\n';
+  auto start = std::chrono::high_resolution_clock::now();
+  auto matchCount = countMatches(executionLoop, dataFile);
+  auto end = std::chrono::high_resolution_clock::now();
+
+  std::cout << "Execution time in ms: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end -
+                                                                     start)
+                   .count()
+            << std::endl;
+
+  std::cout << "Match count: " << matchCount << '\n';
 
   return 0;
 }
