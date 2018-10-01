@@ -47,10 +47,11 @@ class DataFile {
 
     auto data = std::make_unique<byte[]>(size);
 
-    size_t readSize = std::fread(data.get(), size, 1, file);
+    size_t readCount = std::fread(data.get(), size, 1, file);
     std::fclose(file);
 
-    if (readSize != size) {
+    if (readCount != 1) {
+      std::perror("Could not read file");
       return DataFile(path_);
     }
 
