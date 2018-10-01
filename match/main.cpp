@@ -8,6 +8,7 @@
 #include "match-path.hpp"
 #include "pattern-aggregator.hpp"
 #include "pattern-parser.hpp"
+#include "util-benchmark.hpp"
 
 using TwoByteDirectFilter = dfc::FlatDirectFilter<uint16_t>;
 using OneByteCompactTable = dfc::CompactTable<uint8_t, 1, 0x100>;
@@ -35,20 +36,20 @@ class DataFile {
       : path_(std::move(path)), data_(std::move(data)), size_(size) {}
 
   DataFile read() const noexcept {
-    auto file = std::fopen(path_.c_str(), "rb");
+    std::unique_ptr<std::FILE, std::function<void(std::FILE*)>> file(
+        std::fopen(path_.c_str(), "rb"), [](FILE* file) { std::fclose(file); });
 
     if (file == nullptr) {
       return DataFile(path_);
     }
 
-    std::fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    std::fseek(file, 0, SEEK_SET);
+    std::fseek(file.get(), 0, SEEK_END);
+    size_t size = ftell(file.get());
+    std::fseek(file.get(), 0, SEEK_SET);
 
     auto data = std::make_unique<byte[]>(size);
 
-    size_t readCount = std::fread(data.get(), size, 1, file);
-    std::fclose(file);
+    size_t readCount = std::fread(data.get(), size, 1, file.get());
 
     if (readCount != 1) {
       std::perror("Could not read file");
@@ -64,31 +65,47 @@ class DataFile {
 
 class PatternFile {
   std::string path_;
+  dfc::Pattern::CaseSensitivity caseSensitivity_;
 
  public:
-  explicit PatternFile(std::string path) : path_(std::move(path)) {}
+  explicit PatternFile(std::string path,
+                       dfc::Pattern::CaseSensitivity caseSensitivity)
+      : path_(std::move(path)), caseSensitivity_(caseSensitivity) {}
 
   void readPatterns(std::function<void(dfc::RawPattern)> const& callback) const
       noexcept {
     std::ifstream input(path_);
 
-    dfc::PatternParser patternParser;
     std::string line;
     while (std::getline(input, line)) {
-      std::optional<dfc::RawPattern> maybePattern =
-          patternParser.parsePatternAsCaseSensitive(line);
+      std::optional<dfc::RawPattern> maybePattern = readPattern(line);
 
       if (maybePattern.has_value()) {
         callback(std::move(maybePattern.value()));
       }
     }
   }
+
+  bool readAsCaseSensitive() const noexcept {
+    return caseSensitivity_ == dfc::Pattern::CaseSensitivity::CaseSensitive;
+  }
+
+ private:
+  std::optional<dfc::RawPattern> readPattern(std::string const& line) const
+      noexcept {
+    dfc::PatternParser const patternParser;
+    if (readAsCaseSensitive()) {
+      return patternParser.parsePatternAsCaseSensitive(line);
+    }
+
+    return patternParser.parsePatternAsCaseInsensitive(line);
+  }
 };
 
 bool isArgumentCountValid(int argc);
 void printUsage(std::string const& programName);
-CustomExecutionLoop parsePatternFileAndAddPatterns(
-    std::string const& patternFilePath);
+dfc::Pattern::CaseSensitivity caseSensitivityOfParsedPatterns(int argc,
+                                                              char** argv);
 std::vector<dfc::ImmutablePattern> readFileAndAggregatePatterns(
     std::string const& patternFilePath);
 
@@ -97,7 +114,34 @@ DataFile readDataFile(std::string dataFilePath) {
   return dataFile.read();
 }
 
-std::vector<dfc::ImmutablePattern> aggregatePatterns(PatternFile patternFile) {
+void printMatchingPatternsToFile(
+    std::vector<dfc::ImmutablePattern> const& matchedPatterns) {
+  std::ofstream outFile("out-cpp");
+
+  std::for_each(std::cbegin(matchedPatterns), std::cend(matchedPatterns),
+                [&outFile](dfc::ImmutablePattern const& pattern) {
+                  outFile << std::string(
+                                 reinterpret_cast<char const*>(pattern.data()),
+                                 pattern.size())
+                          << '\n';
+                });
+}
+int countMatches(CustomExecutionLoop const& executionLoop,
+                 DataFile const& dataFile) {
+  dfc::SaveOnMatcher matcher;
+  executionLoop.match(dfc::InputView(dataFile.data(), dataFile.size()),
+                      matcher);
+
+  printMatchingPatternsToFile(matcher.matchedPatterns);
+
+  return matcher.matchedPatterns.size();
+}
+
+void printExecutionInformation(PatternFile const& patternFile,
+                               DataFile const& dataFile);
+
+std::vector<dfc::ImmutablePattern> aggregatePatterns(
+    PatternFile const& patternFile) {
   dfc::PatternAggregator patternAggregator;
   patternFile.readPatterns([&patternAggregator](dfc::RawPattern pattern) {
     patternAggregator.add(std::move(pattern));
@@ -125,20 +169,39 @@ int main(int argc, char** argv) {
 
   DataFile const dataFile = readDataFile(argv[2]);
 
+  PatternFile const patternFile(argv[1],
+                                caseSensitivityOfParsedPatterns(argc, argv));
   CustomExecutionLoop const executionLoop =
-      addPatternsToExecutionLoop(aggregatePatterns(PatternFile(argv[1])));
+      addPatternsToExecutionLoop(aggregatePatterns(patternFile));
 
-  dfc::SaveOnMatcher matcher;
-  executionLoop.match(dfc::InputView(dataFile.data(), dataFile.size()),
-                      matcher);
+  printExecutionInformation(patternFile, dataFile);
 
-  std::cout << "Match count: " << matcher.matchedPids.size() << '\n';
+  std::cout << "Match count: " << countMatches(executionLoop, dataFile) << '\n';
 
   return 0;
 }
 
-bool isArgumentCountValid(int const argc) { return argc == 3; }
+bool isArgumentCountValid(int const argc) { return argc == 3 || argc == 4; }
 
 void printUsage(std::string const& programName) {
-  std::cout << "Usage: " << programName << " pattern-file data-file\n";
+  std::cout << "Usage: " << programName
+            << " pattern-file data-file [case-sensitive=1|0]\n";
+}
+
+dfc::Pattern::CaseSensitivity caseSensitivityOfParsedPatterns(int const argc,
+                                                              char** argv) {
+  if (argc == 4 && std::strcmp(argv[3], "1") == 0) {
+    return dfc::Pattern::CaseSensitivity::CaseInsensitive;
+  }
+
+  return dfc::Pattern::CaseSensitivity::CaseSensitive;
+}
+
+void printExecutionInformation(PatternFile const& patternFile,
+                               DataFile const& dataFile) {
+  std::cout << "Matching " << dataFile.size() << " bytes against "
+            << (patternFile.readAsCaseSensitive() ? "case sensitive "
+                                                  : "case insensitive ")
+            << "patterns\n"
+            << std::endl;
 }
