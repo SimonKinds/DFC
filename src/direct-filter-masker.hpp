@@ -12,8 +12,8 @@ class DirectFilterMasker {
                 "SegmentType must be integral");
 
  public:
-  inline byte mask(const SegmentType segment) const noexcept {
-    return (segment & 0x7) << 1;
+  inline byte mask(SegmentType const segment) const noexcept {
+    return 1 << (segment & 0x7);
   }
 };
 }  // namespace dfc
