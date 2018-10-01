@@ -26,7 +26,7 @@ TEST_CASE("No match if no patterns are added") {
 
   path.match(InputView("test"), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.empty());
+  REQUIRE(onMatcher.matchedPatterns.empty());
 }
 
 TEST_CASE("Match if input equals pattern") {
@@ -39,8 +39,8 @@ TEST_CASE("Match if input equals pattern") {
 
   path.match(InputView(in.data()), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.size() == 1);
-  REQUIRE(onMatcher.matchedPids[0] == pid);
+  REQUIRE(onMatcher.matchedPatterns.size() == 1);
+  REQUIRE(onMatcher.matchedPatterns[0].pid() == pid);
 }
 
 TEST_CASE("Does not add pattern if pattern is outside of range contraints") {
@@ -56,7 +56,7 @@ TEST_CASE("Does not add pattern if pattern is outside of range contraints") {
   path.match(InputView(firstPattern.data()), onMatcher);
   path.match(InputView(secondPattern.data()), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.empty());
+  REQUIRE(onMatcher.matchedPatterns.empty());
 }
 TEST_CASE(
     "Extends input by one byte if length is larger than smallest pattern but "
@@ -72,10 +72,10 @@ TEST_CASE(
 
   path.match(InputView("a"), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.size() == 3);
-  REQUIRE(onMatcher.matchedPids[0] == Pid{1});
-  REQUIRE(onMatcher.matchedPids[1] == Pid{2});
-  REQUIRE(onMatcher.matchedPids[2] == Pid{3});
+  REQUIRE(onMatcher.matchedPatterns.size() == 3);
+  REQUIRE(onMatcher.matchedPatterns[0].pid() == Pid{1});
+  REQUIRE(onMatcher.matchedPatterns[1].pid() == Pid{2});
+  REQUIRE(onMatcher.matchedPatterns[2].pid() == Pid{3});
 }
 
 TEST_CASE("Works with layered direct filter") {
@@ -88,7 +88,7 @@ TEST_CASE("Works with layered direct filter") {
 
   path.match(InputView(in.data()), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.size() == 1);
-  REQUIRE(onMatcher.matchedPids[0] == pid);
+  REQUIRE(onMatcher.matchedPatterns.size() == 1);
+  REQUIRE(onMatcher.matchedPatterns[0].pid() == pid);
 }
 }  // namespace

@@ -15,8 +15,8 @@ TEST_CASE("Can match single character") {
   dfc::SaveOnMatcher onMatcher;
   executionLoop.match(dfc::InputView("a"), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.size() == 1);
-  REQUIRE(onMatcher.matchedPids[0] == dfc::Pid{1});
+  REQUIRE(onMatcher.matchedPatterns.size() == 1);
+  REQUIRE(onMatcher.matchedPatterns[0].pid() == dfc::Pid{1});
 }
 
 TEST_CASE("Will match all occurences in input") {
@@ -31,9 +31,9 @@ TEST_CASE("Will match all occurences in input") {
   dfc::SaveOnMatcher onMatcher;
   executionLoop.match(dfc::InputView("ab"), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.size() == 2);
-  REQUIRE(onMatcher.matchedPids[0] == dfc::Pid{1});
-  REQUIRE(onMatcher.matchedPids[1] == dfc::Pid{2});
+  REQUIRE(onMatcher.matchedPatterns.size() == 2);
+  REQUIRE(onMatcher.matchedPatterns[0].pid() == dfc::Pid{1});
+  REQUIRE(onMatcher.matchedPatterns[1].pid() == dfc::Pid{2});
 }
 
 TEST_CASE("Uses all given match paths") {
@@ -55,9 +55,9 @@ TEST_CASE("Uses all given match paths") {
   dfc::SaveOnMatcher onMatcher;
   executionLoop.match(dfc::InputView("abcd abcd"), onMatcher);
 
-  REQUIRE(onMatcher.matchedPids.size() == 4);
-  REQUIRE(onMatcher.matchedPids[0] == singleCharacterPid);
-  REQUIRE(onMatcher.matchedPids[1] == multipleCharacterPid);
-  REQUIRE(onMatcher.matchedPids[2] == singleCharacterPid);
-  REQUIRE(onMatcher.matchedPids[3] == multipleCharacterPid);
+  REQUIRE(onMatcher.matchedPatterns.size() == 4);
+  REQUIRE(onMatcher.matchedPatterns[0].pid() == singleCharacterPid);
+  REQUIRE(onMatcher.matchedPatterns[1].pid() == multipleCharacterPid);
+  REQUIRE(onMatcher.matchedPatterns[2].pid() == singleCharacterPid);
+  REQUIRE(onMatcher.matchedPatterns[3].pid() == multipleCharacterPid);
 }

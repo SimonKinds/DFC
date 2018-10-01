@@ -20,10 +20,10 @@ struct PrintOnMatcher final : public OnMatcher {
 };
 
 struct SaveOnMatcher final : public OnMatcher {
-  std::vector<dfc::Pid> mutable matchedPids;
+  std::vector<ImmutablePattern> mutable matchedPatterns;
 
   void onMatch(dfc::ImmutablePattern const& pattern) const {
-    matchedPids.emplace_back(pattern.pid());
+    matchedPatterns.emplace_back(pattern);
   }
 };
 

@@ -26,7 +26,7 @@ TEST_CASE("Compact Table") {
       ct.findAllMatches(InputView(&in), onMatcher);
     }
 
-    REQUIRE(onMatcher.matchedPids.size() == 0);
+    REQUIRE(onMatcher.matchedPatterns.size() == 0);
   }
 
   SECTION("Matches if added and equal") {
@@ -37,8 +37,8 @@ TEST_CASE("Compact Table") {
 
     ct.findAllMatches(InputView(patternValue), onMatcher);
 
-    REQUIRE(onMatcher.matchedPids.size() == 1);
-    REQUIRE(onMatcher.matchedPids[0] == pid);
+    REQUIRE(onMatcher.matchedPatterns.size() == 1);
+    REQUIRE(onMatcher.matchedPatterns[0].pid() == pid);
   }
 
   SECTION("Does not match if incorrect segment") {
@@ -49,7 +49,7 @@ TEST_CASE("Compact Table") {
 
     ct.findAllMatches(InputView("y"), onMatcher);
 
-    REQUIRE(onMatcher.matchedPids.size() == 0);
+    REQUIRE(onMatcher.matchedPatterns.size() == 0);
   }
 
   SECTION("Sets for all variants of input if case insensitive") {
@@ -65,11 +65,11 @@ TEST_CASE("Compact Table") {
     ct.findAllMatches(InputView("Ab"), onMatcher);
     ct.findAllMatches(InputView("AB"), onMatcher);
 
-    REQUIRE(onMatcher.matchedPids.size() == 4);
-    REQUIRE(onMatcher.matchedPids[0] == pid);
-    REQUIRE(onMatcher.matchedPids[1] == pid);
-    REQUIRE(onMatcher.matchedPids[2] == pid);
-    REQUIRE(onMatcher.matchedPids[3] == pid);
+    REQUIRE(onMatcher.matchedPatterns.size() == 4);
+    REQUIRE(onMatcher.matchedPatterns[0].pid() == pid);
+    REQUIRE(onMatcher.matchedPatterns[1].pid() == pid);
+    REQUIRE(onMatcher.matchedPatterns[2].pid() == pid);
+    REQUIRE(onMatcher.matchedPatterns[3].pid() == pid);
   }
 
   SECTION("Multiple patterns") {
@@ -81,9 +81,9 @@ TEST_CASE("Compact Table") {
 
       ct.findAllMatches(InputView("x"), onMatcher);
 
-      REQUIRE(onMatcher.matchedPids.size() == 2);
-      REQUIRE(onMatcher.matchedPids[0] == firstPatternPid);
-      REQUIRE(onMatcher.matchedPids[1] == secondPatternPid);
+      REQUIRE(onMatcher.matchedPatterns.size() == 2);
+      REQUIRE(onMatcher.matchedPatterns[0].pid() == firstPatternPid);
+      REQUIRE(onMatcher.matchedPatterns[1].pid() == secondPatternPid);
     }
 
     SECTION("Can match multiple different segments") {
@@ -93,9 +93,9 @@ TEST_CASE("Compact Table") {
       ct.findAllMatches(InputView("x"), onMatcher);
       ct.findAllMatches(InputView("y"), onMatcher);
 
-      REQUIRE(onMatcher.matchedPids.size() == 2);
-      REQUIRE(onMatcher.matchedPids[0] == firstPatternPid);
-      REQUIRE(onMatcher.matchedPids[1] == secondPatternPid);
+      REQUIRE(onMatcher.matchedPatterns.size() == 2);
+      REQUIRE(onMatcher.matchedPatterns[0].pid() == firstPatternPid);
+      REQUIRE(onMatcher.matchedPatterns[1].pid() == secondPatternPid);
     }
   }
 }
