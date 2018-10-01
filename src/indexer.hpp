@@ -13,7 +13,7 @@ class DirectFilterIndexer {
 
  public:
   constexpr inline RetType index(SegmentType const segment) const noexcept {
-    return (segment * Hash) >> 3;
+    return static_cast<RetType>(segment * Hash) >> 3;
   }
 };
 

@@ -21,6 +21,13 @@ TEST_CASE("DF indexer hashes before shift") {
   REQUIRE(indexer.index(0xff) == 0xff);
 }
 
+TEST_CASE(
+    "DF indexer max return value is RetType shifted 3 bytes to the right") {
+  DirectFilterIndexer<uint16_t, 1, uint8_t> indexer;
+  REQUIRE(indexer.index(std::numeric_limits<uint16_t>::max()) ==
+          (std::numeric_limits<uint8_t>::max() >> 3));
+}
+
 TEST_CASE("CT indexer uses the mask") {
   auto const hash = 1;
   auto const mask = 0xfe;
