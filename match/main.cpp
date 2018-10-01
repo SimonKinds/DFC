@@ -116,11 +116,11 @@ DataFile readDataFile(std::string dataFilePath) {
 
 int countMatches(CustomExecutionLoop const& executionLoop,
                  DataFile const& dataFile) {
-  dfc::SaveOnMatcher matcher;
+  dfc::CountOnMatcher matcher;
   executionLoop.match(dfc::InputView(dataFile.data(), dataFile.size()),
                       matcher);
 
-  return matcher.matchedPatterns.size();
+  return matcher.matchCount;
 }
 
 void printExecutionInformation(PatternFile const& patternFile,
