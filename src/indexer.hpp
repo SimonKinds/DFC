@@ -12,7 +12,7 @@ class DirectFilterIndexer {
   static_assert(std::is_integral<RetType>::value, "RetType must be integral");
 
  public:
-  constexpr inline RetType index(SegmentType const segment) const noexcept {
+  constexpr RetType index(SegmentType const segment) const noexcept {
     return static_cast<RetType>(segment * Hash) >> 3;
   }
 };
@@ -23,7 +23,7 @@ class CompactTableIndexer {
                 "SegmentType must be integral");
 
  public:
-  constexpr inline SegmentType index(SegmentType const segment) const noexcept {
+  constexpr SegmentType index(SegmentType const segment) const noexcept {
     return (segment * Hash) & Mask;
   }
 };
