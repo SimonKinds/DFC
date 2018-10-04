@@ -39,6 +39,10 @@ class MatchPath {
   CT ct_;
 
  public:
+  int largestIndexByteCount() const noexcept {
+    return std::max(df_.indexByteCount(), ct_.indexByteCount());
+  }
+
   void addPattern(ImmutablePattern const &pattern) {
     if (patternRange_.includes(pattern)) {
       df_.addPattern(pattern);
@@ -52,6 +56,13 @@ class MatchPath {
       findAllMatches(input, onMatcher);
     } else if (shouldExtendInput(input)) {
       extendInputAndMatch(input, onMatcher);
+    }
+  }
+
+  inline void unsafeMatch(InputView const &input,
+                          OnMatcher const &onMatcher) const {
+    if (doesDirectFilterContain(input)) {
+      findAllMatches(input, onMatcher);
     }
   }
 
