@@ -77,10 +77,12 @@ class MatchPath {
    * a minor negative impact when 5 DFs.
    *
    * Let the compiler do what it wants for now and check the hot path every now
-   * and then
+   * and then.
+   *
+   * UPDATE: noinline has a 15% speed improvement with three DFs with real data
    */
-  void findAllMatches(InputView const &input,
-                      OnMatcher const &onMatcher) const {
+  __attribute_noinline__ void findAllMatches(InputView const &input,
+                                             OnMatcher const &onMatcher) const {
     ct_.findAllMatches(input, onMatcher);
   }
 
