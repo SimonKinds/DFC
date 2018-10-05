@@ -89,8 +89,9 @@ class CompactTable {
     }
   }
 
-  void findMatchesInEntry(Entry const &entry, InputView const &input,
-                          OnMatcher const &onMatcher) const {
+  __attribute_noinline__ void findMatchesInEntry(
+      Entry const &entry, InputView const &input,
+      OnMatcher const &onMatcher) const {
     for (auto const pidIndex : entry.pids) {
       auto const &pattern = patterns_[pidIndex.value()];
 
