@@ -59,7 +59,7 @@ using SecondMatchPath = MatchPath<
 /**
  * It's required to alias a type called CustomExecutionLoop, and it should be
  * of type ExecutionLoop. The template parameters to the ExecutionLoop has to
- * of type MatchPath
+ * of type MatchPath. There may one or more match paths.
  */
 using CustomExecutionLoop = ExecutionLoop<FirstMatchPath, SecondMatchPath>;
 
