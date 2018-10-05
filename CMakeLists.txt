@@ -15,6 +15,7 @@ add_executable(match
   ${DFC_SRCS}
 
   match/main.cpp
+  match/helpers.cpp
 )
 target_include_directories(match PRIVATE src)
 
