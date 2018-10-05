@@ -4,6 +4,8 @@ High performance string matching algorithm
 ## Requirements
 - CMake (3.1 or greater)
 - C++ compiler (C++17 or greater)
+  - gcc version >= 7 (?)
+  - clang version >= 3.9 (?)
 
 ## Building
 ```sh
