@@ -22,5 +22,9 @@ Configure the file `match/config.hpp` with your preferred direct filter and comp
 Usage: ./match pattern-file data-file [case-sensitive=1|0]
 ```
 
+## Current limitations
+The current implementation does not count the amount of duplicate patterns. e.g. if there are two identical patterns, and a hit occurs, the match count will only be incremented by one. There is no inherent reason behind this, however it does make it possible to decrease the size of a pattern.
+Another limitation is that currently the **location of a match is not given to the `OnMatch` handler**. I plan to fix this, but must figure out how to best do it.
+
 ## License
 MIT
